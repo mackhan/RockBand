@@ -1,8 +1,12 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-//ゲームプレイ中に表示するGUIの挙動
-public class OnPlayGUI : MonoBehaviour {
+
+/// <summary>
+/// 游戏进行中的GUI
+/// </summary>
+public class OnPlayGUI : MonoBehaviour
+{
 	public Texture messageTexture_Best;
 	public Texture messageTexture_Good;
 	public Texture messageTexture_Miss;

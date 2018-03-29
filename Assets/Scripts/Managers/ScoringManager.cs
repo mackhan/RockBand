@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
-//プレイヤーのアクション等からスコアの加点/減点を管理
-public class ScoringManager : MonoBehaviour {
+/// <summary>
+/// 判断玩家输入是否成功，计算得分等
+/// </summary>
+public class ScoringManager : MonoBehaviour
+{
 	public static float timingErrorToleranceGood = 0.22f;			// タイミングのずれがこれ以下だったら Good
 	public static float timingErrorTorelanceExcellent = 0.12f;		// タイミングのずれがこれ以下だったら Excellent
 	public static float missScore = -1.0f;
@@ -17,8 +20,10 @@ public class ScoringManager : MonoBehaviour {
 	public static float bestHeatupRate = 0.02f;
 	public static float temperThreshold = 0.5f;//演出の変化の有無などを分ける盛り上がりのしきい値
 	public bool outScoringLog=true;
+
 	//現在の合計スコア
-	public float score{
+	public float score
+    {
 		get{ return m_score; }
 	}
 	private float m_score;

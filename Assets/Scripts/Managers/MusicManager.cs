@@ -1,7 +1,10 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-//曲の情報や演奏の開始/停止等の管理
+
+/// <summary>
+/// 音乐播放暂停控制
+/// </summary>
 public class MusicManager : MonoBehaviour {
 	private SongInfo m_currentSongInfo;
 	//現フレームの曲再生位置

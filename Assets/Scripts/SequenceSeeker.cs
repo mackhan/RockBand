@@ -4,22 +4,35 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
 
-//シーケンスを走査し、直近の要素のインデックスを取得するクラス
-public class SequenceSeeker<ElementType>
-	where ElementType: MusicalElement
-{	//走査するシーケンスデータをセット
-	public void SetSequence( List<ElementType> sequence ){
+/// <summary>
+/// 按时间对序列数据定位
+/// </summary>
+/// <typeparam name="ElementType"></typeparam>
+public class SequenceSeeker<ElementType> where ElementType: MusicalElement
+{	/// <summary>
+    /// 走査するシーケンスデータをセット
+    /// </summary>
+    /// <param name="sequence"></param>
+	public void SetSequence( List<ElementType> sequence )
+    {
 		m_sequence = sequence;
 		m_nextIndex=0;
 		m_currentBeatCount=0;
 		m_isJustPassElement=false;
 	}
-	//一番近い次の要素を示すインデックス番号
-	public int nextIndex{
-			get{return m_nextIndex;}
+	
+    //一番近い次の要素を示すインデックス番号
+	public int nextIndex
+    {
+		get
+        {
+            return m_nextIndex;
+        }
 	}
-	//要素のトリガー位置を通過した時にtrue
-	public bool isJustPassElement{
+	
+    //要素のトリガー位置を通過した時にtrue
+	public bool isJustPassElement
+    {
 			get{return m_isJustPassElement;}
 	}
 
