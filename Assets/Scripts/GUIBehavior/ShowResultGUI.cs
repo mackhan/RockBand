@@ -26,11 +26,6 @@ public class ShowResultGUI : MonoBehaviour
 		m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
 	}
 
-	// Update is called once per frame
-	void Update()
-	{
-
-	}
 	void OnGUI()
 	{
 		GUI.skin = guiStyle;

@@ -4,7 +4,8 @@ using System.Collections;
 /// <summary>
 /// 操作画面的GUI
 /// </summary>
-public class InstructionGUI : MonoBehaviour {
+public class InstructionGUI : MonoBehaviour
+{
 	public string title="title";
 	public string instruction="How to Play";
 	public string bandMemberLabel="bandMember";

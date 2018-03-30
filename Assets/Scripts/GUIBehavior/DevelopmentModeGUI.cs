@@ -95,8 +95,8 @@ public class DevelopmentModeGUI : MonoBehaviour
 					= m_musicManager.currentSongInfo.onBeatActionRegionSequence[currentReginIndex].name;
 			}
 			GUI.Label(new Rect(150, 420, 250, 40), "region ...:" + previousHitRegionName);
-			//現在のパートを表示
-			GUI.Label(new Rect(5, 460, 150, 40), "Current:" + m_musicManager.beatCountFromStart);
+            //显示当前部分
+            GUI.Label(new Rect(5, 460, 150, 40), "Current:" + m_musicManager.beatCountFromStart);
 			GUI.Label(new Rect(150, 460, 250, 40), "region ...:" + m_musicManager.currentSongInfo.onBeatActionRegionSequence[currentReginIndex].name);
 		}
 
