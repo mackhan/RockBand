@@ -1,11 +1,7 @@
 using UnityEngine;
 using System.Collections;
-
-/// <summary>
-/// 开发模式的GUI
-/// </summary>
-public class DevelopmentModeGUI : MonoBehaviour
-{
+//シーク機能付き開発モードのGUI挙動
+public class DevelopmentModeGUI : MonoBehaviour {
 	//演奏開始時の処理
 	public void BeginVisualization()
 	{
@@ -18,10 +14,8 @@ public class DevelopmentModeGUI : MonoBehaviour
 	{
 		m_actionInfoRegionSeeker.Seek(beatCount);
 	}
-
 	// Use this for initialization
-	void Start ()
-    {
+	void Start () {
 		m_musicManager=GameObject.Find("MusicManager").GetComponent<MusicManager>();
 		m_scoringManager=GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
 		m_eventManager=GameObject.Find("EventManager").GetComponent<EventManager>();
@@ -33,8 +27,7 @@ public class DevelopmentModeGUI : MonoBehaviour
 	}
 
 	// Update is called once per frame
-	void Update ()
-    {
+	void Update () {
 		m_actionInfoRegionSeeker.ProceedTime(
 			m_musicManager.beatCountFromStart - m_musicManager.previousBeatCountFromStart
 		);
@@ -42,8 +35,8 @@ public class DevelopmentModeGUI : MonoBehaviour
 		m_seekSlider.is_button_down = Input.GetMouseButton(0);
 	}
 
-	void OnGUI()
-    {
+	void OnGUI(){
+
 		GUI.Label(new Rect( 5, 100, 150, 40 ),"Current");
 
 		// シークスライダーの制御.
@@ -55,15 +48,13 @@ public class DevelopmentModeGUI : MonoBehaviour
 		);
 
 		// シーク中だけ、シークバー上の位置を表示する.
-		if(this.m_seekSlider.is_now_dragging)
-        {
+		if(this.m_seekSlider.is_now_dragging) {
 
 			GUI.Label(new Rect( 252, 120, 200, 40 ), ((int)this.m_seekSlider.dragging_poisition).ToString());
 		}
 
 		//
-		if( GUI.Button( new Rect( (Screen.width - 150)/2.0f, 350, 150, 40 ), "End" ) )
-        {
+		if( GUI.Button( new Rect( (Screen.width - 150)/2.0f, 350, 150, 40 ), "End" ) ){
 			GameObject.Find("PhaseManager").GetComponent<PhaseManager>().SetPhase("Restart");
 		}
 
@@ -95,8 +86,8 @@ public class DevelopmentModeGUI : MonoBehaviour
 					= m_musicManager.currentSongInfo.onBeatActionRegionSequence[currentReginIndex].name;
 			}
 			GUI.Label(new Rect(150, 420, 250, 40), "region ...:" + previousHitRegionName);
-            //显示当前部分
-            GUI.Label(new Rect(5, 460, 150, 40), "Current:" + m_musicManager.beatCountFromStart);
+			//現在のパートを表示
+			GUI.Label(new Rect(5, 460, 150, 40), "Current:" + m_musicManager.beatCountFromStart);
 			GUI.Label(new Rect(150, 460, 250, 40), "region ...:" + m_musicManager.currentSongInfo.onBeatActionRegionSequence[currentReginIndex].name);
 		}
 

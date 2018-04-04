@@ -3,22 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
+<<<<<<< HEAD
+//プレイヤーのアクション等からスコアの加点/減点を管理
+public class ScoringManager : MonoBehaviour {
+=======
 /// <summary>
 /// 判断玩家输入是否成功，计算得分等
 /// </summary>
 public class ScoringManager : MonoBehaviour
 {
-    /// <summary>
-    /// Good的时机，如果时间差距低于这个 
-    /// </summary>
-	public static float timingErrorToleranceGood = 0.22f;          
-
-    /// <summary>
-    /// Excellent的时机, 如果定时偏差小于这个
-    /// </summary>
-    public static float timingErrorTorelanceExcellent = 0.12f;     
-
-    public static float missScore = -1.0f;
+>>>>>>> parent of 03acd46... 增加一些注释
+	public static float timingErrorToleranceGood = 0.22f;			// タイミングのずれがこれ以下だったら Good
+	public static float timingErrorTorelanceExcellent = 0.12f;		// タイミングのずれがこれ以下だったら Excellent
+	public static float missScore = -1.0f;
 	public static float goodScore = 2.0f;
 	public static float excellentScore = 4.0f;
 	public static float failureScoreRate = 0.3f;//途中判定ポイントで"失敗"として判定される得点率(得点/理論上の最高得点)
@@ -26,32 +23,27 @@ public class ScoringManager : MonoBehaviour
 	public static float missHeatupRate = -0.08f;
 	public static float goodHeatupRate = 0.01f;
 	public static float bestHeatupRate = 0.02f;
-	public static float temperThreshold = 0.5f;//兴奋的门槛分开存在或不存在生产变化
-    public bool outScoringLog=true;
+	public static float temperThreshold = 0.5f;//演出の変化の有無などを分ける盛り上がりのしきい値
+	public bool outScoringLog=true;
+<<<<<<< HEAD
+=======
 
+>>>>>>> parent of 03acd46... 增加一些注释
 	//現在の合計スコア
-	public float score
-    {
+	public float score{
 		get{ return m_score; }
 	}
 	private float m_score;
 
-    /// <summary>
-    /// 兴奋的数值化 0.0 - 1.0
-    /// </summary>
-    public float temper
+	//盛り上がりの数値化 0.0 - 1.0
+	public float temper
 	{
 		get { return m_temper; }
 		set { m_temper = Mathf.Clamp(value, 0, 1); }
 	}
-
 	float m_temper = 0;
-
-    /// <summary>
-    /// 当前帧中的总得分波动值
-    /// </summary>
-    public float scoreJustAdded
-    {
+	//現フレームでのスコア変動合計値
+	public float scoreJustAdded{
 		get{ return m_additionalScore; }
 	}
 
