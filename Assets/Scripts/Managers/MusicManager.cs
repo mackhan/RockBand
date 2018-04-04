@@ -1,7 +1,14 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+<<<<<<< HEAD
 //曲の情報や演奏の開始/停止等の管理
+=======
+
+/// <summary>
+/// 音乐播放暂停控制
+/// </summary>
+>>>>>>> parent of 03acd46... 增加一些注释
 public class MusicManager : MonoBehaviour {
 	private SongInfo m_currentSongInfo;
 	//現フレームの曲再生位置

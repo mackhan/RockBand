@@ -1,6 +1,13 @@
 using UnityEngine;
 using System.Collections;
+<<<<<<< HEAD
 //ゲームルールなどの説明画面の挙動
+=======
+
+/// <summary>
+/// 操作画面的GUI
+/// </summary>
+>>>>>>> parent of 03acd46... 增加一些注释
 public class InstructionGUI : MonoBehaviour {
 	public string title="title";
 	public string instruction="How to Play";

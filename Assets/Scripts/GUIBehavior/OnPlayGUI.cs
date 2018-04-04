@@ -106,12 +106,21 @@ public class OnPlayGUI : MonoBehaviour {
 		);
 
 		if( m_musicManager.IsPlaying() ){
+<<<<<<< HEAD
 
 			SongInfo			song =  m_musicManager.currentSongInfo;
 
 			// 表示を開始するマーカー.
 			int	begin = m_seekerBack.nextIndex;
 
+=======
+
+			SongInfo			song =  m_musicManager.currentSongInfo;
+
+			// 表示を開始するマーカー.
+			int	begin = m_seekerBack.nextIndex;
+
+>>>>>>> parent of 03acd46... 增加一些注释
 			// 表示を終了するマーカー.
 			int end   = m_seekerFront.nextIndex;
 			float x_offset;

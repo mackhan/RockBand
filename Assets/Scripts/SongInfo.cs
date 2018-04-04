@@ -3,7 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
+<<<<<<< HEAD
 public class SongInfo{
+=======
+
+/// <summary>
+/// “Ù¿÷ ÈºÆ
+/// </summary>
+public class SongInfo
+{
+>>>>>>> parent of 03acd46... Â¢ûÂä†‰∏Ä‰∫õÊ≥®Èáä
 	public List<OnBeatActionInfo> onBeatActionSequence = new List<OnBeatActionInfo>();
 	public List<StagingDirection> stagingDirectionSequence = new List<StagingDirection>();
 	public List<SequenceRegion> onBeatActionRegionSequence = new List<SequenceRegion>();
