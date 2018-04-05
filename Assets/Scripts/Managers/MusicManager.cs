@@ -1,20 +1,27 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-//曲の情報や演奏の開始/停止等の管理
-public class MusicManager : MonoBehaviour {
+
+/// <summary>
+/// 音乐播放暂停控制
+/// </summary>
+public class MusicManager : MonoBehaviour
+{
 	private SongInfo m_currentSongInfo;
-	//現フレームの曲再生位置
-	public float beatCountFromStart{
+
+    //当前帧的歌曲再现位置
+    public float beatCountFromStart{
 		get{ return m_beatCountFromStart;}
 	}
 	public float beatCount{
 		get{ return m_beatCountFromStart;}
 	}
-	//前フレームの曲再生位置
-	public float previousBeatCountFromStart{
+    
+    //前一帧的歌曲再现位置
+    public float previousBeatCountFromStart{
 		get{ return m_previousBeatCountFromStart;}
 	}
+
 	public float previousBeatCount{
 		get{ return m_previousBeatCountFromStart;}
 	}
@@ -40,11 +47,11 @@ public class MusicManager : MonoBehaviour {
 	}
 	// Update is called once per frame
 	void Update () {
-		//演奏中は常に曲の再生位置をチェック
-		if (m_audioSource.isPlaying)
+        //播放时始终检查歌曲的播放位置
+        if (m_audioSource.isPlaying)
 		{
 			m_previousBeatCountFromStart = m_beatCountFromStart;
-			m_beatCountFromStart = m_audioSource.time * m_currentSongInfo.beatPerSecond;
+			m_beatCountFromStart = m_audioSource.time * m_currentSongInfo.beatPerSecond;//-当前播放的时间，乘以2，一秒钟两面
 			m_isPlayPreviousFrame = true;
 		}
 		else

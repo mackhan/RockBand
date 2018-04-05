@@ -3,8 +3,12 @@ using System.Collections;
 using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
-//ゲームのフェーズの遷移を管理するクラス
-public class PhaseManager : MonoBehaviour {
+
+/// <summary>
+/// 游戏整体的分段管理（主题画面和游戏进行中等）
+/// </summary>
+public class PhaseManager : MonoBehaviour
+{
 	public string currentPhase{
 		get{ return m_currentPhase; }
 	}

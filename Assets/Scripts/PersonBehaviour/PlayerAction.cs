@@ -6,7 +6,10 @@ public enum PlayerActionEnum{
 	HeadBanging,
 	Jump
 };
-//プレイヤーのアクション
+
+/// <summary>
+/// 玩家的动画
+/// </summary>
 public class PlayerAction : MonoBehaviour {
 	public AudioClip headBangingSoundClip_GOOD;
 	public AudioClip headBangingSoundClip_BAD;

@@ -1,8 +1,12 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-//ステージ演出等のイベント管理
-public class EventManager : MonoBehaviour {
+
+/// <summary>
+/// 舞台演出的管理和执行
+/// </summary>
+public class EventManager : MonoBehaviour
+{
 	// Use this for initialization
 	void Start(){
 		m_musicManager=GameObject.Find("MusicManager").GetComponent<MusicManager>();

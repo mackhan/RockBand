@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Runtime.Serialization;
+
 public enum StagingDirectionEnum{
 	None,
 	FireBlast,
@@ -11,6 +12,10 @@ public enum StagingDirectionEnum{
 	SetBandMemberDefaultAnimation,
 	Applause
 };
+
+/// <summary>
+/// 舞台演出的基类
+/// </summary>
 public abstract class StagingDirection : MusicalElement{
 	public StagingDirection(){}
 	public virtual void OnBegin(){}

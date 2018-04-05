@@ -5,7 +5,10 @@ using System.Text;
 
 using UnityEngine;
 using System.Collections;
-//シーク機能付き開発モードのGUI挙動
+
+/// <summary>
+/// 结算界面的GUI
+/// </summary>
 public class ShowResultGUI : MonoBehaviour
 {
 	public string title = "title";
@@ -16,17 +19,13 @@ public class ShowResultGUI : MonoBehaviour
 	public string comment_BAD = "comment shown here";
 	public string comment = "comment shown here";
 	public GUISkin guiStyle;
+
 	// Use this for initialization
 	void Start()
 	{
 		m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
 	}
 
-	// Update is called once per frame
-	void Update()
-	{
-
-	}
 	void OnGUI()
 	{
 		GUI.skin = guiStyle;
@@ -41,5 +40,6 @@ public class ShowResultGUI : MonoBehaviour
 			GameObject.Find("PhaseManager").GetComponent<PhaseManager>().SetPhase("Restart");
 		}
 	}
+
 	ScoringManager m_scoringManager;
 }
