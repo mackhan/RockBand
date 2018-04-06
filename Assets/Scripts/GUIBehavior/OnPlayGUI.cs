@@ -1,29 +1,39 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-//ゲームプレイ中に表示するGUIの挙動
-public class OnPlayGUI : MonoBehaviour {
+
+/// <summary>
+/// 游戏进行中的GUI
+/// </summary>
+public class OnPlayGUI : MonoBehaviour
+{
 	public Texture messageTexture_Best;
 	public Texture messageTexture_Good;
 	public Texture messageTexture_Miss;
 	public Texture headbangingIcon;
 	public Texture beatPositionIcon;
+
+    /// <summary>
+    /// 集中的特效
+    /// </summary>
 	public Texture hitEffectIcon;
+
 	public Texture temperBar;
 	public Texture temperBarFrame;
 
-	public static float markerEnterOffset = 2.5f;	//マーカーの表示を開始するタイミング(何ビート後のアクションが出現するか)
-	public static float markerLeaveOffset =-1.0f;	//マーカーの表示を終了するタイミング(何ビート後のアクションが出現するか)
+	public static float markerEnterOffset = 2.5f;	//何时开始显示标记，节拍要提前多久显示
+	public static float markerLeaveOffset =-1.0f;   //计时结束显示标记，节拍要延迟多久结束
 
-	public static int rythmHitEffectShowFrameDuration = 20;
+    public static int rythmHitEffectShowFrameDuration = 20;
 	public static int messatShowFrameDuration = 40;
 
 	public bool isDevelopmentMode=false;
-	public Vector2 		markerOrigin = new Vector2(20.0f, 300.0f);
+	public Vector2 markerOrigin = new Vector2(20.0f, 300.0f);
 
-	public GUISkin	guiSkin;
+	public GUISkin guiSkin;
 
-	public void BeginVisualization(){
+	public void BeginVisualization()
+    {
 		m_musicManager=GameObject.Find("MusicManager").GetComponent<MusicManager>();
 		m_scoringManager=GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
 		m_seekerBack.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
@@ -31,21 +41,32 @@ public class OnPlayGUI : MonoBehaviour {
 		m_seekerBack.Seek(markerLeaveOffset);
 		m_seekerFront.Seek(markerEnterOffset);
 	}
+
+    /// <summary>
+    /// 根据玩家的操作结果播放音效和显示消息
+    /// </summary>
+    /// <param name="actionInfoIndex"></param>
+    /// <param name="score"></param>
     public void RythmHitEffect(int actionInfoIndex, float score)
-    {	m_lastInputScore = score;
+    {
+        m_lastInputScore = score;
 		m_rythmHitEffectCountDown = rythmHitEffectShowFrameDuration;
-		m_messageShowCountDown=messatShowFrameDuration;
-		if(score<0){
+		m_messageShowCountDown = messatShowFrameDuration;
+
+		if (score < 0)
+        {
 			m_playerAvator.GetComponent<AudioSource>().clip
 				= m_playerAvator.GetComponent<PlayerAction>().headBangingSoundClip_BAD;
 			messageTexture = messageTexture_Miss;
 		}
-		else if(score<=ScoringManager.goodScore){
+		else if (score <= ScoringManager.goodScore)
+        {
 			m_playerAvator.GetComponent<AudioSource>().clip
 				= m_playerAvator.GetComponent<PlayerAction>().headBangingSoundClip_GOOD;
 			messageTexture = messageTexture_Good;
 		}
-		else{
+		else
+        {
 			m_playerAvator.GetComponent<AudioSource>().clip
 				= m_playerAvator.GetComponent<PlayerAction>().headBangingSoundClip_GOOD;
 			messageTexture = messageTexture_Best;
@@ -54,37 +75,46 @@ public class OnPlayGUI : MonoBehaviour {
     }
 
 	// Use this for initialization
-	void Start(){
+	void Start()
+    {
 		m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
 		m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
 		m_playerAvator = GameObject.Find("PlayerAvator");
 	}
-	public void Seek(float beatCount){
+
+    public void Seek(float beatCount)
+    {
 		m_seekerBack.Seek(beatCount + markerLeaveOffset);
 		m_seekerFront.Seek(beatCount + markerEnterOffset);
 	}
-	// Update is called once per frame
-	void Update () {
-		if(m_musicManager.IsPlaying()){
-			m_seekerBack.ProceedTime( m_musicManager.beatCountFromStart - m_musicManager.previousBeatCountFromStart);
-			m_seekerFront.ProceedTime( m_musicManager.beatCountFromStart -m_musicManager.previousBeatCountFromStart);
+
+	void Update ()
+    {
+		if(m_musicManager.IsPlaying())
+        {
+			m_seekerBack.ProceedTime(m_musicManager.beatCountFromStart - m_musicManager.previousBeatCountFromStart);
+			m_seekerFront.ProceedTime(m_musicManager.beatCountFromStart - m_musicManager.previousBeatCountFromStart);
 		}
 	}
-	void OnGUI(){
-		//スコア表示
-		GUI.Box(new Rect(15,5,100,30),"");
-		GUI.Label(new Rect(20,10,90,20),"Score: " + m_scoringManager.score);
-		//ハイテンションのときの明滅色
-		if (m_scoringManager.temper > ScoringManager.temperThreshold)
+
+	void OnGUI()
+    {
+        //分数显示
+        GUI.Box(new Rect(15,5,100,30), "");
+		GUI.Label(new Rect(20,10,90,20), "Score: " + m_scoringManager.score);
+
+        //在高张力下闪烁颜色
+        if (m_scoringManager.temper > ScoringManager.temperThreshold)
 		{
 			m_blinkColor.g = m_blinkColor.b
 				= 0.7f + 0.3f * Mathf.Abs(
 					Time.frameCount % Application.targetFrameRate - Application.targetFrameRate / 2
 				) / (float)Application.targetFrameRate;
-			GUI.color=m_blinkColor;
+			GUI.color = m_blinkColor;
 		}
-		//盛り上がりゲージ表示
-		Rect heatBarFrameRect=new Rect(180.0f, 20.0f, 100.0f, 20.0f);
+
+        //仪表显示器升高
+        Rect heatBarFrameRect = new Rect(180.0f, 20.0f, 100.0f, 20.0f);
 		Rect heatBarRect = heatBarFrameRect;
 		Rect heatBarLabelRect = heatBarFrameRect;
 		heatBarRect.width *= m_scoringManager.temper;
@@ -97,41 +127,33 @@ public class OnPlayGUI : MonoBehaviour {
 
 		GUI.color = Color.white;
 
-		//このアイコンとアクションタイミングのアイコンが重なった時に入力
-		float 	markerSize = ScoringManager.timingErrorToleranceGood * m_pixelsPerBeats;
+        //当此图标和动作计时图标重叠时输入
+        float markerSize = ScoringManager.timingErrorToleranceGood * m_pixelsPerBeats;
 
 		Graphics.DrawTexture(
 			new Rect(markerOrigin.x - markerSize / 2.0f, markerOrigin.y - markerSize / 2.0f, markerSize, markerSize)
 			, beatPositionIcon
 		);
 
-		if( m_musicManager.IsPlaying() ){
-<<<<<<< HEAD
+		if (m_musicManager.IsPlaying())
+        {
+			SongInfo song =  m_musicManager.currentSongInfo;
 
-			SongInfo			song =  m_musicManager.currentSongInfo;
+            //标记开始显示。
+            int begin = m_seekerBack.nextIndex;
 
-			// 表示を開始するマーカー.
-			int	begin = m_seekerBack.nextIndex;
-
-=======
-
-			SongInfo			song =  m_musicManager.currentSongInfo;
-
-			// 表示を開始するマーカー.
-			int	begin = m_seekerBack.nextIndex;
-
->>>>>>> parent of 03acd46... 增加一些注释
-			// 表示を終了するマーカー.
-			int end   = m_seekerFront.nextIndex;
+            //标记结束显示。
+            int end   = m_seekerFront.nextIndex;
 			float x_offset;
 
-			//アクションタイミングを示すアイコンを描画.
-			for ( int drawnIndex = begin; drawnIndex < end; drawnIndex++) {
-				OnBeatActionInfo	info = song.onBeatActionSequence[drawnIndex];
+            //绘制一个显示动作时间的图标。
+            for (int drawnIndex = begin; drawnIndex < end; drawnIndex++)
+            {
+				OnBeatActionInfo info = song.onBeatActionSequence[drawnIndex];
 
 				float size = ScoringManager.timingErrorToleranceGood * m_pixelsPerBeats;
-				//テンションが高いとき、ジャンプアクションのマーカーを大きくする
-				if (m_scoringManager.temper > ScoringManager.temperThreshold && info.playerActionType == PlayerActionEnum.Jump)
+                //当张力高时，增加跳跃动作的标记
+                if (m_scoringManager.temper > ScoringManager.temperThreshold && info.playerActionType == PlayerActionEnum.Jump)
 				{
 					size *= 1.5f;
 				}
@@ -160,10 +182,12 @@ public class OnPlayGUI : MonoBehaviour {
 				}
 			}
 
-			//アクションタイミングのヒットエフェクト
-			if( m_rythmHitEffectCountDown>0  ){
+            //行动时间点击效果
+            if (m_rythmHitEffectCountDown > 0)
+            {
 				float scale=2.0f - m_rythmHitEffectCountDown / (float)rythmHitEffectShowFrameDuration;
-				if( m_lastInputScore >= ScoringManager.excellentScore){
+				if( m_lastInputScore >= ScoringManager.excellentScore)//-如果上一次
+                {
 					scale *= 2.0f;
 				}
 				else if( m_lastInputScore > ScoringManager.missScore){
@@ -182,28 +206,36 @@ public class OnPlayGUI : MonoBehaviour {
 				Graphics.DrawTexture(drawRect3, hitEffectIcon);
 				m_rythmHitEffectCountDown--;
 			}
-			//メッセージを表示
-			if( m_messageShowCountDown > 0 ){
-				GUI.color=new Color(1, 1, 1, m_messageShowCountDown/40.0f );
-				GUI.DrawTexture(new Rect(20,230,150,50),messageTexture,ScaleMode.ScaleAndCrop, true);
-				GUI.color=Color.white;
+
+			//显示Perfect，Good，Bad三种提示
+			if (m_messageShowCountDown > 0)
+            {
+				GUI.color = new Color(1, 1, 1, m_messageShowCountDown/40.0f);
+				GUI.DrawTexture(new Rect(20 ,230, 150, 50), messageTexture, ScaleMode.ScaleAndCrop, true);
+				GUI.color = Color.white;
 				m_messageShowCountDown--;
 			}
 		}
 	}
+
 	//private Variables
 	float	m_pixelsPerBeats = Screen.width * 1.0f/markerEnterOffset;
 	int		m_messageShowCountDown=0;
 	int		m_rythmHitEffectCountDown = 0;
+
+    /// <summary>
+    /// 上一次的分数
+    /// </summary>
 	float	m_lastInputScore = 0;
-	Color	m_blinkColor = new Color(1,1,1);
+
+	Color m_blinkColor = new Color(1,1,1);
 
 
-	// 時間的に進んでいるシークユニット（表示終了位置）.
-	SequenceSeeker<OnBeatActionInfo> m_seekerFront = new SequenceSeeker<OnBeatActionInfo>();
+    // 时间先进的查找单位（显示结束位置）。
+    SequenceSeeker<OnBeatActionInfo> m_seekerFront = new SequenceSeeker<OnBeatActionInfo>();
 
-	// 時間的に遅れているシークユニット（表示開始位置）.
-	SequenceSeeker<OnBeatActionInfo> m_seekerBack = new SequenceSeeker<OnBeatActionInfo>();
+    // 寻找单位（显示开始位置），在后面的时间。 
+    SequenceSeeker<OnBeatActionInfo> m_seekerBack = new SequenceSeeker<OnBeatActionInfo>();
 
 	MusicManager	m_musicManager;
 	ScoringManager	m_scoringManager;

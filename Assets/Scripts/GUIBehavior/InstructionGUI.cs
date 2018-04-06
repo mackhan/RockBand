@@ -1,14 +1,11 @@
 using UnityEngine;
 using System.Collections;
-<<<<<<< HEAD
-//ゲームルールなどの説明画面の挙動
-=======
 
 /// <summary>
 /// 操作画面的GUI
 /// </summary>
->>>>>>> parent of 03acd46... 增加一些注释
-public class InstructionGUI : MonoBehaviour {
+public class InstructionGUI : MonoBehaviour
+{
 	public string title="title";
 	public string instruction="How to Play";
 	public string bandMemberLabel="bandMember";
@@ -20,12 +17,9 @@ public class InstructionGUI : MonoBehaviour {
 	public SimpleSpriteAnimation sampleBandMemberAniamtion;
 	public SimpleSpriteAnimation playerAvatorAnimation;
 	public Texture actinoMarker;
-	// Use this for initialization
-	void Start () {
-	}
 	
-	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
 		//一定時間ごとにキャラをアニメーションさせる。
 		animationCounter+=Time.deltaTime;
 		if( animationCounter > 1.0f){
@@ -38,8 +32,10 @@ public class InstructionGUI : MonoBehaviour {
 			GameObject.Find("PhaseManager").GetComponent<PhaseManager>().SetPhase("Play");
 		}
 	}
-	float animationCounter=0;
-	void OnGUI(){
+
+    float animationCounter=0;
+	void OnGUI()
+    {
 		GUI.skin = guiStyle;
 		GUI.Label( new Rect( 20, 60, 100, 40 ), bandMemberLabel );
 		GUI.Label( new Rect( 150, 40, 180, 40 ), guageLabel );
@@ -48,7 +44,5 @@ public class InstructionGUI : MonoBehaviour {
 		GUI.Label( new Rect( 200, 260, 210, 80 ), actionMarkerLabel );
 		GUI.DrawTexture( new Rect( 200, 285, actinoMarker.width, actinoMarker.height ), actinoMarker);
 		GUI.Box( new Rect( 20, 370, Screen.width-20, 150 ), instruction );
-		
 	}
-	
 }

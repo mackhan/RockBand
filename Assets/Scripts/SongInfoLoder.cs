@@ -2,10 +2,15 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-//曲情報をファイルから読み込むクラス
-public class SongInfoLoader {
+
+/// <summary>
+/// 从文件读取歌曲信息的类
+/// </summary>
+public class SongInfoLoader
+{
 	public SongInfo songInfo;
-//以下ファイル入出力関係の処理
+
+    //以下ファイル入出力関係の処理
 	public void ReadCSV( System.IO.TextReader reader, bool isEditorMode=false ){
 		string line;
 
@@ -120,15 +125,13 @@ public class SongInfoLoader {
 		}
 		Debug.LogError("StagingDirectionSequenceRegion.ReadCSV: ParseError - missing stagingDirectionSequenceRegion-End");
 	}
-	private int	ReadCSV_OnBeatAction( System.IO.TextReader reader , int line_number)
-    {
+	private int		ReadCSV_OnBeatAction( System.IO.TextReader reader , int line_number){
 		string line;
 		SequenceRegion region = new SequenceRegion();
 
 		List<OnBeatActionInfo> sequence=new List<OnBeatActionInfo>();
 
-		while ((line = reader.ReadLine()) != null)
-        {
+		while( (line = reader.ReadLine()) != null   ){
 
 			line_number++;
 
