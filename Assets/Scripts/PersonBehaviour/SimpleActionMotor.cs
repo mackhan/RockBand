@@ -1,37 +1,55 @@
 using UnityEngine;
 using System.Collections;
-//僗僥乕僕忋偺墘弌傪峴偆偺偵嵟掅尷昁梫側塣摦
-public class SimpleActionMotor : MonoBehaviour {
+
+/// <summary>
+/// 图片上下抖动的动画控制器
+/// </summary>
+public class SimpleActionMotor : MonoBehaviour
+{
 	public bool isWaveBegin = false;
 	public float wavePhaseOffset = 0;
 	public float jumpInitialVelocity = 1.0f;
-	public bool isJustJump{
+
+    public bool isJustJump
+    {
 		get { return m_isJustJump; }
 	}
-	public void Jump()
-	{	m_isJumpTriggered=true;
+
+    public void Jump()
+	{	m_isJumpTriggered = true;
 		velocity = new Vector3(0, jumpInitialVelocity, 0);
 	}
-	// Use this for initialization
-	void Start()
+    
+
+    void Start()
 	{
 		basePosition = transform.position;
 		m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
 	}
 
-	// Update is called once per frame
 	void Update()
 	{
 		m_isJustJump=false;
-		if( m_isJumpTriggered ){
+		if (m_isJumpTriggered)
+        {
 			m_isJustJump=true;
 			m_isJumpTriggered=false;
 		}
+
 		positionOffset += velocity;
-		if (positionOffset.y < 0) velocity.y = 0;
-		else velocity.y -= gravity;
-		if (isWaveBegin){
-			if (m_musicManager.IsPlaying()){
+        if (positionOffset.y < 0)
+        {
+            velocity.y = 0;
+        }
+        else
+        {
+            velocity.y -= gravity;
+        }
+
+		if (isWaveBegin)
+        {
+			if (m_musicManager.IsPlaying())
+            {
 				basePosition
 					= new Vector3(
 						basePosition.x

@@ -35,7 +35,9 @@ public class SequenceRegion: MusicalElement
 	public float repeatPosition;
 };
 
-//プレイヤーが音楽に合わせて行うべきアクションの情報
+/// <summary>
+/// 玩家可以配合音乐进行的动作信息
+/// </summary>
 public class OnBeatActionInfo : MusicalElement
 {
 	public PlayerActionEnum playerActionType;//アクションの種類

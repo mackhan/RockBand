@@ -63,10 +63,11 @@ public class ScoringManager : MonoBehaviour
 	private float m_scoreRate = 0;
 
 	//スコアの評価開始
-	public void BeginScoringSequence(){
+	public void BeginScoringSequence()
+    {
 		m_scoringUnitSeeker.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
 	}
-	// Use this for initialization
+	
     void Start()
     {
 		m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();

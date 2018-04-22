@@ -7,14 +7,21 @@ using System.Collections.Generic;
 /// </summary>
 public class EventManager : MonoBehaviour
 {
-	// Use this for initialization
-	void Start(){
-		m_musicManager=GameObject.Find("MusicManager").GetComponent<MusicManager>();
+	void Start()
+    {
+		m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
 	}
-	public void BeginEventSequence(){
+
+    /// <summary>
+    /// 开始播放Sequence
+    /// </summary>
+    public void BeginEventSequence()
+    {
 		m_seekUnit.SetSequence(m_musicManager.currentSongInfo.stagingDirectionSequence);
 	}
-	public void Seek(float beatCount){
+
+    public void Seek(float beatCount)
+    {
 		m_seekUnit.Seek( beatCount );
 		m_previousIndex=m_seekUnit.nextIndex;
 		//シーク時には現行のリストをクリア
@@ -23,11 +30,12 @@ public class EventManager : MonoBehaviour
 			m_activeEvents.Remove(it);
 		}
 	}
-	void Update () {
 
-		SongInfo	song = m_musicManager.currentSongInfo;
+    void Update ()
+    {
+		SongInfo song = m_musicManager.currentSongInfo;
 
-		if( m_musicManager.IsPlaying() )
+		if (m_musicManager.IsPlaying())
 		{
 			//前フレームから現フレームへの間にヒットしたステージ演出の取得
 
@@ -36,7 +44,8 @@ public class EventManager : MonoBehaviour
 			m_seekUnit.ProceedTime(m_musicManager.beatCount - m_musicManager.previousBeatCount);
 
 			// 「直前のシーク位置」と「更新後のシーク位置」の間にあるイベントを実行開始.
-			for(int i = m_previousIndex;i < m_seekUnit.nextIndex;i++){
+			for(int i = m_previousIndex;i < m_seekUnit.nextIndex;i++)
+            {
 
 				// イベントデータをコピーする.
 				StagingDirection clone = song.stagingDirectionSequence[i].GetClone() as StagingDirection;

@@ -16,7 +16,8 @@ public enum StagingDirectionEnum{
 /// <summary>
 /// 舞台演出的基类
 /// </summary>
-public abstract class StagingDirection : MusicalElement{
+public abstract class StagingDirection : MusicalElement
+{
 	public StagingDirection(){}
 	public virtual void OnBegin(){}
 	public virtual void OnEnd(){}
@@ -25,21 +26,28 @@ public abstract class StagingDirection : MusicalElement{
 	public virtual StagingDirectionEnum GetEnum(){return StagingDirectionEnum.None;}
 };
 
-public class StagingDirectionFactory{
-	public static StagingDirection CreateStagingDirectionFromEnum(StagingDirectionEnum stagingDirectionEnum){
-		if( stagingDirectionEnum == StagingDirectionEnum.FireBlast ){
+public class StagingDirectionFactory
+{
+	public static StagingDirection CreateStagingDirectionFromEnum(StagingDirectionEnum stagingDirectionEnum)
+    {
+		if( stagingDirectionEnum == StagingDirectionEnum.FireBlast )
+        {
 			return new StagingDirection_FireBlast(0,1);
 		}
-		else if( stagingDirectionEnum == StagingDirectionEnum.LightFlash ){
+		else if( stagingDirectionEnum == StagingDirectionEnum.LightFlash )
+        {
 			return new StagingDirection_LightFlash(0);
 		}
-		else if( stagingDirectionEnum == StagingDirectionEnum.LightShuffle ){
+		else if( stagingDirectionEnum == StagingDirectionEnum.LightShuffle )
+        {
 			return new StagingDirection_LightShuffle(0,1);
 		}
-		else if( stagingDirectionEnum == StagingDirectionEnum.LightFade ){
+		else if( stagingDirectionEnum == StagingDirectionEnum.LightFade )
+        {
 			return new StagingDirection_LightFade(0,1.0f);
 		}
-		else if( stagingDirectionEnum == StagingDirectionEnum.SetBandMemberAction ){
+		else if( stagingDirectionEnum == StagingDirectionEnum.SetBandMemberAction )
+        {
 			return new StagingDirection_SetBandMemberAction();
 		}
 		else if (stagingDirectionEnum == StagingDirectionEnum.SetBandMemberDefaultAnimation)
@@ -50,6 +58,7 @@ public class StagingDirectionFactory{
 		{
 			return new StagingDirection_Applause();
 		}
+
 		return null;
 	}
 }

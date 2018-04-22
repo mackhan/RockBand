@@ -3,17 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 
 /// <summary>
-/// 音乐播放暂停控制
+/// 音乐播放暂停控制管理器
 /// </summary>
 public class MusicManager : MonoBehaviour
 {
 	private SongInfo m_currentSongInfo;
 
     //当前帧的歌曲再现位置
-    public float beatCountFromStart{
+    public float beatCountFromStart
+    {
 		get{ return m_beatCountFromStart;}
 	}
-	public float beatCount{
+
+	public float beatCount
+    {
 		get{ return m_beatCountFromStart;}
 	}
     
@@ -39,14 +42,18 @@ public class MusicManager : MonoBehaviour
 	{
 		Application.targetFrameRate = 60;
 	}
-	// Use this for initialization
-	void Start() {
+
+	
+	void Start()
+    {
 		//Assume gomeObject has AudioSource component
 		m_audioSource = gameObject.GetComponent<AudioSource>();
 		m_musicFinished = false;
 	}
+
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
         //播放时始终检查歌曲的播放位置
         if (m_audioSource.isPlaying)
 		{
@@ -65,22 +72,37 @@ public class MusicManager : MonoBehaviour
 			m_isPlayPreviousFrame = false;
 		}
 	}
+
 	//再生位置指定
 	public void Seek(float beatCount){
 		m_audioSource.time =  beatCount / m_currentSongInfo.beatPerSecond;
 		m_beatCountFromStart = m_previousBeatCountFromStart = beatCount;
 	}
-	public void PlayMusicFromStart(){
-		m_musicFinished=false;
-		m_isPlayPreviousFrame=false;
+
+    public void PlayMusicFromStart()
+    {
+		m_musicFinished = false;
+		m_isPlayPreviousFrame = false;
 		m_beatCountFromStart=0;
 		m_previousBeatCountFromStart=0;
 		m_audioSource.Play();
 	}
-	public bool IsPlaying(){
+
+    /// <summary>
+    /// 是否在播放音乐
+    /// </summary>
+    /// <returns></returns>
+	public bool IsPlaying()
+    {
 		return m_audioSource.isPlaying;
 	}
-	public bool IsFinished(){
+
+    /// <summary>
+    /// 是否播放结束
+    /// </summary>
+    /// <returns></returns>
+	public bool IsFinished()
+    {
 		return m_musicFinished;
 	}
 	

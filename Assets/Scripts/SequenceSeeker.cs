@@ -28,13 +28,13 @@ public class SequenceSeeker<ElementType> where ElementType: MusicalElement
     /// <summary>
     /// 要查找的序列数据。
     /// </summary>
-    List<ElementType> m_sequence;			
+    List<ElementType> m_sequence;
 
     /// <summary>
-    /// 走査するシーケンスデータをセット
+    /// 设置序列数据
     /// </summary>
     /// <param name="sequence"></param>
-	public void SetSequence( List<ElementType> sequence )
+    public void SetSequence(List<ElementType> sequence)
     {
 		m_sequence = sequence;
 		m_nextIndex=0;

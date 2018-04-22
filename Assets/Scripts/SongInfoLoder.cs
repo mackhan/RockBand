@@ -10,23 +10,26 @@ public class SongInfoLoader
 {
 	public SongInfo songInfo;
 
-    //以下ファイル入出力関係の処理
-	public void ReadCSV( System.IO.TextReader reader, bool isEditorMode=false ){
+    //以下文件输入/输出关系的处理
+    public void ReadCSV(System.IO.TextReader reader, bool isEditorMode=false)
+    {
 		string line;
 
-		int		line_number = 0;
+        //多少行
+		int	line_number = 0;
 
-		while( (line = reader.ReadLine()) != null ){
-
+		while ((line = reader.ReadLine()) != null)//-读取一行
+        {
 			line_number++;
 
-			string[] lineCells = line.Split(',');
-			switch( lineCells[0] ){
-			case "beatPerSecond":
-				songInfo.beatPerSecond=float.Parse(lineCells[1]);
+			string[] lineCells = line.Split(',');//-按逗号分割
+			switch (lineCells[0])
+            {
+			case "beatPerSecond"://-每秒拍数= BPM / 60
+				songInfo.beatPerSecond = float.Parse(lineCells[1]);
 				break;
-			case "beatPerBar":
-				songInfo.beatPerBar=float.Parse(lineCells[1]);
+			case "beatPerBar"://-每个小节的节拍数量
+                songInfo.beatPerBar = float.Parse(lineCells[1]);
 				break;
 			case "scoringUnitSequenceRegion-Begin":
 				line_number = ReadCSV_OnBeatAction(reader, line_number);
@@ -34,21 +37,23 @@ public class SongInfoLoader
 			case "stagingDirectionSequenceRegion-Begin":
 				ReadCSV_StagingDirection(reader);
 				break;
-			case "include":
+			case "include"://-如果是include，用递归的方式继续读一下个信息
 				TextReader textReader;
 #if UNITY_EDITOR
-				if(isEditorMode){
-					textReader  = File.OpenText("Assets/Resources/SongInfo/" + lineCells[1] + ".txt");
-				}
-				else{
-					string data = System.Text.Encoding.UTF8.GetString(
-						(Resources.Load("SongInfo/" + lineCells[1]) as TextAsset).bytes
-					);
-					textReader = new StringReader(data);
-				}
-#else
-				textReader = new StringReader(System.Text.Encoding.UTF8.GetString((Resources.Load("SongInfo/" + lineCells[1]) as TextAsset).bytes));
+                if (isEditorMode)
+                {
+                    textReader = File.OpenText("Assets/Resources/SongInfo/" + lineCells[1] + ".txt");
+                }
+                else
 #endif
+                {
+                    string data = System.Text.Encoding.UTF8.GetString
+                    (
+                        (Resources.Load("SongInfo/" + lineCells[1]) as TextAsset).bytes
+                    );
+                    textReader = new StringReader(data);
+                }
+
 				ReadCSV(textReader);
 				break;
 			}
