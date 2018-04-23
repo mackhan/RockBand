@@ -7,10 +7,23 @@ using System.Collections.Generic;
 /// </summary>
 public class OnPlayGUI : MonoBehaviour
 {
+    /// <summary>
+    /// 最佳的图标
+    /// </summary>
 	public Texture messageTexture_Best;
+
+    /// <summary>
+    /// Good的图标
+    /// </summary>
 	public Texture messageTexture_Good;
+
+    /// <summary>
+    /// Miss的图标
+    /// </summary>
 	public Texture messageTexture_Miss;
-	public Texture headbangingIcon;
+
+    public Texture headbangingIcon;
+
 	public Texture beatPositionIcon;
 
     /// <summary>
@@ -24,21 +37,50 @@ public class OnPlayGUI : MonoBehaviour
 	public static float markerEnterOffset = 2.5f;	//何时开始显示标记，节拍要提前多久显示
 	public static float markerLeaveOffset =-1.0f;   //计时结束显示标记，节拍要延迟多久结束
 
-    public static int rythmHitEffectShowFrameDuration = 20;
-	public static int messatShowFrameDuration = 40;
+    /// <summary>
+    /// 消息显示的时长
+    /// </summary>
+    public static int messatShowFrameDuration = 40;
 
-	public bool isDevelopmentMode=false;
+    /// <summary>
+    /// 点击效果显示的时长
+    /// </summary>
+    public static int rythmHitEffectShowFrameDuration = 20;
+
+    /// <summary>
+    /// Perfect，good，bad图标显示的时长
+    /// </summary>
+    int m_messageShowCountDown = 0;
+
+    /// <summary>
+    /// 点击效果显示的时长
+    /// </summary>
+    int m_rythmHitEffectCountDown = 0;
+
+    /// <summary>
+    /// 上一次的分数
+    /// </summary>
+	float m_lastInputScore = 0;
+
+    Color m_blinkColor = new Color(1, 1, 1);
+    
+    public bool isDevelopmentMode=false;
 	public Vector2 markerOrigin = new Vector2(20.0f, 300.0f);
 
 	public GUISkin guiSkin;
 
+    /// <summary>
+    /// PlayUI的初始化
+    /// </summary>
 	public void BeginVisualization()
     {
-		m_musicManager=GameObject.Find("MusicManager").GetComponent<MusicManager>();
-		m_scoringManager=GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
-		m_seekerBack.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
-		m_seekerFront.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
-		m_seekerBack.Seek(markerLeaveOffset);
+		m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
+		m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
+
+        m_seekerBack.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
+        m_seekerBack.Seek(markerLeaveOffset);
+
+        m_seekerFront.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
 		m_seekerFront.Seek(markerEnterOffset);
 	}
 
@@ -53,25 +95,28 @@ public class OnPlayGUI : MonoBehaviour
 		m_rythmHitEffectCountDown = rythmHitEffectShowFrameDuration;
 		m_messageShowCountDown = messatShowFrameDuration;
 
-		if (score < 0)
+        AudioClip kAudioClip;
+        PlayerAction kPlayerAction = m_playerAvator.GetComponent<PlayerAction>();
+        if (score < 0)
         {
-			m_playerAvator.GetComponent<AudioSource>().clip
-				= m_playerAvator.GetComponent<PlayerAction>().headBangingSoundClip_BAD;
+            kAudioClip = kPlayerAction.headBangingSoundClip_BAD;
 			messageTexture = messageTexture_Miss;
 		}
 		else if (score <= ScoringManager.goodScore)
         {
-			m_playerAvator.GetComponent<AudioSource>().clip
-				= m_playerAvator.GetComponent<PlayerAction>().headBangingSoundClip_GOOD;
+            kAudioClip = kPlayerAction.headBangingSoundClip_GOOD;
 			messageTexture = messageTexture_Good;
 		}
 		else
         {
-			m_playerAvator.GetComponent<AudioSource>().clip
-				= m_playerAvator.GetComponent<PlayerAction>().headBangingSoundClip_GOOD;
+            kAudioClip = kPlayerAction.headBangingSoundClip_GOOD;
 			messageTexture = messageTexture_Best;
 		}
-		m_playerAvator.GetComponent<AudioSource>().Play();
+        
+        //-播放Best，Good，bad的音效
+        AudioSource kAudioSource = m_playerAvator.GetComponent<AudioSource>();
+        kAudioSource.clip = kAudioClip;
+        kAudioSource.Play();
     }
 
 	// Use this for initialization
@@ -103,24 +148,22 @@ public class OnPlayGUI : MonoBehaviour
         GUI.Box(new Rect(15,5,100,30), "");
 		GUI.Label(new Rect(20,10,90,20), "Score: " + m_scoringManager.score);
 
-        //在高张力下闪烁颜色
+        //兴奋闪烁颜色
         if (m_scoringManager.temper > ScoringManager.temperThreshold)
 		{
-			m_blinkColor.g = m_blinkColor.b
-				= 0.7f + 0.3f * Mathf.Abs(
-					Time.frameCount % Application.targetFrameRate - Application.targetFrameRate / 2
-				) / (float)Application.targetFrameRate;
+			m_blinkColor.g = m_blinkColor.b	
+                = 0.7f + 0.3f * Mathf.Abs(Time.frameCount % Application.targetFrameRate - Application.targetFrameRate / 2) / (float)Application.targetFrameRate;
 			GUI.color = m_blinkColor;
 		}
 
-        //仪表显示器升高
+        //仪表显示器升高？？？
         Rect heatBarFrameRect = new Rect(180.0f, 20.0f, 100.0f, 20.0f);
 		Rect heatBarRect = heatBarFrameRect;
 		Rect heatBarLabelRect = heatBarFrameRect;
 		heatBarRect.width *= m_scoringManager.temper;
 		heatBarLabelRect.y = heatBarFrameRect.y-20;
 		GUI.Label(heatBarLabelRect, "Temper");
-		GUI.Box( heatBarFrameRect,"" );
+		GUI.Box(heatBarFrameRect,"" );
 		GUI.DrawTextureWithTexCoords( 
 			heatBarRect, temperBar, new Rect(0.0f, 0.0f, 1.0f * m_scoringManager.temper, 1.0f)
 		);
@@ -218,19 +261,8 @@ public class OnPlayGUI : MonoBehaviour
 		}
 	}
 
-	//private Variables
 	float	m_pixelsPerBeats = Screen.width * 1.0f/markerEnterOffset;
-	int		m_messageShowCountDown=0;
-	int		m_rythmHitEffectCountDown = 0;
-
-    /// <summary>
-    /// 上一次的分数
-    /// </summary>
-	float	m_lastInputScore = 0;
-
-	Color m_blinkColor = new Color(1,1,1);
-
-
+    
     // 时间先进的查找单位（显示结束位置）。
     SequenceSeeker<OnBeatActionInfo> m_seekerFront = new SequenceSeeker<OnBeatActionInfo>();
 

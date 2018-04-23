@@ -65,12 +65,12 @@ public class PhaseManager : MonoBehaviour
 		switch(nextPhase)
         {
 		case "Startup"://开始菜单
-                DeactiveateAllGUI();
-			ActivateGUI("StartupMenuGUI");
+            DeactiveateAllGUI();
+			ActivateGUI("StartupMenuxixi");
 			break;
 		
 		case "OnBeginInstruction"://玩法介绍界面
-                DeactiveateAllGUI();
+            DeactiveateAllGUI();
 			ActivateGUI("InstructionGUI");
 			ActivateGUI("OnPlayGUI");
 			break;
@@ -104,7 +104,6 @@ public class PhaseManager : MonoBehaviour
 
                 //节奏序列绘制开始
                 OnPlayGUI onPlayGUI = GameObject.Find("OnPlayGUI").GetComponent<OnPlayGUI>();
-
 			    onPlayGUI.BeginVisualization();
 			    onPlayGUI.isDevelopmentMode = false;
 

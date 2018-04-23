@@ -10,8 +10,10 @@ using System.Xml.Serialization;
 public class SongInfo
 {
 	public List<OnBeatActionInfo> onBeatActionSequence = new List<OnBeatActionInfo>();
+
 	public List<StagingDirection> stagingDirectionSequence = new List<StagingDirection>();
-	public List<SequenceRegion> onBeatActionRegionSequence = new List<SequenceRegion>();
+
+    public List<SequenceRegion> onBeatActionRegionSequence = new List<SequenceRegion>();
 
     /// <summary>
     /// Ã¿ÃëÅÄÊý= BPM / 60

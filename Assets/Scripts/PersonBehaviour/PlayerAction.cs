@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections;
 //プレイヤーのアクションの種類を表す列挙
-public enum PlayerActionEnum{
+public enum PlayerActionEnum
+{
 	None,
 	HeadBanging,
 	Jump
@@ -10,9 +11,18 @@ public enum PlayerActionEnum{
 /// <summary>
 /// 玩家的动画
 /// </summary>
-public class PlayerAction : MonoBehaviour {
+public class PlayerAction : MonoBehaviour
+{
+    /// <summary>
+    /// Best和Good的音效
+    /// </summary>
 	public AudioClip headBangingSoundClip_GOOD;
+
+    /// <summary>
+    /// Bad的音效
+    /// </summary>
 	public AudioClip headBangingSoundClip_BAD;
+
 	//プレイヤーの現在のアクション
 	public PlayerActionEnum currentPlayerAction{
 		get{ return m_currentPlayerAction; }
