@@ -37,12 +37,14 @@ public class SequenceSeeker<ElementType> where ElementType: MusicalElement
     public void SetSequence(List<ElementType> sequence)
     {
 		m_sequence = sequence;
-		m_nextIndex=0;
-		m_currentBeatCount=0;
+		m_nextIndex = 0;
+		m_currentBeatCount = 0;
 		m_isJustPassElement=false;
 	}
-	
-    //一番近い次の要素を示すインデックス番号
+
+    /// <summary>
+    /// 指示最近元素的索引号
+    /// </summary>
 	public int nextIndex
     {
 		get
@@ -50,9 +52,11 @@ public class SequenceSeeker<ElementType> where ElementType: MusicalElement
             return m_nextIndex;
         }
 	}
-	
-    //要素のトリガー位置を通過した時にtrue
-	public bool isJustPassElement
+
+    /// <summary>
+    /// 如果它传递了元素的触发位置，则为真
+    /// </summary>
+    public bool isJustPassElement
     {
 			get{return m_isJustPassElement;}
 	}

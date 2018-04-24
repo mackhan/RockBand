@@ -14,24 +14,51 @@ public class SimpleSpriteAnimation: MonoBehaviour
     /// <summary>
     /// 动画有多少列
     /// </summary>
-	public int divisionCountX=1;
+	public int divisionCountX = 1;
 
     /// <summary>
     /// 动画有多少行
     /// </summary>
-	public int divisionCountY=1;
+	public int divisionCountY = 1;
 
     float m_frameElapsedTime = 0;
-    int m_fromIndex = 0, m_toIndex = 0;
+
+    /// <summary>
+    /// 从第几帧开始播
+    /// </summary>
+    int m_fromIndex = 0;
+
+    /// <summary>
+    /// 播放到第几帧
+    /// </summary>
+    int m_toIndex = 0;
+
+    /// <summary>
+    /// 默认是从第几帧开始播
+    /// </summary>
     int m_defaultFromIndex = 0;
+
+    /// <summary>
+    /// 默认是播放到第几帧
+    /// </summary>
     int m_defaultToIndex = 0;
 
     /// <summary>
     /// 是否循环
     /// </summary>
     bool m_loop = false;
+
+    /// <summary>
+    /// 当前播放到第几帧
+    /// </summary>
     int m_currentIndex = 0;
 
+    /// <summary>
+    /// 从第几帧播放到第几帧
+    /// </summary>
+    /// <param name="fromIndex"></param>
+    /// <param name="toIndex"></param>
+    /// <param name="loop"></param>
     public void BeginAnimation(int fromIndex, int toIndex, bool loop=false)
     {
 		m_currentIndex = m_fromIndex = fromIndex;
@@ -45,15 +72,22 @@ public class SimpleSpriteAnimation: MonoBehaviour
 	public Texture GetTexture(){
 		return GetComponent<Renderer>().material.GetTexture("_MainTex");
 	}
-	
-    //テクスチャ表示部分のRectを取得
+
+    /// <summary>
+    /// 获取纹理显示部分的矩形
+    /// </summary>
+    /// <param name="frameIndex"></param>
+    /// <returns></returns>
 	public Rect GetUVRect(int frameIndex)
     {
-		int frameIndexNormalized=frameIndex;
-		if(frameIndex>=divisionCountX*divisionCountY) 
-			frameIndexNormalized=frameIndex%(divisionCountX*divisionCountY);
-		float posX=((frameIndexNormalized%divisionCountX)/(float)divisionCountX);
-		float posY=(1- ((1+(frameIndexNormalized/divisionCountX))/(float)divisionCountY));
+		int frameIndexNormalized = frameIndex;
+		if (frameIndex >= divisionCountX*divisionCountY)//-如果超过限制，归一化，转成循环
+        {
+            frameIndexNormalized = frameIndex % (divisionCountX * divisionCountY);
+        }
+			
+		float posX = ((frameIndexNormalized % divisionCountX) / (float)divisionCountX);//-计算x的起始位置
+		float posY = (1- ( (1 + (frameIndexNormalized / divisionCountX)) / (float)divisionCountY));//-计算Y的其实位置
 		return new Rect( 
 			posX, 
 			posY, 
@@ -61,6 +95,11 @@ public class SimpleSpriteAnimation: MonoBehaviour
 			GetComponent<Renderer>().material.mainTextureScale.y
 		);
 	}
+
+    /// <summary>
+    /// 获取当前帧纹理显示部分的矩形
+    /// </summary>
+    /// <returns></returns>
 	public Rect GetCurrentFrameUVRect()
     {
 		return GetUVRect(m_currentIndex);

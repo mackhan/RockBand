@@ -64,7 +64,7 @@ public class OnPlayGUI : MonoBehaviour
 
     Color m_blinkColor = new Color(1, 1, 1);
     
-    public bool isDevelopmentMode=false;
+    public bool isDevelopmentMode = false;
 	public Vector2 markerOrigin = new Vector2(20.0f, 300.0f);
 
 	public GUISkin guiSkin;
@@ -202,7 +202,7 @@ public class OnPlayGUI : MonoBehaviour
 				}
 
 				// 表示位置までのX座標のオフセットを求める.
-				x_offset = info.triggerBeatTiming - m_musicManager.beatCount;
+				x_offset = info.triggerBeatTiming - m_musicManager.beatCountFromStart;
 
 				x_offset *= m_pixelsPerBeats;
 
@@ -217,8 +217,9 @@ public class OnPlayGUI : MonoBehaviour
 				GUI.DrawTexture( drawRect, headbangingIcon );
 				GUI.color = Color.white;
 
-				// テキストファイル中の行番号を表示する.
-				if( isDevelopmentMode ){
+                // 在文本文件中显示行号。
+                if (isDevelopmentMode)
+                {
 					GUI.skin = this.guiSkin;
 					GUI.Label(new Rect(drawRect.x, drawRect.y - 10.0f, 50.0f, 30.0f), info.line_number.ToString());
 					GUI.skin = null;

@@ -138,7 +138,7 @@ public class ScoringManager : MonoBehaviour
 
 		if( m_musicManager.IsPlaying() ){
 
-			float	delta_count = m_musicManager.beatCount - m_musicManager.previousBeatCount;
+			float	delta_count = m_musicManager.beatCountFromStart - m_musicManager.previousBeatCountFromStart;
 
 			m_scoringUnitSeeker.ProceedTime(delta_count);
 			// プレイヤーが入力したタイミングの直後、また直前（近い方）のマーカーの

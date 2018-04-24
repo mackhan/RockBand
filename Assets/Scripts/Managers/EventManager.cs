@@ -41,7 +41,7 @@ public class EventManager : MonoBehaviour
 
 			m_previousIndex = m_seekUnit.nextIndex;
 
-			m_seekUnit.ProceedTime(m_musicManager.beatCount - m_musicManager.previousBeatCount);
+			m_seekUnit.ProceedTime(m_musicManager.beatCountFromStart - m_musicManager.previousBeatCountFromStart);
 
 			// 「直前のシーク位置」と「更新後のシーク位置」の間にあるイベントを実行開始.
 			for(int i = m_previousIndex;i < m_seekUnit.nextIndex;i++)

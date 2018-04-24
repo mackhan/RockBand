@@ -110,10 +110,10 @@ public class DevelopmentModeGUI : MonoBehaviour
 		if(!m_seekSlider.is_now_dragging) {
 
 			float	new_position 
-				= GUI.HorizontalSlider( slider_rect, m_musicManager.beatCount, 0, m_musicManager.length );
+				= GUI.HorizontalSlider( slider_rect, m_musicManager.beatCountFromStart, 0, m_musicManager.length );
 
 			// ドラッグ開始.
-			if(new_position != m_musicManager.beatCount) {
+			if(new_position != m_musicManager.beatCountFromStart) {
 
 				m_seekSlider.dragging_poisition = new_position;
 				m_seekSlider.is_now_dragging = true;
@@ -125,9 +125,9 @@ public class DevelopmentModeGUI : MonoBehaviour
 			m_seekSlider.dragging_poisition 
 				= GUI.HorizontalSlider( slider_rect, m_seekSlider.dragging_poisition, 0, m_musicManager.length );
 
-			// ボタンが離された（ドラッグ終了）.
-			if(!m_seekSlider.is_button_down) {
-
+            // 释放按钮（拖动完成）
+			if (!m_seekSlider.is_button_down)
+            {
 				m_musicManager.Seek( m_seekSlider.dragging_poisition );
 
 				m_eventManager.Seek( m_seekSlider.dragging_poisition );
