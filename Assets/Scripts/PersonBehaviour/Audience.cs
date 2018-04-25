@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 
 /// <summary>
-/// 观众的动画
+/// 观众的控制类
 /// </summary>
 public class Audience : MonoBehaviour
 {

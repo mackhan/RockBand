@@ -11,7 +11,7 @@ using System.Xml.Serialization;
 public abstract class MusicalElement
 {
     /// <summary>
-    /// 我们什么时候能开始处理？
+    /// 当前帧播放到第几拍了
     /// </summary>
 	public float triggerBeatTiming = 0;
 
@@ -20,9 +20,13 @@ public abstract class MusicalElement
     /// </summary>
     /// <param name="parameters"></param>
 	public virtual void ReadCustomParameterFromString(string[] parameters){}
-	
-    //triggerBeatTimingの原点を指定した上でクローンを生成
-	public virtual MusicalElement GetClone(){
+
+    /// <summary>
+    /// 指定triggerbatTiming的原点后生成克隆
+    /// </summary>
+    /// <returns></returns>
+    public virtual MusicalElement GetClone()
+    {
 		MusicalElement clone = this.MemberwiseClone() as MusicalElement;
 		return clone;
 	}
@@ -45,10 +49,18 @@ public class SequenceRegion: MusicalElement
 /// </summary>
 public class OnBeatActionInfo : MusicalElement
 {
-	public PlayerActionEnum playerActionType;//アクションの種類
-	public string GetCustomParameterAsString_CSV(){
+    /// <summary>
+    /// 动作类型
+    /// </summary>
+	public PlayerActionEnum playerActionType;
+
+	public string GetCustomParameterAsString_CSV()
+    {
 		return "SingleShot," + triggerBeatTiming.ToString() + "," + playerActionType.ToString();
 	}
 
-	public int	line_number;		// もとのテキスト中の行番号.
+    /// <summary>
+    /// 原来文本中的行号
+    /// </summary>
+	public int	line_number;		
 }

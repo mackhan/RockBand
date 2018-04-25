@@ -202,10 +202,12 @@ public class OnPlayGUI : MonoBehaviour
 
         //-计算目标拍子的ICON的大小。显示当前需要击中的位置
         float markerSize = ScoringManager.timingErrorToleranceGood * m_pixelsPerBeats;
+        float x = markerOrigin.x - markerSize / 2.0f;
+        float y = markerOrigin.y - markerSize / 2.0f;
 
         //-显示目标拍子的ICON
-		Graphics.DrawTexture(
-			new Rect(markerOrigin.x - markerSize / 2.0f, markerOrigin.y - markerSize / 2.0f, markerSize, markerSize)
+        Graphics.DrawTexture(
+			new Rect(x, y, markerSize, markerSize)
 			, beatPositionIcon
 		);
 
@@ -224,28 +226,25 @@ public class OnPlayGUI : MonoBehaviour
             for (int drawnIndex = begin; drawnIndex < end; drawnIndex++)
             {
 				OnBeatActionInfo info = song.onBeatActionSequence[drawnIndex];
-
-				float size = ScoringManager.timingErrorToleranceGood * m_pixelsPerBeats;
-                //当张力高时，增加跳跃动作的标记
-                if (m_scoringManager.temper > ScoringManager.temperThreshold && info.playerActionType == PlayerActionEnum.Jump)
+                //当兴奋值高，并且是跳跃的时候,放大一些
+                if (m_scoringManager.temper > ScoringManager.temperThreshold 
+                    && info.playerActionType == PlayerActionEnum.Jump)
 				{
-					size *= 1.5f;
+                    markerSize *= 1.5f;
 				}
 
-				// 表示位置までのX座標のオフセットを求める.
-				x_offset = info.triggerBeatTiming - m_musicManager.beatCountFromStart;
-
+                // 求到显示位置的X坐标的偏移.???
+                x_offset = info.triggerBeatTiming - m_musicManager.beatCountFromStart;
 				x_offset *= m_pixelsPerBeats;
 
-
 				Rect drawRect = new Rect(
-					markerOrigin.x - size/2.0f + x_offset,
-					markerOrigin.y - size/2.0f ,
-					size,
-					size
-				);
+                    x + x_offset,
+                    y,
+                    markerSize,
+                    markerSize
+                );
 			
-				GUI.DrawTexture( drawRect, headbangingIcon );
+				GUI.DrawTexture(drawRect, headbangingIcon);
 				GUI.color = Color.white;
 
                 // 在文本文件中显示行号。
@@ -257,18 +256,22 @@ public class OnPlayGUI : MonoBehaviour
 				}
 			}
 
-            //行动时间点击效果
+            //-点中爆裂的效果
             if (m_rythmHitEffectCountDown > 0)
             {
-				float scale=2.0f - m_rythmHitEffectCountDown / (float)rythmHitEffectShowFrameDuration;
-				if( m_lastInputScore >= ScoringManager.excellentScore)//-如果上一次
+				float scale  = 2.0f - m_rythmHitEffectCountDown / (float)rythmHitEffectShowFrameDuration;//-依据点击效果的时间确认缩放，一开始1倍，最后是2倍，逐渐变大
+
+                //-再依据上一次的得分调整倍率
+                if (m_lastInputScore >= ScoringManager.excellentScore)
                 {
 					scale *= 2.0f;
 				}
-				else if( m_lastInputScore > ScoringManager.missScore){
+				else if( m_lastInputScore > ScoringManager.missScore)
+                {
 					scale *= 1.2f;
 				}
-				else{
+				else
+                {
 					scale *= 0.5f;
 				}
 				float baseSize = 32.0f;
@@ -285,7 +288,7 @@ public class OnPlayGUI : MonoBehaviour
 			//显示Perfect，Good，Bad三种提示
 			if (m_messageShowCountDown > 0)
             {
-				GUI.color = new Color(1, 1, 1, m_messageShowCountDown/40.0f);
+				GUI.color = new Color(1, 1, 1, m_messageShowCountDown / 40.0f);
 				GUI.DrawTexture(new Rect(20 ,230, 150, 50), messageTexture, ScaleMode.ScaleAndCrop, true);
 				GUI.color = Color.white;
 				m_messageShowCountDown--;

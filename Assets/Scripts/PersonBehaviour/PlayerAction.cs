@@ -1,6 +1,9 @@
 using UnityEngine;
 using System.Collections;
-//プレイヤーのアクションの種類を表す列挙
+
+/// <summary>
+/// 玩家的动作种类
+/// </summary>
 public enum PlayerActionEnum
 {
 	None,
@@ -9,7 +12,7 @@ public enum PlayerActionEnum
 };
 
 /// <summary>
-/// 玩家的动画
+/// 玩家的控制类
 /// </summary>
 public class PlayerAction : MonoBehaviour
 {
@@ -23,25 +26,45 @@ public class PlayerAction : MonoBehaviour
     /// </summary>
 	public AudioClip headBangingSoundClip_BAD;
 
-	//プレイヤーの現在のアクション
-	public PlayerActionEnum currentPlayerAction{
+    /// <summary>
+    /// 玩家当前的动作
+    /// </summary>
+    PlayerActionEnum m_currentPlayerAction;
+    public PlayerActionEnum currentPlayerAction
+    {
 		get{ return m_currentPlayerAction; }
 	}
-	//プレイヤーが最後にとったアクション
-	public OnBeatActionInfo lastActionInfo{
+
+    /// <summary>
+    /// 玩家最后的动作
+    /// </summary>
+    OnBeatActionInfo m_lastActionInfo = new OnBeatActionInfo();
+    public OnBeatActionInfo lastActionInfo
+    {
 		get{ return m_lastActionInfo; }
 	}
-	// Use this for initialization
-	void Start () {
+
+    MusicManager m_musicManager;
+    
+    PlayerActionEnum m_newPlayerAction;
+
+    void Start ()
+    {
 		m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
 	}
 	
-	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
 		m_currentPlayerAction = m_newPlayerAction;
 		m_newPlayerAction = PlayerActionEnum.None;
 	}
-	public void DoAction(PlayerActionEnum actionType){
+
+    /// <summary>
+    /// 玩家有一个操作，表现的玩家就做一个动作
+    /// </summary>
+    /// <param name="actionType"></param>
+	public void DoAction(PlayerActionEnum actionType)
+    {
 		m_newPlayerAction = actionType;
 
 		OnBeatActionInfo actionInfo = new OnBeatActionInfo();
@@ -49,7 +72,8 @@ public class PlayerAction : MonoBehaviour
 		actionInfo.playerActionType = m_newPlayerAction;
 		m_lastActionInfo = actionInfo;
 
-		if(actionType == PlayerActionEnum. HeadBanging){
+		if(actionType == PlayerActionEnum. HeadBanging)
+        {
 			gameObject.GetComponent<SimpleSpriteAnimation>().BeginAnimation(2, 1, false);
 		}
 		else if (actionType == PlayerActionEnum.Jump)
@@ -58,10 +82,4 @@ public class PlayerAction : MonoBehaviour
 			gameObject.GetComponent<SimpleSpriteAnimation>().BeginAnimation(1, 1, false);
 		}
 	}
-	//入力に対応したアクションを行う
-	//Private variables
-	MusicManager m_musicManager;
-	OnBeatActionInfo m_lastActionInfo=new OnBeatActionInfo();
-	PlayerActionEnum m_currentPlayerAction;
-	PlayerActionEnum m_newPlayerAction;
 }

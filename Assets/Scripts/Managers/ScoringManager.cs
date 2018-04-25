@@ -128,7 +128,8 @@ public class ScoringManager : MonoBehaviour
 	}
 
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
 
 		m_additionalScore = 0;
 
@@ -136,14 +137,15 @@ public class ScoringManager : MonoBehaviour
 		bool hitBefore = false;
 		bool hitAfter = false;
 
-		if( m_musicManager.IsPlaying() ){
-
+		if (m_musicManager.IsPlaying())
+        {
 			float	delta_count = m_musicManager.beatCountFromStart - m_musicManager.previousBeatCountFromStart;
 
 			m_scoringUnitSeeker.ProceedTime(delta_count);
 			// プレイヤーが入力したタイミングの直後、また直前（近い方）のマーカーの
 			// インデックスを取得する.
-			if(m_playerAction.currentPlayerAction != PlayerActionEnum.None){
+			if (m_playerAction.currentPlayerAction != PlayerActionEnum.None)
+            {
 				int nearestIndex = GetNearestPlayerActionInfoIndex();
 
 				SongInfo song = m_musicManager.currentSongInfo;
@@ -154,18 +156,22 @@ public class ScoringManager : MonoBehaviour
 				m_lastResult.timingError = player_act.triggerBeatTiming - marker_act.triggerBeatTiming;
 				m_lastResult.markerIndex = nearestIndex;
 
-				if (nearestIndex == m_previousHitIndex){
+				if (nearestIndex == m_previousHitIndex)
+                {
 					// 一度判定済みのマーカーに対して、再度入力されたとき.
 					m_additionalScore = 0;
 
-				} else {
+				}
+                else
+                {
 
 					// 初めてクリックされたマーカー.
 					// タイミングの判定をする.
 					m_additionalScore = CheckScore(nearestIndex, m_lastResult.timingError, out additionalTemper);
 				}
 
-				if (m_additionalScore > 0){
+				if (m_additionalScore > 0)
+                {
 
 					// 入力成功.
 
@@ -185,7 +191,9 @@ public class ScoringManager : MonoBehaviour
 
 					//成功時の演出
 					OnScoreAdded(nearestIndex);
-				} else{
+				}
+                else
+                {
 
 					// 入力失敗（タイミングが大きくずれていた）.
 
@@ -202,8 +210,10 @@ public class ScoringManager : MonoBehaviour
 				DebugWriteLogPrev();
 				DebugWriteLogPost(hitBefore, hitAfter);
 			}
-			if (m_scoringUnitSeeker.nextIndex > 0)
-				m_scoreRate = m_score / (m_scoringUnitSeeker.nextIndex * excellentScore);
+            if (m_scoringUnitSeeker.nextIndex > 0)
+            {
+                m_scoreRate = m_score / (m_scoringUnitSeeker.nextIndex * excellentScore);
+            }
 		}
 	}
 

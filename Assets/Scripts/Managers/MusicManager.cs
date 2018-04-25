@@ -30,7 +30,7 @@ public class MusicManager : MonoBehaviour
     /// </summary>
 	public float length
     {
-		get{ return m_audioSource.clip.length * m_currentSongInfo.beatPerSecond ; }
+		get { return m_audioSource.clip.length * m_currentSongInfo.beatPerSecond; }
 	}
 
     /// <summary>
@@ -39,8 +39,8 @@ public class MusicManager : MonoBehaviour
     private SongInfo m_currentSongInfo;
     public SongInfo currentSongInfo
     {
-		set{ m_currentSongInfo = value; }
-		get{ return m_currentSongInfo; }
+		set { m_currentSongInfo = value; }
+		get { return m_currentSongInfo; }
 	}
 
     /// <summary>
@@ -86,8 +86,7 @@ public class MusicManager : MonoBehaviour
 		{
             //-如果上一帧是在播放，且音乐是采样是刚结束，延迟一帧设置播放完成？？？
 			if (m_isPlayPreviousFrame
-				&& !(0 < m_audioSource.timeSamples && m_audioSource.timeSamples < m_audioSource.clip.samples)
-			)
+				&& !(0 < m_audioSource.timeSamples && m_audioSource.timeSamples < m_audioSource.clip.samples))
 			{
 				m_musicFinished = true;
 			}

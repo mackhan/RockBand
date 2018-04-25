@@ -41,7 +41,10 @@ public class PhaseManager : MonoBehaviour
     {
 		m_musicManager   = GameObject.Find("MusicManager").GetComponent<MusicManager>();
 		m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
-	}
+
+        SetPhase(m_currentPhase);
+
+    }
 	
 	void Update ()
     {
@@ -69,11 +72,11 @@ public class PhaseManager : MonoBehaviour
 			ActivateGUI("StartupMenuxixi");
 			break;
 		
-		case "OnBeginInstruction"://玩法介绍界面
-            DeactiveateAllGUI();
-			ActivateGUI("InstructionGUI");
-			ActivateGUI("OnPlayGUI");
-			break;
+		//case "OnBeginInstruction"://玩法介绍界面
+  //          DeactiveateAllGUI();
+		//	ActivateGUI("InstructionGUI");
+		//	ActivateGUI("OnPlayGUI");
+		//	break;
 
 		case "Play"://主游戏
             {

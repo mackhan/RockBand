@@ -8,7 +8,7 @@ public class StartupMenuNewGUI : MonoBehaviour
 {	
     public void PressStart()
     {
-        GameObject.Find("PhaseManager").GetComponent<PhaseManager>().SetPhase("OnBeginInstruction");
+        GameObject.Find("PhaseManager").GetComponent<PhaseManager>().SetPhase("Play");
     }
 
 	void OnGUI()

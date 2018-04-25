@@ -26,7 +26,9 @@ public class InstructionGUI : MonoBehaviour
 
 	public SimpleSpriteAnimation sampleBandMemberAniamtion;
 
-
+    /// <summary>
+    /// 玩家的动画
+    /// </summary>
     public SimpleSpriteAnimation playerAvatorAnimation;
 
 

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 /// </summary>
 public class InputManager : MonoBehaviour
 {
-
     /// <summary>
     /// 音乐管理器，播放暂停等
     /// </summary>
@@ -33,23 +32,16 @@ public class InputManager : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-		//ビートカウントの記録タイミングを、InputのUpdateのタイミングで行う。
-		//MusicManagerのUpdateでビートカウントの記録を行うと入力とビートカウントが
-		//最大1フレーム分ずれる
-		//演奏中に画面クリックでプレイヤーのアクション
-		if( Input.GetMouseButtonDown(0) && m_musicManager.IsPlaying() )
+        if (Input.GetMouseButtonDown(0) && m_musicManager.IsPlaying())//-如果有操作并且音乐正在播放
         {
 			PlayerActionEnum actionType;
-			if (m_scoringManager.temper < ScoringManager.temperThreshold)
+			if (m_scoringManager.temper < ScoringManager.temperThreshold)//-如果兴奋值比较低就一直播放点头的动作
             {
-				actionType=PlayerActionEnum.HeadBanging;
+				actionType = PlayerActionEnum.HeadBanging;
 			}
-			else
+			else//-如果比较兴奋了就按照脚本的动作
             {
-				actionType
-					=m_musicManager.currentSongInfo.onBeatActionSequence[
-						m_scoringManager.GetNearestPlayerActionInfoIndex()
-					].playerActionType;
+				actionType = m_musicManager.currentSongInfo.onBeatActionSequence[m_scoringManager.GetNearestPlayerActionInfoIndex()].playerActionType;
 			}
 			m_playerAction.DoAction(actionType);
 		}
