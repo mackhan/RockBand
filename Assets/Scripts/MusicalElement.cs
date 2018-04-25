@@ -10,10 +10,15 @@ using System.Xml.Serialization;
 /// </summary>
 public abstract class MusicalElement
 {
-	//処理を開始できるタイミング
+    /// <summary>
+    /// 我们什么时候能开始处理？
+    /// </summary>
 	public float triggerBeatTiming = 0;
 
-	//パラメータ値の文字列配列(CSVなどの読み込みに使用) 
+    /// <summary>
+    /// 参数值的字符串数组（用于读取CSV等）
+    /// </summary>
+    /// <param name="parameters"></param>
 	public virtual void ReadCustomParameterFromString(string[] parameters){}
 	
     //triggerBeatTimingの原点を指定した上でクローンを生成

@@ -24,6 +24,9 @@ public class OnPlayGUI : MonoBehaviour
 
     public Texture headbangingIcon;
 
+    /// <summary>
+    /// 当前拍子需要击中的位置
+    /// </summary>
 	public Texture beatPositionIcon;
 
     /// <summary>
@@ -31,11 +34,26 @@ public class OnPlayGUI : MonoBehaviour
     /// </summary>
 	public Texture hitEffectIcon;
 
+    /// <summary>
+    /// 兴奋度的血条
+    /// </summary>
 	public Texture temperBar;
 	public Texture temperBarFrame;
 
-	public static float markerEnterOffset = 2.5f;	//何时开始显示标记，节拍要提前多久显示
-	public static float markerLeaveOffset =-1.0f;   //计时结束显示标记，节拍要延迟多久结束
+    /// <summary>
+    /// 何时开始显示标记，节拍要提前多久显示
+    /// </summary>
+	public static float markerEnterOffset = 2.5f;
+
+    /// <summary>
+    /// 转换成提前多少个像素
+    /// </summary>
+    float m_pixelsPerBeats = Screen.width * 1.0f / markerEnterOffset;
+
+    /// <summary>
+    /// 计时结束显示标记，节拍要延迟多久结束
+    /// </summary>
+	public static float markerLeaveOffset = -1.0f;   
 
     /// <summary>
     /// 消息显示的时长
@@ -65,6 +83,10 @@ public class OnPlayGUI : MonoBehaviour
     Color m_blinkColor = new Color(1, 1, 1);
     
     public bool isDevelopmentMode = false;
+
+    /// <summary>
+    /// 目标图标的中心位置
+    /// </summary>
 	public Vector2 markerOrigin = new Vector2(20.0f, 300.0f);
 
 	public GUISkin guiSkin;
@@ -135,7 +157,7 @@ public class OnPlayGUI : MonoBehaviour
 
 	void Update ()
     {
-		if(m_musicManager.IsPlaying())
+		if(m_musicManager.IsPlaying())//-更新拍子，一帧可能有多个拍子
         {
 			m_seekerBack.ProceedTime(m_musicManager.beatCountFromStart - m_musicManager.previousBeatCountFromStart);
 			m_seekerFront.ProceedTime(m_musicManager.beatCountFromStart - m_musicManager.previousBeatCountFromStart);
@@ -144,11 +166,11 @@ public class OnPlayGUI : MonoBehaviour
 
 	void OnGUI()
     {
-        //分数显示
+        //-分数显示
         GUI.Box(new Rect(15,5,100,30), "");
 		GUI.Label(new Rect(20,10,90,20), "Score: " + m_scoringManager.score);
 
-        //兴奋闪烁颜色
+        //-兴奋闪烁颜色
         if (m_scoringManager.temper > ScoringManager.temperThreshold)
 		{
 			m_blinkColor.g = m_blinkColor.b	
@@ -156,23 +178,32 @@ public class OnPlayGUI : MonoBehaviour
 			GUI.color = m_blinkColor;
 		}
 
-        //仪表显示器升高？？？
+        //-兴奋度
         Rect heatBarFrameRect = new Rect(180.0f, 20.0f, 100.0f, 20.0f);
-		Rect heatBarRect = heatBarFrameRect;
-		Rect heatBarLabelRect = heatBarFrameRect;
+
+        //-显示兴奋度的文字
+        Rect heatBarLabelRect = heatBarFrameRect;
+        heatBarLabelRect.y = heatBarFrameRect.y - 20;
+        GUI.Label(heatBarLabelRect, "Temper");
+
+        //-显示兴奋度的能量槽
+        Rect heatBarRect = heatBarFrameRect;
 		heatBarRect.width *= m_scoringManager.temper;
-		heatBarLabelRect.y = heatBarFrameRect.y-20;
-		GUI.Label(heatBarLabelRect, "Temper");
-		GUI.Box(heatBarFrameRect,"" );
-		GUI.DrawTextureWithTexCoords( 
-			heatBarRect, temperBar, new Rect(0.0f, 0.0f, 1.0f * m_scoringManager.temper, 1.0f)
+		GUI.Box(heatBarFrameRect, "");
+
+        //-显示兴奋度的值
+		GUI.DrawTextureWithTexCoords(heatBarRect
+            , temperBar
+            , new Rect(0.0f, 0.0f, 1.0f * m_scoringManager.temper
+            , 1.0f)
 		);
 
 		GUI.color = Color.white;
 
-        //当此图标和动作计时图标重叠时输入
+        //-计算目标拍子的ICON的大小。显示当前需要击中的位置
         float markerSize = ScoringManager.timingErrorToleranceGood * m_pixelsPerBeats;
 
+        //-显示目标拍子的ICON
 		Graphics.DrawTexture(
 			new Rect(markerOrigin.x - markerSize / 2.0f, markerOrigin.y - markerSize / 2.0f, markerSize, markerSize)
 			, beatPositionIcon
@@ -261,8 +292,6 @@ public class OnPlayGUI : MonoBehaviour
 			}
 		}
 	}
-
-	float	m_pixelsPerBeats = Screen.width * 1.0f/markerEnterOffset;
     
     // 时间先进的查找单位（显示结束位置）。
     SequenceSeeker<OnBeatActionInfo> m_seekerFront = new SequenceSeeker<OnBeatActionInfo>();

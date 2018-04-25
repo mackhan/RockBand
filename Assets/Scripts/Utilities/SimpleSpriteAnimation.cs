@@ -68,9 +68,13 @@ public class SimpleSpriteAnimation: MonoBehaviour
 		SetMaterilTextureUV();
 	}
 	
-    //現在のメインテクスチャを取得
-	public Texture GetTexture(){
-		return GetComponent<Renderer>().material.GetTexture("_MainTex");
+    /// <summary>
+    /// 获得当前的贴图
+    /// </summary>
+    /// <returns></returns>
+	public Texture GetTexture()
+    {
+		return m_kTexture;
 	}
 
     /// <summary>
@@ -87,13 +91,11 @@ public class SimpleSpriteAnimation: MonoBehaviour
         }
 			
 		float posX = ((frameIndexNormalized % divisionCountX) / (float)divisionCountX);//-计算x的起始位置
-		float posY = (1- ( (1 + (frameIndexNormalized / divisionCountX)) / (float)divisionCountY));//-计算Y的其实位置
-		return new Rect( 
-			posX, 
-			posY, 
-			GetComponent<Renderer>().material.mainTextureScale.x, 
-			GetComponent<Renderer>().material.mainTextureScale.y
-		);
+		float posY = (1- ((1 + (frameIndexNormalized / divisionCountX)) / (float)divisionCountY));//-计算Y的起始位置，00在左下，需要1-
+		return new Rect(posX
+            , posY
+            , m_kScale.x
+            , m_kScale.y);
 	}
 
     /// <summary>
@@ -105,43 +107,55 @@ public class SimpleSpriteAnimation: MonoBehaviour
 		return GetUVRect(m_currentIndex);
 	}
 
-	//明確な指定が無い場合のアニメーションを設定
-	public void SetDefaultAnimation( int defaultFromIndex, int defaultToIndex )
+	/// <summary>
+    /// 默认的参数设置
+    /// </summary>
+    /// <param name="defaultFromIndex"></param>
+    /// <param name="defaultToIndex"></param>
+	public void SetDefaultAnimation(int defaultFromIndex, int defaultToIndex)
     {
 		m_currentIndex = m_fromIndex = m_defaultFromIndex = defaultFromIndex;
 		m_toIndex = m_defaultToIndex = defaultToIndex;
 	}
-	//ピクセル幅を取得
-	public float GetWidth(){
-		return GetComponent<Renderer>().material.mainTextureScale.x * GetComponent<Renderer>().material.GetTexture("_MainTex").width;
-	}
-	//ピクセル高さを取得
-	public float GetHeight(){
-		return GetComponent<Renderer>().material.mainTextureScale.y * GetComponent<Renderer>().material.GetTexture("_MainTex").height;
+
+    /// <summary>
+    /// 获得一帧贴图的宽
+    /// </summary>
+    /// <returns></returns>
+	public float GetWidth()
+    {
+		return m_kScale.x * m_kTexture.width;
 	}
 	
-    //アニメーションのコマを進める
+    /// <summary>
+    /// 获得一帧贴图的高
+    /// </summary>
+    /// <returns></returns>
+	public float GetHeight()
+    {
+		return m_kScale.y * m_kTexture.height;
+	}
+	
+    /// <summary>
+    /// 播放动画帧
+    /// </summary>
 	public void AdvanceFrame()
     {
 		if (m_fromIndex < m_toIndex)//-如果起始动画帧小于目标动画帧正的播放
         {
-			if (m_currentIndex <= m_toIndex)
+			if (m_currentIndex <= m_toIndex)//-如果还没到目标帧，前进一帧
             {
 				m_currentIndex++;
-				if (m_toIndex < m_currentIndex)
+				if (m_toIndex < m_currentIndex)//-如果超过了
                 {
-					if (m_loop)
-                    {
-						m_currentIndex = m_fromIndex;
-					}
-					else
-                    {
-						m_currentIndex = m_fromIndex = m_defaultFromIndex;
-						m_toIndex = m_defaultToIndex;
-					}
-				}
+                    Loop();
+                }
 				SetMaterilTextureUV();
 			}
+            else
+            {
+                Debug.LogError("Out of range");
+            }
 		}
         else//-如果起始动画帧小于目标动画帧倒的播放
         {
@@ -150,23 +164,51 @@ public class SimpleSpriteAnimation: MonoBehaviour
 				m_currentIndex--;
 				if (m_toIndex > m_currentIndex)
                 {
-					if (m_loop)
-                    {
-						m_currentIndex = m_fromIndex;
-					}
-					else
-                    {
-						m_currentIndex = m_fromIndex = m_defaultFromIndex;
-						m_toIndex = m_defaultToIndex;
-					}
-				}
+                    Loop();
+
+                }
 				SetMaterilTextureUV();
 			}
-		}
-	}
+            else
+            {
+                Debug.LogError("Out of range");
+            }
+        }
+    }
+
+    /// <summary>
+    /// 当动画播放完成了执行循环或者回到默认动画的操作
+    /// </summary>
+    void Loop()
+    {
+        if (m_loop)//-如果循环回到开始帧
+        {
+            m_currentIndex = m_fromIndex;
+        }
+        else
+        {
+            //-如果不是循环，会到默认的初始帧
+            m_currentIndex = m_fromIndex = m_defaultFromIndex;
+            m_toIndex = m_defaultToIndex;
+        }
+    }
+
+    /// <summary>
+    /// 贴图动画每块的大小
+    /// </summary>
+    Vector2 m_kScale;
+
+    /// <summary>
+    /// 当前的贴图
+    /// </summary>
+    Texture m_kTexture;
+
 	void Start ()
     {
-		GetComponent<Renderer>().material.mainTextureScale = new Vector2(1.0f/divisionCountX,1.0f/divisionCountY);
+        Material kMaterial = GetComponent<Renderer>().material;
+        m_kTexture = kMaterial.GetTexture("_MainTex");
+        m_kScale = kMaterial.mainTextureScale;
+        m_kScale = new Vector2(1.0f / divisionCountX, 1.0f / divisionCountY);
 	}
 	
 	void Update ()
@@ -179,10 +221,12 @@ public class SimpleSpriteAnimation: MonoBehaviour
 		}
 	}
 
-	//コマ番号から適切なテクスチャ座標UVを設定
+    /// <summary>
+    /// 根据帧编号设置适当的纹理坐标UV
+    /// </summary>
 	void SetMaterilTextureUV()
     {
 		Rect uvRect = GetCurrentFrameUVRect();
-		GetComponent<Renderer>().material.mainTextureOffset = new Vector2(uvRect.x,uvRect.y);
+		GetComponent<Renderer>().material.mainTextureOffset = new Vector2(uvRect.x, uvRect.y);
 	}	
 }

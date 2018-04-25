@@ -9,12 +9,12 @@ using System.IO;
 public class ScoringManager : MonoBehaviour
 {
     /// <summary>
-    /// Good的时机，如果时间差距低于这个 
+    /// Good的时机，如果时间差距低于这个就是Error
     /// </summary>
 	public static float timingErrorToleranceGood = 0.22f;          
 
     /// <summary>
-    /// Excellent的时机, 如果定时偏差小于这个
+    /// Excellent的时机, 如果时偏差小于这个就是Good
     /// </summary>
     public static float timingErrorTorelanceExcellent = 0.12f;     
 
@@ -245,7 +245,8 @@ public class ScoringManager : MonoBehaviour
 	private	void	DebugWriteLogPrev()
 	{
 #if UNITY_EDITOR
-		if( m_scoringUnitSeeker.isJustPassElement ){
+		if (m_scoringUnitSeeker.isJustPassElement)
+        {
 			if(outScoringLog){
 				OnBeatActionInfo onBeatActionInfo
 					= m_musicManager.currentSongInfo.onBeatActionSequence[m_scoringUnitSeeker.nextIndex-1];

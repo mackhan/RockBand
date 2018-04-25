@@ -16,7 +16,7 @@ public class SequenceSeeker<ElementType> where ElementType: MusicalElement
     int m_nextIndex = 0;                
 
     /// <summary>
-    /// 当前时间
+    /// 当前到那个拍子
     /// </summary>
     float m_currentBeatCount = 0;           
 
@@ -58,16 +58,16 @@ public class SequenceSeeker<ElementType> where ElementType: MusicalElement
     /// </summary>
     public bool isJustPassElement
     {
-			get{return m_isJustPassElement;}
+		get{ return m_isJustPassElement; }
 	}
 
     /// <summary>
     /// 每帧处理
     /// </summary>
-    /// <param name="deltaBeatCount"></param>
+    /// <param name="deltaBeatCount">这帧走了几个拍子</param>
     public void ProceedTime(float deltaBeatCount)
     {
-        //-计算当前时间
+        //-计算当前到那个拍子
         m_currentBeatCount += deltaBeatCount;
 
         //设置标识“检索位置前进完成”瞬间的标记为false
@@ -83,7 +83,7 @@ public class SequenceSeeker<ElementType> where ElementType: MusicalElement
 			m_nextIndex = index;
 
 			//把更新的标记设置为true
-			m_isJustPassElement=true;
+			m_isJustPassElement = true;
 		}
 	}
 
@@ -94,26 +94,23 @@ public class SequenceSeeker<ElementType> where ElementType: MusicalElement
 	public void Seek(float beatCount)
     {
 		m_currentBeatCount = beatCount;
-
-		int	index = find_next_element(0);
-
-		m_nextIndex = index;
+        m_nextIndex = find_next_element(0);
 	}
 
     /// <summary>
-    /// 查找到当前时刻m_currentBeatCount，之后的那个索引
+    /// 查找到当前拍子m_currentBeatCount，之后的那个索引
     /// </summary>
     /// <param name="start_index">从哪里开始检查，优化</param>
     /// <returns></returns>
 	private int	find_next_element(int start_index)
 	{
-		//-通过表示超过了最后标记的时刻的值进行初始化
+		//-找到最近的一个事件
 		int ret = m_sequence.Count;
 
-		for (int i = start_index;i < m_sequence.Count; i++)
+		for (int i = start_index; i < m_sequence.Count; i++)
 		{
-			// m_currentBeatCount よりも後ろにあるマーカーだった＝見つかった.
-			if(m_sequence[i].triggerBeatTiming > m_currentBeatCount)
+            //-这是m_currentBeatCount = found后面的标记。
+			if (m_sequence[i].triggerBeatTiming > m_currentBeatCount)
 			{
 				ret = i;
 				break;
