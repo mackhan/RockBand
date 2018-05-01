@@ -20,12 +20,18 @@ public class EventManager : MonoBehaviour
 		m_seekUnit.SetSequence(m_musicManager.currentSongInfo.stagingDirectionSequence);
 	}
 
+    /// <summary>
+    /// 直接跳转
+    /// </summary>
+    /// <param name="beatCount"></param>
     public void Seek(float beatCount)
     {
-		m_seekUnit.Seek( beatCount );
-		m_previousIndex=m_seekUnit.nextIndex;
-		//シーク時には現行のリストをクリア
-		for ( LinkedListNode<StagingDirection> it = m_activeEvents.First; it != null; it = it.Next) {
+		m_seekUnit.Seek(beatCount);
+		m_previousIndex = m_seekUnit.nextIndex;
+
+        //-结束时清除事件列表
+        for ( LinkedListNode<StagingDirection> it = m_activeEvents.First; it != null; it = it.Next)
+        {
 			it.Value.OnEnd();
 			m_activeEvents.Remove(it);
 		}
@@ -37,52 +43,55 @@ public class EventManager : MonoBehaviour
 
 		if (m_musicManager.IsPlaying())
 		{
-			//前フレームから現フレームへの間にヒットしたステージ演出の取得
+            //前帧到现帧之间获得成功的舞台演出
+            m_previousIndex = m_seekUnit.nextIndex;
 
-			m_previousIndex = m_seekUnit.nextIndex;
+			m_seekUnit.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
 
-			m_seekUnit.ProceedTime(m_musicManager.beatCountFromStart - m_musicManager.previousBeatCountFromStart);
-
-			// 「直前のシーク位置」と「更新後のシーク位置」の間にあるイベントを実行開始.
-			for(int i = m_previousIndex;i < m_seekUnit.nextIndex;i++)
+            // 开始在“之前的移动位置”和“更新后的移动位置”之间的活动。
+            for (int i = m_previousIndex; i < m_seekUnit.nextIndex; i++)
             {
-
-				// イベントデータをコピーする.
-				StagingDirection clone = song.stagingDirectionSequence[i].GetClone() as StagingDirection;
-
+                //复制事件数据
+                StagingDirection clone = song.stagingDirectionSequence[i].GetClone() as StagingDirection;
 				clone.OnBegin();
 
-				// 「実行中のイベントリスト」に追加.
-				m_activeEvents.AddLast(clone);
+                //添加到“执行中的活动列表”
+                m_activeEvents.AddLast(clone);
 			}
 		}
 
-		// 「実行中のイベント」の実行.
-		for ( LinkedListNode<StagingDirection> it = m_activeEvents.First; it != null; it = it.Next) {
-
-			StagingDirection	activeEvent = it.Value;
-
+        //“执行中的活动列表”的执行，LinkedList<T>类在.NET framework中是一个双向链表
+        for (LinkedListNode<StagingDirection> it = m_activeEvents.First; it != null; it = it.Next)
+        {
+			StagingDirection activeEvent = it.Value;
 			activeEvent.Update();
 
-			// 実行が終了した？.
-			if(activeEvent.IsFinished()) {
-
+            //执行结束了吗？.
+            if (activeEvent.IsFinished())
+            {
 				activeEvent.OnEnd();
 
-				// 「実行中のイベントリスト」から削除する.
-				m_activeEvents.Remove(it);
+                //从“执行中的事件列表”中删除
+                m_activeEvents.Remove(it);
 			}
 		}
 	}
 
 	MusicManager m_musicManager;
 
-	// シークユニット.
+	/// <summary>
+    /// 序列管理器
+    /// </summary>
 	SequenceSeeker<StagingDirection> m_seekUnit	= new SequenceSeeker<StagingDirection>();
 
-	// 実行中のイベント.
-	LinkedList<StagingDirection> m_activeEvents	= new LinkedList<StagingDirection>();
+    /// <summary>
+    /// “执行中的事件列表”
+    /// </summary>
+    LinkedList<StagingDirection> m_activeEvents	= new LinkedList<StagingDirection>();
 
-	int		m_previousIndex=0;			// 直前のシーク位置.
+    /// <summary>
+    /// 前一帧的序列索引
+    /// </summary>
+	int	m_previousIndex = 0;	
 }
 

@@ -18,16 +18,48 @@ public class ScoringManager : MonoBehaviour
     /// </summary>
     public static float timingErrorTorelanceExcellent = 0.12f;     
 
+    /// <summary>
+    /// 失败的得分
+    /// </summary>
     public static float missScore = -1.0f;
+
+    /// <summary>
+    /// Good的得分
+    /// </summary>
 	public static float goodScore = 2.0f;
+
+    /// <summary>
+    /// Excellent的得分
+    /// </summary>
 	public static float excellentScore = 4.0f;
+
 	public static float failureScoreRate = 0.3f;//途中判定ポイントで"失敗"として判定される得点率(得点/理論上の最高得点)
 	public static float excellentScoreRate = 0.85f;//途中判定ポイントで"優秀"として判定される得点率(得点/理論上の最高得点)
-	public static float missHeatupRate = -0.08f;
+
+    /// <summary>
+    /// 失败的兴奋值
+    /// </summary>
+    public static float missHeatupRate = -0.08f;
+
+    /// <summary>
+    /// Good的兴奋值
+    /// </summary>
 	public static float goodHeatupRate = 0.01f;
+
+    /// <summary>
+    /// Excellent的兴奋值
+    /// </summary>
 	public static float bestHeatupRate = 0.02f;
-	public static float temperThreshold = 0.5f;//兴奋的门槛分开存在或不存在生产变化
-    public bool outScoringLog=true;
+
+    /// <summary>
+    /// 兴奋度的门槛
+    /// </summary>
+    public static float temperThreshold = 0.5f;
+
+    /// <summary>
+    /// 是否开启日志功能
+    /// </summary>
+    public bool outScoringLog = true;
 
     /// <summary>
     /// 现在的合计分数
@@ -158,75 +190,57 @@ public class ScoringManager : MonoBehaviour
 
 		if (m_musicManager.IsPlaying())
         {
-			float delta_count = m_musicManager.beatCountFromStart - m_musicManager.previousBeatCountFromStart;//-当前帧跑了几个拍子
-            Debug.Assert(delta_count > 1);
+			m_scoringUnitSeeker.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
 
-			m_scoringUnitSeeker.ProceedTime(delta_count);
-
-			// プレイヤーが入力したタイミングの直後、また直前（近い方）のマーカーの
-			// インデックスを取得する.
-			if (m_playerAction.currentPlayerAction != PlayerActionEnum.None)//-如果这一拍是关键拍=
+			if (m_playerAction.currentPlayerAction != PlayerActionEnum.None)//-如果这一拍玩家有操作？？？
             {
 				int nearestIndex = GetNearestPlayerActionInfoIndex();
 
 				SongInfo song = m_musicManager.currentSongInfo;
 
 				OnBeatActionInfo marker_act = song.onBeatActionSequence[nearestIndex];//-找到最近的谱面
-				OnBeatActionInfo player_act = m_playerAction.lastActionInfo;
+				OnBeatActionInfo player_act = m_playerAction.lastActionInfo;//-找到玩家操作的信息
 
-				m_lastResult.timingError = player_act.triggerBeatTiming - marker_act.triggerBeatTiming;
+				m_lastResult.timingError = player_act.triggerBeatTiming - marker_act.triggerBeatTiming;//-找到玩家操作的拍子和最近谱面时间的差值
 				m_lastResult.markerIndex = nearestIndex;
 
-				if (nearestIndex == m_previousHitIndex)
+				if (nearestIndex == m_previousHitIndex)//-如果已经判定过了，则扣分
                 {
-					// 一度判定済みのマーカーに対して、再度入力されたとき.
 					m_additionalScore = 0;
-
 				}
-                else
+                else//-计算得分
                 {
-
-					// 初めてクリックされたマーカー.
-					// タイミングの判定をする.
 					m_additionalScore = CheckScore(nearestIndex, m_lastResult.timingError, out additionalTemper);
 				}
 
-				if (m_additionalScore > 0)
+				if (m_additionalScore > 0)//-得分
                 {
-					// 入力成功.
+                    //-记录当前的索引，防止将相同的标记判定为两次
+                    m_previousHitIndex = nearestIndex;
 
-					// 同じマーカーを二回判定してしまわないよう、最後に判定された
-					// マーカーを覚えておく.
-					m_previousHitIndex = nearestIndex;
+                    if (nearestIndex == m_scoringUnitSeeker.nextIndex)//-判断当前按下的是前一个还是后一个
+                    {
+                        hitAfter = true;
+                    }
+                    else
+                    {
+                        hitBefore = true;
+                    }
 
-					// 判定に使われたのが
-					// ・シーク位置のマーカー(hitAftere)
-					// ・シーク位置のいっこ前のマーカー(hitBefore)
-					// なのか、判定する.
-					//
-					if (nearestIndex == m_scoringUnitSeeker.nextIndex)
-						hitAfter = true;
-					else
-						hitBefore = true;
-
-					//成功時の演出
-					OnScoreAdded(nearestIndex);
+                    //增加分数的时候播放动画
+                    OnScoreAdded(nearestIndex);
 				}
-                else
+                else//-扣分，为了已经判定的时候也自动扣分写的有些丑陋
                 {
-
-					// 入力失敗（タイミングが大きくずれていた）.
-
-					//アクションをとったのに加点が無ければ減点
 					m_additionalScore = missScore;
-
 					additionalTemper = missHeatupRate;
 				}
-				m_score += m_additionalScore;
 
+				m_score += m_additionalScore;
 				temper += additionalTemper;
 				m_onPlayGUI.RythmHitEffect(m_previousHitIndex, m_additionalScore);
-				// デバッグ用ログ出力.
+
+				//-记录日志
 				DebugWriteLogPrev();
 				DebugWriteLogPost(hitBefore, hitAfter);
 			}
@@ -237,63 +251,46 @@ public class ScoringManager : MonoBehaviour
 		}
 	}
 
-	// 入力の結果を判定する（うまい／へた／ミス）.
-	float CheckScore(int actionInfoIndex, float timingError, out float heatup)
+    /// <summary>
+    /// 判定输入的结果（好/不好/错误）
+    /// </summary>
+    /// <param name="actionInfoIndex">应该计算的谱面索引</param>
+    /// <param name="timingError">误差</param>
+    /// <param name="heatup">输出的兴奋值</param>
+    /// <returns></returns>
+    float CheckScore(int actionInfoIndex, float timingError, out float heatup)
     {
-		float	score = 0;
+		float score = 0;
 
-		timingError = Mathf.Abs(timingError);
+		timingError = Mathf.Abs(timingError);//-取出误差的绝对值
 
 		do
         {
-			// Good の範囲より大きいとき → ミス.
-			if(timingError >= timingErrorToleranceGood)
+			if (timingError >= timingErrorToleranceGood)//-如果低于了Good范围，增加0分，兴奋值为0
             {
 				score  = 0.0f;
 				heatup = 0;
 				break;
 			}
 			
-			// Good と Excellent の間のとき → Good.
-			if(timingError >= timingErrorTorelanceExcellent)
+			if(timingError >= timingErrorTorelanceExcellent)//-“Good和Excellent”之间的时候认为是Good，增加good的分数和兴奋值
             {
 				score  = goodScore;
 				heatup = goodHeatupRate;
 				break;
 			}
 
-			// Excellent の範囲のとき → Excellent.
+			//Excellent
 			score  = excellentScore;
 			heatup = bestHeatupRate;
 
 		} while(false);
 
-		return(score);
-	}
-
-	// デバッグ用ログ出力.
-	private	void	DebugWriteLogPrev()
-	{
-#if UNITY_EDITOR
-		if (m_scoringUnitSeeker.isJustPassElement)
-        {
-			if (outScoringLog)
-            {
-				OnBeatActionInfo onBeatActionInfo
-					= m_musicManager.currentSongInfo.onBeatActionSequence[m_scoringUnitSeeker.nextIndex-1];
-				m_logWriter.WriteLine(
-					onBeatActionInfo.triggerBeatTiming.ToString() + ","
-					+ "IdealAction,,"
-					+ onBeatActionInfo.playerActionType.ToString()
-				);
-				m_logWriter.Flush();
-			}
-		}
-#endif
+		return (score);
 	}
 
     /// <summary>
-    /// 增加分数了
+    /// 增加分数的时候播放动画
     /// </summary>
     /// <param name="nearestIndex">最近的谱面</param>
 	private void OnScoreAdded(int nearestIndex)
@@ -331,23 +328,59 @@ public class ScoringManager : MonoBehaviour
 		}
 	}
 
-	// デバッグ用ログ出力.
-	private void DebugWriteLogPost(bool hitBefore, bool hitAfter)
+    /// <summary>
+    /// 输出debug信息，这一帧玩家是有的操作的
+    /// </summary>
+    private void DebugWriteLogPrev()
+    {
+#if UNITY_EDITOR
+        if (m_scoringUnitSeeker.isJustPassElement)//-如果当前过了一个拍子
+        {
+            if (outScoringLog)
+            {
+                OnBeatActionInfo onBeatActionInfo
+                    = m_musicManager.currentSongInfo.onBeatActionSequence[m_scoringUnitSeeker.nextIndex - 1];
+                m_logWriter.WriteLine(
+                    onBeatActionInfo.triggerBeatTiming.ToString() + ","
+                    + "IdealAction,,"
+                    + onBeatActionInfo.playerActionType.ToString()
+                );
+                m_logWriter.Flush();
+            }
+        }
+#endif
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="hitBefore"></param>
+    /// <param name="hitAfter"></param>
+    private void DebugWriteLogPost(bool hitBefore, bool hitAfter)
 	{
 #if UNITY_EDITOR
-		if(outScoringLog){
-			string relation="";
-			if(hitBefore){
+		if (outScoringLog)
+        {
+			string relation = "";
+
+			if (hitBefore)
+            {
 				relation = "HIT ABOVE";
 			}
-			if(hitAfter){
+			if (hitAfter)
+            {
 				relation = "HIT BELOW";
 			}
+
 			string scoreTypeString = "MISS";
-			if( m_additionalScore>=excellentScore )
-				scoreTypeString = "BEST";
-			else if( m_additionalScore>=goodScore )
-				scoreTypeString = "GOOD";
+            if (m_additionalScore >= excellentScore)
+            {
+                scoreTypeString = "BEST";
+            }
+            else if (m_additionalScore >= goodScore)
+            {
+                scoreTypeString = "GOOD";
+            }
 			m_logWriter.WriteLine(
 				m_playerAction.lastActionInfo.triggerBeatTiming.ToString() + ","
 				+ " PlayerAction,"
@@ -396,14 +429,18 @@ public class ScoringManager : MonoBehaviour
 
 	PhaseManager m_phaseManager;
 
-	// プレイヤーの入力の結果.
-	public struct Result
+    /// <summary>
+    /// 玩家输入的结果
+    /// </summary>
+    public struct Result
     {
-		public float	timingError;		// タイミングのずれ（マイナス…早い　プラス…遅い）
-		public int		markerIndex;		// 比較されたマーカーのインデックス
-	};
+		public float	timingError;        // 时机的偏差快的加……晚了）
+        public int		markerIndex;        // 被比较的标记的索引,就是当前应该按的那个谱面
+    };
 
-	// 直前のプレイヤーの入力の、結果.
-	public Result	m_lastResult;
+    /// <summary>
+    /// 之前玩家输入的结果
+    /// </summary>
+    public Result	m_lastResult;
 }
 

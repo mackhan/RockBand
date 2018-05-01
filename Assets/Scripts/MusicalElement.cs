@@ -16,7 +16,7 @@ public abstract class MusicalElement
 	public float triggerBeatTiming = 0;
 
     /// <summary>
-    /// 参数值的字符串数组（用于读取CSV等）
+    /// 参数的字符串数组（用于读取CSV等），直接通过字符串数组初始化
     /// </summary>
     /// <param name="parameters"></param>
 	public virtual void ReadCustomParameterFromString(string[] parameters){}
@@ -31,6 +31,10 @@ public abstract class MusicalElement
 		return clone;
 	}
 
+    /// <summary>
+    /// ???
+    /// </summary>
+    /// <returns></returns>
     public System.Xml.Schema.XmlSchema GetSchema(){return null;}
 };
 
@@ -39,8 +43,19 @@ public abstract class MusicalElement
 /// </summary>
 public class SequenceRegion: MusicalElement
 {
+    /// <summary>
+    /// 一共多少拍
+    /// </summary>
 	public float totalBeatCount;
+
+    /// <summary>
+    /// 名字
+    /// </summary>
 	public string name;
+
+    /// <summary>
+    /// 重复的位置
+    /// </summary>
 	public float repeatPosition;
 };
 

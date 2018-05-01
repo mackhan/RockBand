@@ -7,8 +7,8 @@ using System.Collections;
 public enum PlayerActionEnum
 {
 	None,
-	HeadBanging,
-	Jump
+	HeadBanging,//-点头
+	Jump//-跳
 };
 
 /// <summary>

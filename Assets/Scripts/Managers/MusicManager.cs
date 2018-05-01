@@ -20,9 +20,18 @@ public class MusicManager : MonoBehaviour
     /// 前一帧播放到第几拍了
     /// </summary>
     float m_previousBeatCountFromStart = 0;
-    public float previousBeatCountFromStart
+
+    /// <summary>
+    /// 当前和上一帧的拍子差值
+    /// </summary>
+    public float DeltaBeatCountFromStart
     {
-		get { return m_previousBeatCountFromStart; }
+		get
+        {
+            float fDeltaCount = m_beatCountFromStart - m_previousBeatCountFromStart;
+            Debug.Assert(fDeltaCount > 1);
+            return fDeltaCount;
+        }
 	}
 
 	/// <summary>

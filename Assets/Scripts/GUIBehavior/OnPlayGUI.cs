@@ -175,8 +175,8 @@ public class OnPlayGUI : MonoBehaviour
     {
 		if(m_musicManager.IsPlaying())//-更新拍子，一帧可能有多个拍子
         {
-			m_seekerBack.ProceedTime(m_musicManager.beatCountFromStart - m_musicManager.previousBeatCountFromStart);
-			m_seekerFront.ProceedTime(m_musicManager.beatCountFromStart - m_musicManager.previousBeatCountFromStart);
+			m_seekerBack.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
+			m_seekerFront.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
 		}
 	}
 

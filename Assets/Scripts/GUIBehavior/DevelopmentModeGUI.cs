@@ -82,8 +82,7 @@ public class DevelopmentModeGUI : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-		m_actionInfoRegionSeeker.ProceedTime(m_musicManager.beatCountFromStart 
-            - m_musicManager.previousBeatCountFromStart);
+		m_actionInfoRegionSeeker.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
 
 		m_seekSlider.is_button_down = Input.GetMouseButton(0);
 	}

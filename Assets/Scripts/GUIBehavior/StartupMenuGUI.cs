@@ -8,7 +8,6 @@ public class StartupMenuGUI : MonoBehaviour
 {
 	public Texture titleTexture;
 	public GUISkin guiStyle;
-
 	
 	void OnGUI()
     {
