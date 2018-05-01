@@ -29,8 +29,10 @@ public class ScoringManager : MonoBehaviour
 	public static float temperThreshold = 0.5f;//兴奋的门槛分开存在或不存在生产变化
     public bool outScoringLog=true;
 
-	//現在の合計スコア
-	public float score
+    /// <summary>
+    /// 现在的合计分数
+    /// </summary>
+    public float score
     {
 		get{ return m_score; }
 	}
@@ -39,14 +41,13 @@ public class ScoringManager : MonoBehaviour
     /// <summary>
     /// 兴奋的数值化 0.0 - 1.0
     /// </summary>
+    float m_temper = 0;
     public float temper
 	{
 		get { return m_temper; }
 		set { m_temper = Mathf.Clamp(value, 0, 1); }
 	}
-
-	float m_temper = 0;
-
+    
     /// <summary>
     /// 当前帧中的总得分波动值
     /// </summary>
@@ -62,7 +63,9 @@ public class ScoringManager : MonoBehaviour
 	}
 	private float m_scoreRate = 0;
 
-	//スコアの評価開始
+	/// <summary>
+    /// 得分系统开启
+    /// </summary>
 	public void BeginScoringSequence()
     {
 		m_scoringUnitSeeker.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
@@ -72,6 +75,8 @@ public class ScoringManager : MonoBehaviour
     {
 		m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
 		m_playerAction = GameObject.Find("PlayerAvator").GetComponent<PlayerAction>();
+
+        //-找到所有成员
 		m_bandMembers = GameObject.FindGameObjectsWithTag("BandMember");
 
 #if AUDIENCES
@@ -79,65 +84,72 @@ public class ScoringManager : MonoBehaviour
         m_audiences = GameObject.FindGameObjectsWithTag("Audience");
 #endif
 
+        //-找到所有的音符特效
         m_noteParticles = GameObject.FindGameObjectsWithTag("NoteParticle");
+
+        //-找到场景管理器
 		m_phaseManager = GameObject.Find("PhaseManager").GetComponent<PhaseManager>();
-		//GUIオブジェクトはInactiveな可能性があるので、Findで直接アクセスできない。
-		m_onPlayGUI    = m_phaseManager.guiList[1].GetComponent<OnPlayGUI>();
+		
+        //-找到主游戏逻辑的界面
+		m_onPlayGUI = m_phaseManager.guiList[1].GetComponent<OnPlayGUI>();
 
 #if UNITY_EDITOR
+        //-记录日志
         string sPath = "Assets/PlayLog/scoringLog.csv";
         m_logWriter = new StreamWriter(sPath);
 #endif
     }
-	public void Seek(float beatCount){
-		m_scoringUnitSeeker.Seek( beatCount );
+
+    /// <summary>
+    /// 直接跳到第几拍，调试用
+    /// </summary>
+    /// <param name="beatCount"></param>
+    public void Seek(float beatCount)
+    {
+		m_scoringUnitSeeker.Seek(beatCount);
 		m_previousHitIndex=-1;
 	}
-	// 一番近いActionInfoのインデックスを確認
-	public int	GetNearestPlayerActionInfoIndex(){
 
+	/// <summary>
+    /// 找到最近的谱面索引
+    /// </summary>
+    /// <returns></returns>
+	public int GetNearestPlayerActionInfoIndex()
+    {
 		SongInfo	song = m_musicManager.currentSongInfo;
 		int 		nearestIndex = 0;
 
-		if(m_scoringUnitSeeker.nextIndex == 0) {
-
-			// シーク位置が先頭だった場合、ひとつ前のマーカーは無いので比較しない.
+		if (m_scoringUnitSeeker.nextIndex == 0)//-如果目的位置是开头的话，没有前一个标记，所以不比较。
+        {		
 			nearestIndex = 0;
-
-		} else if(m_scoringUnitSeeker.nextIndex >= song.onBeatActionSequence.Count) {
-
-			// シーク位置が配列のサイズより大きいとき（最後のマーカーの時刻を過ぎていたとき）
-
+		}
+        else if(m_scoringUnitSeeker.nextIndex >= song.onBeatActionSequence.Count)//-当前索引的位置比序列的尺寸大的时候（过了最后的标记时间的时候）应该不会大于
+        {
+            Debug.Assert(m_scoringUnitSeeker.nextIndex > song.onBeatActionSequence.Count);
 			nearestIndex = song.onBeatActionSequence.Count - 1;
+		}
+        else//与前后的定时相比较
+        {
+            OnBeatActionInfo crnt_action = song.onBeatActionSequence[m_scoringUnitSeeker.nextIndex];//-当前位置
+			OnBeatActionInfo prev_action = song.onBeatActionSequence[m_scoringUnitSeeker.nextIndex - 1];//-前一个位置
 
-		} else {
+			float act_timing = m_playerAction.lastActionInfo.triggerBeatTiming;//-玩家在哪个拍子按下的
 
-			// 前後のタイミングとのずれを比較.
-
-			OnBeatActionInfo	crnt_action = song.onBeatActionSequence[m_scoringUnitSeeker.nextIndex];			// シーク位置.
-			OnBeatActionInfo	prev_action = song.onBeatActionSequence[m_scoringUnitSeeker.nextIndex - 1];		// シーク位置のひとつ前.
-
-			float				act_timing = m_playerAction.lastActionInfo.triggerBeatTiming;
-
-			if( crnt_action.triggerBeatTiming - act_timing < act_timing - prev_action.triggerBeatTiming) {
-
-				// シーク位置（m_scoringUnitSeeker.nextIndex）の方が近かった.
+			if (crnt_action.triggerBeatTiming - act_timing < act_timing - prev_action.triggerBeatTiming)//-如果是当前位置比较近
+            {
 				nearestIndex = m_scoringUnitSeeker.nextIndex;
-
-			} else {
-
-				// シーク位置のひとつ前（m_scoringUnitSeeker.nextIndex）の方が近かった.
+			}
+            else//-如果是前一个位置比较近
+            {
 				nearestIndex = m_scoringUnitSeeker.nextIndex - 1;
 			}
 		}
 
-		return(nearestIndex);
+		return (nearestIndex);
 	}
 
-	// Update is called once per frame
 	void Update ()
     {
-
 		m_additionalScore = 0;
 
 		float additionalTemper = 0;
@@ -146,18 +158,20 @@ public class ScoringManager : MonoBehaviour
 
 		if (m_musicManager.IsPlaying())
         {
-			float	delta_count = m_musicManager.beatCountFromStart - m_musicManager.previousBeatCountFromStart;
+			float delta_count = m_musicManager.beatCountFromStart - m_musicManager.previousBeatCountFromStart;//-当前帧跑了几个拍子
+            Debug.Assert(delta_count > 1);
 
 			m_scoringUnitSeeker.ProceedTime(delta_count);
+
 			// プレイヤーが入力したタイミングの直後、また直前（近い方）のマーカーの
 			// インデックスを取得する.
-			if (m_playerAction.currentPlayerAction != PlayerActionEnum.None)
+			if (m_playerAction.currentPlayerAction != PlayerActionEnum.None)//-如果这一拍是关键拍=
             {
 				int nearestIndex = GetNearestPlayerActionInfoIndex();
 
 				SongInfo song = m_musicManager.currentSongInfo;
 
-				OnBeatActionInfo marker_act = song.onBeatActionSequence[nearestIndex];
+				OnBeatActionInfo marker_act = song.onBeatActionSequence[nearestIndex];//-找到最近的谱面
 				OnBeatActionInfo player_act = m_playerAction.lastActionInfo;
 
 				m_lastResult.timingError = player_act.triggerBeatTiming - marker_act.triggerBeatTiming;
@@ -179,7 +193,6 @@ public class ScoringManager : MonoBehaviour
 
 				if (m_additionalScore > 0)
                 {
-
 					// 入力成功.
 
 					// 同じマーカーを二回判定してしまわないよう、最後に判定された
@@ -225,25 +238,25 @@ public class ScoringManager : MonoBehaviour
 	}
 
 	// 入力の結果を判定する（うまい／へた／ミス）.
-	float CheckScore(int actionInfoIndex, float timingError, out float heatup){
-
+	float CheckScore(int actionInfoIndex, float timingError, out float heatup)
+    {
 		float	score = 0;
 
 		timingError = Mathf.Abs(timingError);
 
-		do {
-
+		do
+        {
 			// Good の範囲より大きいとき → ミス.
-			if(timingError >= timingErrorToleranceGood) {
-
+			if(timingError >= timingErrorToleranceGood)
+            {
 				score  = 0.0f;
 				heatup = 0;
 				break;
 			}
 			
 			// Good と Excellent の間のとき → Good.
-			if(timingError >= timingErrorTorelanceExcellent) {
-
+			if(timingError >= timingErrorTorelanceExcellent)
+            {
 				score  = goodScore;
 				heatup = goodHeatupRate;
 				break;
@@ -264,7 +277,8 @@ public class ScoringManager : MonoBehaviour
 #if UNITY_EDITOR
 		if (m_scoringUnitSeeker.isJustPassElement)
         {
-			if(outScoringLog){
+			if (outScoringLog)
+            {
 				OnBeatActionInfo onBeatActionInfo
 					= m_musicManager.currentSongInfo.onBeatActionSequence[m_scoringUnitSeeker.nextIndex-1];
 				m_logWriter.WriteLine(
@@ -277,12 +291,18 @@ public class ScoringManager : MonoBehaviour
 		}
 #endif
 	}
-	private void	OnScoreAdded(int nearestIndex)
+
+    /// <summary>
+    /// 增加分数了
+    /// </summary>
+    /// <param name="nearestIndex">最近的谱面</param>
+	private void OnScoreAdded(int nearestIndex)
     {
 		SongInfo song = m_musicManager.currentSongInfo;
 		if (song.onBeatActionSequence[nearestIndex].playerActionType == PlayerActionEnum.Jump
-			&& temper > temperThreshold)
+			&& temper > temperThreshold)//-当行为是跳跃的时候，并且是非常兴奋的时候，并且成功输入的时候
 		{
+            //-所有乐队成员跳一下
 			foreach (GameObject bandMember in m_bandMembers)
 			{
 				bandMember.GetComponent<BandMember>().Jump();
@@ -295,13 +315,14 @@ public class ScoringManager : MonoBehaviour
 				audience.GetComponent<Audience>().Jump();
 			}
 #endif
-
+            //-所有的音符效果,激发一下
             foreach (GameObject noteParticle in m_noteParticles)
 			{
 				noteParticle.GetComponent<ParticleSystem>().Emit(20);
 			}
 		}
-		else if (song.onBeatActionSequence[nearestIndex].playerActionType == PlayerActionEnum.HeadBanging)
+		else if (song.onBeatActionSequence[nearestIndex].playerActionType 
+            == PlayerActionEnum.HeadBanging)//-如果只是headBanging，那乐队成员动一下
 		{
 			foreach (GameObject bandMember in m_bandMembers)
 			{
@@ -309,8 +330,9 @@ public class ScoringManager : MonoBehaviour
 			}
 		}
 	}
+
 	// デバッグ用ログ出力.
-	private void	DebugWriteLogPost(bool hitBefore, bool hitAfter)
+	private void DebugWriteLogPost(bool hitBefore, bool hitAfter)
 	{
 #if UNITY_EDITOR
 		if(outScoringLog){
@@ -338,13 +360,21 @@ public class ScoringManager : MonoBehaviour
 #endif
 	}
 
+    /// <summary>
+    /// 得分的序列计数器
+    /// </summary>
 	SequenceSeeker<OnBeatActionInfo> m_scoringUnitSeeker
 		= new SequenceSeeker<OnBeatActionInfo>();
+
 	float			m_additionalScore;
 	MusicManager	m_musicManager;
 	PlayerAction	m_playerAction;
 	OnPlayGUI		m_onPlayGUI;
 	int				m_previousHitIndex = -1;
+
+    /// <summary>
+    /// 所有成员
+    /// </summary>
 	GameObject[]	m_bandMembers;
 
 #if AUDIENCES
@@ -354,6 +384,9 @@ public class ScoringManager : MonoBehaviour
 	GameObject[]    m_audiences;
 #endif
 
+    /// <summary>
+    /// 所有的音符效果
+    /// </summary>
     GameObject[]    m_noteParticles;
 
     /// <summary>
@@ -362,9 +395,10 @@ public class ScoringManager : MonoBehaviour
     TextWriter		m_logWriter;
 
 	PhaseManager m_phaseManager;
-	// プレイヤーの入力の結果.
-	public struct Result {
 
+	// プレイヤーの入力の結果.
+	public struct Result
+    {
 		public float	timingError;		// タイミングのずれ（マイナス…早い　プラス…遅い）
 		public int		markerIndex;		// 比較されたマーカーのインデックス
 	};

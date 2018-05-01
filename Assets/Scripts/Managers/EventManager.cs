@@ -75,8 +75,6 @@ public class EventManager : MonoBehaviour
 		}
 	}
 
-	//private variables
-
 	MusicManager m_musicManager;
 
 	// シークユニット.

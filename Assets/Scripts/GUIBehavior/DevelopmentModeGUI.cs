@@ -33,7 +33,7 @@ public class DevelopmentModeGUI : MonoBehaviour
     private struct SeekSlider
     {
         /// <summary>
-        /// 拖动？
+        /// 是否在拖动滑动条
         /// </summary>
 		public bool is_now_dragging;
 
@@ -95,51 +95,58 @@ public class DevelopmentModeGUI : MonoBehaviour
 		//-滑动进度条的控制
 		SeekSliderControl();
 
+        //-调试信息，显示当前的拍子数和总共的拍子数
 		GUI.TextArea(
 			new Rect( 250, 100, 200, 40 ),
 			((int)m_musicManager.beatCountFromStart).ToString() + "/" + ((int)m_musicManager.length).ToString()
 		);
 
-		// シーク中だけ、シークバー上の位置を表示する.
+		//-调试信息，显示滑动条当前的拍子数，只在拖动的时候显示
 		if(this.m_seekSlider.is_now_dragging)
         {
-			GUI.Label(new Rect( 252, 120, 200, 40 ), ((int)this.m_seekSlider.dragging_poisition).ToString());
+			GUI.Label(new Rect(252, 120, 200, 40), ((int)this.m_seekSlider.dragging_poisition).ToString());
 		}
 
-		//
+		//结束按钮，按了重启
 		if( GUI.Button( new Rect( (Screen.width - 150)/2.0f, 350, 150, 40 ), "End" ) )
         {
 			GameObject.Find("PhaseManager").GetComponent<PhaseManager>().SetPhase("Restart");
 		}
 
-		// 直前の入力のタイミングがどれくらいずれていたかを表示する.
-		GUI.Label(new Rect( 5, 400, 150, 40 ),"Input Gap:" + m_scoringManager.m_lastResult.timingError);
+        //显示之前输入的定时偏离了多少。
+        GUI.Label(new Rect( 5, 400, 150, 40 )
+            , "Input Gap:" + m_scoringManager.m_lastResult.timingError);
 
-		GUI.Label(
-			new Rect( 5, 420, 150, 40 ),
-			"Previous Input:"
-			+ m_playerAction.lastActionInfo.triggerBeatTiming.ToString());
-		GUI.Label(new Rect( 5, 440, 150, 40 ),
-			"Nearest(beat):"
-			+ m_musicManager.currentSongInfo.onBeatActionSequence[m_scoringManager.m_lastResult.markerIndex].triggerBeatTiming.ToString());
-		GUI.Label(
-			new Rect( 150, 440, 150, 40 ),
-			"Nearest(index):"
+        //显示上一次是在哪个拍子按下了
+		GUI.Label(new Rect( 5, 420, 150, 40 )
+            , "Previous Input:"	+ m_playerAction.lastActionInfo.triggerBeatTiming.ToString());
+
+		GUI.Label(new Rect( 5, 440, 150, 40 )
+            , "Nearest(beat):"	
+            + m_musicManager.currentSongInfo.onBeatActionSequence[m_scoringManager.m_lastResult.markerIndex].triggerBeatTiming.ToString());
+
+		GUI.Label(new Rect( 150, 440, 150, 40 )
+            , "Nearest(index):"
 			+ m_musicManager.currentSongInfo.onBeatActionSequence[m_scoringManager.m_lastResult.markerIndex].line_number.ToString());
-		
-		// 関連するパート名を表示
-		if( m_musicManager.currentSongInfo.onBeatActionRegionSequence.Count>0 ){
-			//現在のパートのインデックスを確認
-			int currentReginIndex = m_actionInfoRegionSeeker.nextIndex - 1;
-			if (currentReginIndex < 0)
-				currentReginIndex = 0;
-			//前回入力時のパートを表示
-			if (m_playerAction.currentPlayerAction != PlayerActionEnum.None)
+
+        // 显示相关的部分名称
+        if ( m_musicManager.currentSongInfo.onBeatActionRegionSequence.Count>0 )
+        {
+            //确认当前部分的索引
+            int currentReginIndex = m_actionInfoRegionSeeker.nextIndex - 1;
+            if (currentReginIndex < 0)
+            {
+                currentReginIndex = 0;
+            }
+
+            //显示上次输入时的部分
+            if (m_playerAction.currentPlayerAction != PlayerActionEnum.None)
 			{	
 				previousHitRegionName
 					= m_musicManager.currentSongInfo.onBeatActionRegionSequence[currentReginIndex].name;
 			}
 			GUI.Label(new Rect(150, 420, 250, 40), "region ...:" + previousHitRegionName);
+
             //显示当前部分
             GUI.Label(new Rect(5, 460, 150, 40), "Current:" + m_musicManager.beatCountFromStart);
 			GUI.Label(new Rect(150, 460, 250, 40), "region ...:" + m_musicManager.currentSongInfo.onBeatActionRegionSequence[currentReginIndex].name);

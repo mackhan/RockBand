@@ -79,7 +79,7 @@ public class SimpleActionMotor : MonoBehaviour
 	void Update()
 	{
         //-设置标记，判断这帧是否跳动，感觉没用
-		m_isJustJump=false;
+		m_isJustJump = false;
 		if (m_isJumpTriggered)
         {
 			m_isJustJump = true;

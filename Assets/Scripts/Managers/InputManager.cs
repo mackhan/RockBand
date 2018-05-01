@@ -27,7 +27,6 @@ public class InputManager : MonoBehaviour
 		Application.targetFrameRate = 60;
 	}
 
-	// Use this for initialization
 	void Start ()
     {
 		m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
@@ -35,7 +34,6 @@ public class InputManager : MonoBehaviour
 		m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
 	}
 
-	// Update is called once per frame
 	void Update ()
     {
         if (Input.GetMouseButtonDown(0) && m_musicManager.IsPlaying())//-如果有操作并且音乐正在播放

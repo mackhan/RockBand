@@ -36,7 +36,7 @@ public class PlayerAction : MonoBehaviour
 	}
 
     /// <summary>
-    /// 玩家最后的动作
+    /// 玩家在哪个拍子按下来了
     /// </summary>
     OnBeatActionInfo m_lastActionInfo = new OnBeatActionInfo();
     public OnBeatActionInfo lastActionInfo
@@ -67,6 +67,7 @@ public class PlayerAction : MonoBehaviour
     {
 		m_newPlayerAction = actionType;
 
+        //获取当前在哪个拍子按下来了
 		OnBeatActionInfo actionInfo = new OnBeatActionInfo();
 		actionInfo.triggerBeatTiming = m_musicManager.beatCountFromStart;
 		actionInfo.playerActionType = m_newPlayerAction;
@@ -74,7 +75,7 @@ public class PlayerAction : MonoBehaviour
 
 #if PLAYER
         //-播放相应的动画
-        if(actionType == PlayerActionEnum. HeadBanging)
+        if(actionType == PlayerActionEnum.HeadBanging)
         {
 			gameObject.GetComponent<SimpleSpriteAnimation>().BeginAnimation(2, 1, false);
 		}
