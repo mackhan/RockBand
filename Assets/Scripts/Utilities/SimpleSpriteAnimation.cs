@@ -207,16 +207,16 @@ public class SimpleSpriteAnimation: MonoBehaviour
     {
         Material kMaterial = GetComponent<Renderer>().material;
         m_kTexture = kMaterial.GetTexture("_MainTex");
-        m_kScale = kMaterial.mainTextureScale;
         m_kScale = new Vector2(1.0f / divisionCountX, 1.0f / divisionCountY);
-	}
+        kMaterial.mainTextureScale = m_kScale;
+    }
 	
 	void Update ()
     {
-		m_frameElapsedTime = Time.deltaTime;
+		m_frameElapsedTime += Time.deltaTime;
 		if (animationFrameRateSecond < m_frameElapsedTime)//-如果经过的时间超过了动画速率播放一次
         {
-			m_frameElapsedTime=0;
+			m_frameElapsedTime = 0;
 			AdvanceFrame();
 		}
 	}

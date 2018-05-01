@@ -80,12 +80,10 @@ public class EventManager : MonoBehaviour
 	MusicManager m_musicManager;
 
 	// シークユニット.
-	SequenceSeeker<StagingDirection> m_seekUnit
-		= new SequenceSeeker<StagingDirection>();
+	SequenceSeeker<StagingDirection> m_seekUnit	= new SequenceSeeker<StagingDirection>();
 
 	// 実行中のイベント.
-	LinkedList<StagingDirection> m_activeEvents
-		= new LinkedList<StagingDirection>();
+	LinkedList<StagingDirection> m_activeEvents	= new LinkedList<StagingDirection>();
 
 	int		m_previousIndex=0;			// 直前のシーク位置.
 }

@@ -6,38 +6,84 @@ using System.Collections;
 /// </summary>
 public class DevelopmentModeGUI : MonoBehaviour
 {
-	//演奏開始時の処理
-	public void BeginVisualization()
+    /// <summary>
+    /// ？？？
+    /// </summary>
+    SequenceSeeker<SequenceRegion> m_actionInfoRegionSeeker = new SequenceSeeker<SequenceRegion>();
+
+    MusicManager m_musicManager;
+    ScoringManager m_scoringManager;
+    EventManager m_eventManager;
+
+    /// <summary>
+    /// 游戏主逻辑的对象
+    /// </summary>
+    OnPlayGUI m_onPlayGUI;
+
+    /// <summary>
+    /// 玩家的对象
+    /// </summary>
+    PlayerAction m_playerAction;
+
+    string previousHitRegionName = "";
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private struct SeekSlider
+    {
+        /// <summary>
+        /// 拖动？
+        /// </summary>
+		public bool is_now_dragging;
+
+        /// <summary>
+        /// 拖动位置
+        /// </summary>
+        public float dragging_poisition;
+
+        /// <summary>
+        /// 鼠标是否按下了. Input . GetMoug Button（0）的结果
+        /// 因为GUI在后面处理，所以保存这个值
+        /// </summary>
+        public bool is_button_down;
+    };
+    private SeekSlider m_seekSlider;
+
+    /// <summary>
+    /// 开发版的界面初始化
+    /// </summary>
+    public void BeginVisualization()
 	{
 		m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
 		m_actionInfoRegionSeeker.SetSequence(m_musicManager.currentSongInfo.onBeatActionRegionSequence);
 		m_actionInfoRegionSeeker.Seek(0);
 
 	}
+
 	public void Seek(float beatCount)
 	{
 		m_actionInfoRegionSeeker.Seek(beatCount);
 	}
 
-	// Use this for initialization
 	void Start ()
     {
 		m_musicManager=GameObject.Find("MusicManager").GetComponent<MusicManager>();
 		m_scoringManager=GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
 		m_eventManager=GameObject.Find("EventManager").GetComponent<EventManager>();
-		//GUIオブジェクトはInactiveな可能性があるので、Findで直接アクセスできない。
-		m_onPlayGUI = GameObject.Find("PhaseManager").GetComponent<PhaseManager>().guiList[1].GetComponent<OnPlayGUI>();
-		m_playerAction=GameObject.Find("PlayerAvator").GetComponent<PlayerAction>();
-		m_seekSlider.is_now_dragging    = false;
+
+        //因为GUI对象有Inactie的可能性，所以不能在Find直接访问。
+        m_onPlayGUI = GameObject.Find("PhaseManager").GetComponent<PhaseManager>().guiList[1].GetComponent<OnPlayGUI>();
+		m_playerAction = GameObject.Find("PlayerAvator").GetComponent<PlayerAction>();
+		m_seekSlider.is_now_dragging = false;
 		m_seekSlider.dragging_poisition = 0.0f;
 	}
 
 	// Update is called once per frame
 	void Update ()
     {
-		m_actionInfoRegionSeeker.ProceedTime(
-			m_musicManager.beatCountFromStart - m_musicManager.previousBeatCountFromStart
-		);
+		m_actionInfoRegionSeeker.ProceedTime(m_musicManager.beatCountFromStart 
+            - m_musicManager.previousBeatCountFromStart);
 
 		m_seekSlider.is_button_down = Input.GetMouseButton(0);
 	}
@@ -46,7 +92,7 @@ public class DevelopmentModeGUI : MonoBehaviour
     {
 		GUI.Label(new Rect( 5, 100, 150, 40 ),"Current");
 
-		// シークスライダーの制御.
+		//-滑动进度条的控制
 		SeekSliderControl();
 
 		GUI.TextArea(
@@ -57,7 +103,6 @@ public class DevelopmentModeGUI : MonoBehaviour
 		// シーク中だけ、シークバー上の位置を表示する.
 		if(this.m_seekSlider.is_now_dragging)
         {
-
 			GUI.Label(new Rect( 252, 120, 200, 40 ), ((int)this.m_seekSlider.dragging_poisition).ToString());
 		}
 
@@ -102,66 +147,47 @@ public class DevelopmentModeGUI : MonoBehaviour
 
 	}
 
-	// シークスライダーの制御.
-	private void	SeekSliderControl()
+    /// <summary>
+    /// 滑动进度条的控制
+    /// </summary>
+    private void SeekSliderControl()
 	{
-		Rect	slider_rect = new Rect( (Screen.width - 100)/2.0f, 100, 130, 40 );
+		Rect slider_rect = new Rect( (Screen.width - 100)/2.0f, 100, 130, 40 );
 
-		if(!m_seekSlider.is_now_dragging) {
+		if (!m_seekSlider.is_now_dragging)//-如果没在拖动
+        {
+			float new_position = GUI.HorizontalSlider(slider_rect
+                , m_musicManager.beatCountFromStart
+                , 0
+                , m_musicManager.length);
 
-			float	new_position 
-				= GUI.HorizontalSlider( slider_rect, m_musicManager.beatCountFromStart, 0, m_musicManager.length );
-
-			// ドラッグ開始.
-			if(new_position != m_musicManager.beatCountFromStart) {
-
+            //-如果滑动条的位置和当前的拍子不一样，说明开始拖动
+            if (new_position != m_musicManager.beatCountFromStart)
+            {
 				m_seekSlider.dragging_poisition = new_position;
 				m_seekSlider.is_now_dragging = true;
 			}
+		}
+        else//-如果在拖动，则滑动条的位置就是当前拖动的位置
+        {
+			m_seekSlider.dragging_poisition = GUI.HorizontalSlider(slider_rect
+                , m_seekSlider.dragging_poisition
+                , 0
+                , m_musicManager.length);
 
-
-		} else {
-
-			m_seekSlider.dragging_poisition 
-				= GUI.HorizontalSlider( slider_rect, m_seekSlider.dragging_poisition, 0, m_musicManager.length );
-
-            // 释放按钮（拖动完成）
+            // 释放按钮（拖动完成）设置所有的控件到当前位置
 			if (!m_seekSlider.is_button_down)
             {
-				m_musicManager.Seek( m_seekSlider.dragging_poisition );
-
-				m_eventManager.Seek( m_seekSlider.dragging_poisition );
-				m_scoringManager.Seek( m_seekSlider.dragging_poisition );
-				m_onPlayGUI.Seek( m_seekSlider.dragging_poisition );
+				m_musicManager.Seek(m_seekSlider.dragging_poisition);
+				m_eventManager.Seek(m_seekSlider.dragging_poisition);
+				m_scoringManager.Seek(m_seekSlider.dragging_poisition);
+				m_onPlayGUI.Seek(m_seekSlider.dragging_poisition);
 
 				Seek(m_seekSlider.dragging_poisition);
 
-				// ドラッグ終了.
+				//-设置滑动结束
 				m_seekSlider.is_now_dragging = false;
 			}
 		}
 	}
-
-
-	SequenceSeeker<SequenceRegion> m_actionInfoRegionSeeker = new SequenceSeeker<SequenceRegion>();
-	MusicManager 	m_musicManager;
-	ScoringManager	m_scoringManager;
-	EventManager	m_eventManager;
-	OnPlayGUI		m_onPlayGUI;
-	PlayerAction	m_playerAction;
-	string	previousHitRegionName = "";
-
-	// シークスライダー
-	private struct SeekSlider {
-
-		public bool		is_now_dragging;		// ドラッグ中？.
-		public float	dragging_poisition;		// ドラッグ位置.
-		public bool		is_button_down;			// マウスの左ボタン.Input.GetMouseButton(0) の結果
-												// ドキュメントに
-												// Note also that the Input flags are not reset until "Update()", 
-												// so its suggested you make all the Input Calls in the Update Loop
-												// とあるので、念のため（実際には大丈夫っぽい？）.
-	};
-	private SeekSlider	m_seekSlider;
-
 }

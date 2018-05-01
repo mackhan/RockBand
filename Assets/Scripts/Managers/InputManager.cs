@@ -12,10 +12,16 @@ public class InputManager : MonoBehaviour
     /// </summary>
     MusicManager m_musicManager;
 
+    /// <summary>
+    /// 玩家的对象
+    /// </summary>
     PlayerAction m_playerAction;
+
+    /// <summary>
+    /// 音乐管理器
+    /// </summary>
     ScoringManager m_scoringManager;
-
-
+    
     void Awake()
     {
 		Application.targetFrameRate = 60;
@@ -24,9 +30,9 @@ public class InputManager : MonoBehaviour
 	// Use this for initialization
 	void Start ()
     {
-		m_musicManager=GameObject.Find("MusicManager").GetComponent<MusicManager>();
-		m_playerAction=GameObject.Find("PlayerAvator").GetComponent<PlayerAction>();
-		m_scoringManager=GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
+		m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
+		m_playerAction = GameObject.Find("PlayerAvator").GetComponent<PlayerAction>();
+		m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
 	}
 
 	// Update is called once per frame

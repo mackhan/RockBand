@@ -72,7 +72,9 @@ public class PlayerAction : MonoBehaviour
 		actionInfo.playerActionType = m_newPlayerAction;
 		m_lastActionInfo = actionInfo;
 
-		if(actionType == PlayerActionEnum. HeadBanging)
+#if PLAYER
+        //-播放相应的动画
+        if(actionType == PlayerActionEnum. HeadBanging)
         {
 			gameObject.GetComponent<SimpleSpriteAnimation>().BeginAnimation(2, 1, false);
 		}
@@ -81,5 +83,6 @@ public class PlayerAction : MonoBehaviour
 			gameObject.GetComponent<SimpleActionMotor>().Jump();
 			gameObject.GetComponent<SimpleSpriteAnimation>().BeginAnimation(1, 1, false);
 		}
+#endif
 	}
 }

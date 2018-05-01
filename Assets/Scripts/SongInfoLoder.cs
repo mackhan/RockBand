@@ -59,12 +59,14 @@ public class SongInfoLoader
 			}
 		}
 	}
-	private void ReadCSV_StagingDirection( System.IO.TextReader reader ){
+	private void ReadCSV_StagingDirection(System.IO.TextReader reader)
+    {
 		string line;
 		float totalBeatCount=0;
 		float repeatPosition=0;
 		List<StagingDirection> sequence=new List<StagingDirection>();
-		while( (line = reader.ReadLine()) != null   ){
+		while ((line = reader.ReadLine()) != null)
+        {
 			string[] lineCells = line.Split(',');
 			switch( lineCells[0] ){
 			case "regionParameters":

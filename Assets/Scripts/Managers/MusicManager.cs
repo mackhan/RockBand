@@ -78,6 +78,11 @@ public class MusicManager : MonoBehaviour
         //-播放时始终检查歌曲的播放位置
         if (m_audioSource.isPlaying)
 		{
+            if (m_currentSongInfo == null)
+            {
+                Debug.LogError("m_currentSongInfo == null");
+                return;
+            }
 			m_previousBeatCountFromStart = m_beatCountFromStart;
 			m_beatCountFromStart = m_audioSource.time * m_currentSongInfo.beatPerSecond;//-计算当前播放到第几拍
 			m_isPlayPreviousFrame = true;

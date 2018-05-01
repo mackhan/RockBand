@@ -60,6 +60,56 @@ public class PhaseManager : MonoBehaviour
 	}
 
     /// <summary>
+    /// 游戏开始的逻辑
+    /// </summary>
+    /// <param name="_bDevelopment"></param>
+    void Play(bool _bDevelopment)
+    {
+        DeactiveateAllGUI();
+        ActivateGUI("OnPlayGUI");
+        if (_bDevelopment)
+        {
+            ActivateGUI("DevelopmentModeGUI");
+        }
+
+        //从csv读取歌曲数据
+        TextReader textReader = new StringReader(
+                System.Text.Encoding.UTF8.GetString((Resources.Load("SongInfo/songInfoCSV") as TextAsset).bytes)
+            );
+        SongInfo songInfo = new SongInfo();
+        SongInfoLoader loader = new SongInfoLoader();
+        loader.songInfo = songInfo;
+        loader.ReadCSV(textReader);
+        m_musicManager.currentSongInfo = songInfo;
+
+        //-三波观众开始动起来
+        foreach (GameObject audience in GameObject.FindGameObjectsWithTag("Audience"))
+        {
+            audience.GetComponent<SimpleActionMotor>().isWaveBegin = true;
+        }
+
+        //各种效果动画（舞台演出等）开始
+        GameObject.Find("EventManager").GetComponent<EventManager>().BeginEventSequence();
+
+        //得分评价开始
+        m_scoringManager.BeginScoringSequence();
+
+        //节奏序列绘制开始
+        OnPlayGUI onPlayGUI = GameObject.Find("OnPlayGUI").GetComponent<OnPlayGUI>();
+        onPlayGUI.BeginVisualization();
+        onPlayGUI.isDevelopmentMode = _bDevelopment;
+
+        //-绘制开发版的特殊界面
+        if (_bDevelopment)
+        {
+            GameObject.Find("DevelopmentModeGUI").GetComponent<DevelopmentModeGUI>().BeginVisualization();
+        }
+
+        //开始播放音乐
+        m_musicManager.PlayMusicFromStart();
+    }
+
+    /// <summary>
     /// 设置状态
     /// </summary>
     /// <param name="nextPhase"></param>
@@ -79,77 +129,11 @@ public class PhaseManager : MonoBehaviour
 		//	break;
 
 		case "Play"://主游戏
-            {
-			    DeactiveateAllGUI();
-			    ActivateGUI("OnPlayGUI");
-
-			    //从csv读取歌曲数据
-			    TextReader textReader = new StringReader(
-					    System.Text.Encoding.UTF8.GetString((Resources.Load("SongInfo/songInfoCSV") as TextAsset).bytes )
-				    );
-			    SongInfo songInfo = new SongInfo();
-			    SongInfoLoader loader = new SongInfoLoader();
-			    loader.songInfo = songInfo;
-			    loader.ReadCSV(textReader);
-			    m_musicManager.currentSongInfo = songInfo;
-
-                //-三波观众开始动起来
-			    foreach (GameObject audience in GameObject.FindGameObjectsWithTag("Audience"))
-			    {
-				    audience.GetComponent<SimpleActionMotor>().isWaveBegin = true;
-			    }
-
-                //各种效果动画（舞台演出等）开始
-                GameObject.Find("EventManager").GetComponent<EventManager>().BeginEventSequence();
-
-                //得分评价开始
-                m_scoringManager.BeginScoringSequence();
-
-                //节奏序列绘制开始
-                OnPlayGUI onPlayGUI = GameObject.Find("OnPlayGUI").GetComponent<OnPlayGUI>();
-			    onPlayGUI.BeginVisualization();
-			    onPlayGUI.isDevelopmentMode = false;
-
-			    //开始播放音乐
-			    m_musicManager.PlayMusicFromStart();
-		    }
+            Play(false);
 			break;
 
 		case "DevelopmentMode":
-		    {
-			    DeactiveateAllGUI();
-			    ActivateGUI("DevelopmentModeGUI");
-			    ActivateGUI("OnPlayGUI");
-
-			    //csvから曲データ読み込み
-			    TextReader textReader
-				    = new StringReader(
-					    System.Text.Encoding.UTF8.GetString((Resources.Load("SongInfo/songInfoCSV") as TextAsset).bytes )
-				    );
-			    SongInfo songInfo = new SongInfo();
-			    SongInfoLoader loader=new SongInfoLoader();
-			    loader.songInfo=songInfo;
-			    loader.ReadCSV(textReader);
-			    m_musicManager.currentSongInfo = songInfo;
-
-			    foreach (GameObject audience in GameObject.FindGameObjectsWithTag("Audience"))
-			    {
-				    audience.GetComponent<SimpleActionMotor>().isWaveBegin = true;
-			    }
-			    //イベント(ステージ演出等)開始
-			    GameObject.Find("EventManager").GetComponent<EventManager>().BeginEventSequence();
-			    //スコア評価開始
-			    m_scoringManager.BeginScoringSequence();
-			    //リズムシーケンス描画開始
-			    OnPlayGUI onPlayGUI = GameObject.Find("OnPlayGUI").GetComponent<OnPlayGUI>();
-			    onPlayGUI.BeginVisualization();
-			    onPlayGUI.isDevelopmentMode = true;
-			    //developモード専用GUIシーケンス描画開始
-			    GameObject.Find("DevelopmentModeGUI").GetComponent<DevelopmentModeGUI>().BeginVisualization();
-
-                //开始播放音乐
-                m_musicManager.PlayMusicFromStart();
-                }
+            Play(true);
 			break;
 
 		case "GameOver":
@@ -157,8 +141,9 @@ public class PhaseManager : MonoBehaviour
 			    DeactiveateAllGUI();
 			    ActivateGUI("ShowResultGUI");
 			    ShowResultGUI showResult = GameObject.Find("ShowResultGUI").GetComponent<ShowResultGUI>();
-			    //スコア依存のメッセージを表示
-			    Debug.Log( m_scoringManager.scoreRate );
+
+			    //-显示结算结果
+			    Debug.Log(m_scoringManager.scoreRate);
 			    Debug.Log(ScoringManager.failureScoreRate);
 			    if (m_scoringManager.scoreRate <= ScoringManager.failureScoreRate)
 			    {

@@ -73,13 +73,20 @@ public class ScoringManager : MonoBehaviour
 		m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
 		m_playerAction = GameObject.Find("PlayerAvator").GetComponent<PlayerAction>();
 		m_bandMembers = GameObject.FindGameObjectsWithTag("BandMember");
-		m_audiences = GameObject.FindGameObjectsWithTag("Audience");
-		m_noteParticles = GameObject.FindGameObjectsWithTag("NoteParticle");
+
+#if AUDIENCES
+        //-找到所有的观众
+        m_audiences = GameObject.FindGameObjectsWithTag("Audience");
+#endif
+
+        m_noteParticles = GameObject.FindGameObjectsWithTag("NoteParticle");
 		m_phaseManager = GameObject.Find("PhaseManager").GetComponent<PhaseManager>();
 		//GUIオブジェクトはInactiveな可能性があるので、Findで直接アクセスできない。
 		m_onPlayGUI    = m_phaseManager.guiList[1].GetComponent<OnPlayGUI>();
-#if UNITY_EDITOR 
-        m_logWriter = new StreamWriter("Assets/PlayLog/scoringLog.csv");
+
+#if UNITY_EDITOR
+        string sPath = "Assets/PlayLog/scoringLog.csv";
+        m_logWriter = new StreamWriter(sPath);
 #endif
     }
 	public void Seek(float beatCount){
@@ -270,7 +277,8 @@ public class ScoringManager : MonoBehaviour
 		}
 #endif
 	}
-	private void	OnScoreAdded(int nearestIndex){
+	private void	OnScoreAdded(int nearestIndex)
+    {
 		SongInfo song = m_musicManager.currentSongInfo;
 		if (song.onBeatActionSequence[nearestIndex].playerActionType == PlayerActionEnum.Jump
 			&& temper > temperThreshold)
@@ -279,11 +287,16 @@ public class ScoringManager : MonoBehaviour
 			{
 				bandMember.GetComponent<BandMember>().Jump();
 			}
-			foreach (GameObject audience in m_audiences)
+
+#if AUDIENCES
+            //-所有观众跳一下
+            foreach (GameObject audience in m_audiences)
 			{
 				audience.GetComponent<Audience>().Jump();
 			}
-			foreach (GameObject noteParticle in m_noteParticles)
+#endif
+
+            foreach (GameObject noteParticle in m_noteParticles)
 			{
 				noteParticle.GetComponent<ParticleSystem>().Emit(20);
 			}
@@ -325,7 +338,6 @@ public class ScoringManager : MonoBehaviour
 #endif
 	}
 
-	//Private
 	SequenceSeeker<OnBeatActionInfo> m_scoringUnitSeeker
 		= new SequenceSeeker<OnBeatActionInfo>();
 	float			m_additionalScore;
@@ -334,9 +346,21 @@ public class ScoringManager : MonoBehaviour
 	OnPlayGUI		m_onPlayGUI;
 	int				m_previousHitIndex = -1;
 	GameObject[]	m_bandMembers;
+
+#if AUDIENCES
+    /// <summary>
+    /// 所有的观众 
+    /// </summary>
 	GameObject[]    m_audiences;
-	GameObject[]    m_noteParticles;
+#endif
+
+    GameObject[]    m_noteParticles;
+
+    /// <summary>
+    /// 日志记录
+    /// </summary>
     TextWriter		m_logWriter;
+
 	PhaseManager m_phaseManager;
 	// プレイヤーの入力の結果.
 	public struct Result {

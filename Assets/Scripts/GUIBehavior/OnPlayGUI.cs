@@ -92,6 +92,21 @@ public class OnPlayGUI : MonoBehaviour
 	public GUISkin guiSkin;
 
     /// <summary>
+    /// 时间先进的查找单位（显示结束位置）。
+    /// </summary>
+    SequenceSeeker<OnBeatActionInfo> m_seekerFront = new SequenceSeeker<OnBeatActionInfo>();
+
+    /// <summary>
+    /// 寻找单位（显示开始位置），在后面的时间。 
+    /// </summary>
+    SequenceSeeker<OnBeatActionInfo> m_seekerBack = new SequenceSeeker<OnBeatActionInfo>();
+
+    MusicManager m_musicManager;
+    ScoringManager m_scoringManager;
+    GameObject m_playerAvator;
+    Texture messageTexture;
+
+    /// <summary>
     /// PlayUI的初始化
     /// </summary>
 	public void BeginVisualization()
@@ -117,6 +132,7 @@ public class OnPlayGUI : MonoBehaviour
 		m_rythmHitEffectCountDown = rythmHitEffectShowFrameDuration;
 		m_messageShowCountDown = messatShowFrameDuration;
 
+        //-根据操作播放音效，这里好坏的音效放在了角色的身上
         AudioClip kAudioClip;
         PlayerAction kPlayerAction = m_playerAvator.GetComponent<PlayerAction>();
         if (score < 0)
@@ -135,7 +151,7 @@ public class OnPlayGUI : MonoBehaviour
 			messageTexture = messageTexture_Best;
 		}
         
-        //-播放Best，Good，bad的音效
+        //-播放Best，Good，bad的音效，播放器也放在主角的身上
         AudioSource kAudioSource = m_playerAvator.GetComponent<AudioSource>();
         kAudioSource.clip = kAudioClip;
         kAudioSource.Play();
@@ -295,15 +311,4 @@ public class OnPlayGUI : MonoBehaviour
 			}
 		}
 	}
-    
-    // 时间先进的查找单位（显示结束位置）。
-    SequenceSeeker<OnBeatActionInfo> m_seekerFront = new SequenceSeeker<OnBeatActionInfo>();
-
-    // 寻找单位（显示开始位置），在后面的时间。 
-    SequenceSeeker<OnBeatActionInfo> m_seekerBack = new SequenceSeeker<OnBeatActionInfo>();
-
-	MusicManager	m_musicManager;
-	ScoringManager	m_scoringManager;
-	GameObject      m_playerAvator;
-	Texture 		messageTexture;
 }
