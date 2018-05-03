@@ -41,6 +41,7 @@ public class OnPlayGUI : MonoBehaviour
     /// 兴奋度的血条
     /// </summary>
 	public Texture temperBar;
+
 	public Texture temperBarFrame;
 
     /// <summary>
@@ -52,6 +53,11 @@ public class OnPlayGUI : MonoBehaviour
     /// 转换成提前多少个像素
     /// </summary>
     float m_pixelsPerBeats = Screen.width * 1.0f / markerEnterOffset;
+
+    /// <summary>
+    /// 转换成提前多少个像素
+    /// </summary>
+    float m_pixelsPerBeatsY = Screen.height * 1.0f / markerEnterOffset;
 
     /// <summary>
     /// 计时结束显示标记，节拍要延迟多久结束
@@ -112,7 +118,15 @@ public class OnPlayGUI : MonoBehaviour
 
     Texture messageTexture;
 
+    /// <summary>
+    /// UGUI中的音符，目前不使用
+    /// </summary>
     GameObject m_kMato;
+
+    /// <summary>
+    /// 所有按钮的位置
+    /// </summary>
+    GameObject m_kButton;
 
     /// <summary>
     /// PlayUI的初始化
@@ -173,6 +187,11 @@ public class OnPlayGUI : MonoBehaviour
 
         m_kMato = transform.Find("mato").gameObject;
         Debug.Assert(m_kMato != null);
+
+        m_kButton = transform.Find("Button").gameObject;
+        Debug.Assert(m_kButton != null);
+
+        markerOrigin = new Vector2(Screen.width / 8.0f, Screen.height - 100);
     }
 
     public void Seek(float beatCount)
@@ -221,17 +240,17 @@ public class OnPlayGUI : MonoBehaviour
 		GUI.DrawTextureWithTexCoords(heatBarRect
             , temperBar
             , new Rect(0.0f, 0.0f, 1.0f * m_scoringManager.temper
-            , 1.0f)
-		);
+            , 1.0f));
 
 		GUI.color = Color.white;
 
         //-计算目标拍子的ICON的大小。显示当前需要击中的位置
-        float markerSize = ScoringManager.timingErrorToleranceGood * m_pixelsPerBeats;
+        float markerSize = ScoringManager.timingErrorToleranceGood * m_pixelsPerBeatsY;
         float x = markerOrigin.x - markerSize / 2.0f;
         float y = markerOrigin.y - markerSize / 2.0f;
 
         //-显示目标拍子的ICON
+        m_kButton.transform.position = new Vector2(40f, markerOrigin.y);
   //      Graphics.DrawTexture(
   //	new Rect(x, y, markerSize, markerSize)
   //	, beatPositionIcon
@@ -247,6 +266,7 @@ public class OnPlayGUI : MonoBehaviour
             //标记结束显示。
             int end   = m_seekerFront.nextIndex;
 			float x_offset;
+            float fYoffset;
 
             //绘制一个显示动作时间的图标。
             for (int drawnIndex = begin; drawnIndex < end; drawnIndex++)
@@ -259,16 +279,16 @@ public class OnPlayGUI : MonoBehaviour
                     markerSize *= 1.5f;
 				}
 
-                // 求到显示位置的X坐标的偏移.???
-                x_offset = info.triggerBeatTiming - m_musicManager.beatCountFromStart;
-				x_offset *= m_pixelsPerBeats;
+                // 求到显示位置的X坐标的偏移,用提前显示的轨道播放的位置减去当前播放拍子的差值
+    //            x_offset = info.triggerBeatTiming - m_musicManager.beatCountFromStart;
+				//x_offset *= m_pixelsPerBeats;
+                fYoffset = info.triggerBeatTiming - m_musicManager.beatCountFromStart;
+                fYoffset *= m_pixelsPerBeatsY;
 
-				Rect drawRect = new Rect(
-                    x + x_offset,
-                    y,
-                    markerSize,
-                    markerSize
-                );
+                Rect drawRect = new Rect(x//x + x_offset,
+                    , y - fYoffset//y
+                    , markerSize
+                    , markerSize);
 
                 GUI.DrawTexture(drawRect, headbangingIcon);
                 //-m_kMato.transform.position = new Vector3(x + x_offset, y, 0.0f);
@@ -302,13 +322,13 @@ public class OnPlayGUI : MonoBehaviour
                 {
 					scale *= 0.5f;
 				}
-				float baseSize = 32.0f;
-				Rect drawRect3 = new Rect(
+
+                float baseSize = markerSize;//32.0f;
+                Rect drawRect3 = new Rect(
 					markerOrigin.x - baseSize * scale / 2.0f,
 					markerOrigin.y - baseSize * scale / 2.0f,
 					baseSize * scale,
-					baseSize * scale
-				);
+					baseSize * scale);
 				Graphics.DrawTexture(drawRect3, hitEffectIcon);
 				m_rythmHitEffectCountDown--;
 			}

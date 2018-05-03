@@ -85,8 +85,8 @@ public class SongInfoLoader
 	private void ReadCSV_StagingDirection(System.IO.TextReader reader)
     {
 		string line;
-		float totalBeatCount=0;
-		float repeatPosition=0;
+		float totalBeatCount = 0;
+		float repeatPosition = 0;
 		List<StagingDirection> sequence = new List<StagingDirection>();
 		while ((line = reader.ReadLine()) != null)
         {
@@ -102,7 +102,7 @@ public class SongInfoLoader
 
 			case "AllBandMemberDefaultAnimation"://-全部乐手一起设置默认动画
 			    {
-				    foreach(GameObject member in GameObject.FindGameObjectsWithTag("BandMember"))
+				    foreach (GameObject member in GameObject.FindGameObjectsWithTag("BandMember"))
                     {
 					    StagingDirection_SetBandMemberDefaultAnimation defaultAnimationSet
 						    = new StagingDirection_SetBandMemberDefaultAnimation();
@@ -117,7 +117,7 @@ public class SongInfoLoader
 
 			case "SetAllBandMemberAction"://-全部乐手一起播放动画
                 {
-				    foreach(GameObject member in GameObject.FindGameObjectsWithTag("BandMember"))
+				    foreach (GameObject member in GameObject.FindGameObjectsWithTag("BandMember"))
                     {
 					    StagingDirection_SetBandMemberAction actionSet = new StagingDirection_SetBandMemberAction();
 					    actionSet.triggerBeatTiming = float.Parse(lineCells[1]);//-时间（节拍数）
@@ -154,9 +154,8 @@ public class SongInfoLoader
 			    {
 				    StagingDirection stagingDirection
 					    = StagingDirectionFactory.CreateStagingDirectionFromEnum(
-						    (StagingDirectionEnum)System.Enum.Parse(typeof(StagingDirectionEnum), lineCells[0]) 
-					    );
-				    if (stagingDirection!=null)
+						    (StagingDirectionEnum)System.Enum.Parse(typeof(StagingDirectionEnum), lineCells[0]));
+				    if (stagingDirection != null)
                     {
 					    stagingDirection.ReadCustomParameterFromString(lineCells);
 					    stagingDirection.triggerBeatTiming = float.Parse(lineCells[1]);//-通用的在第几拍
@@ -201,7 +200,7 @@ public class SongInfoLoader
 				    songInfo.onBeatActionRegionSequence.Add(region);
 				    for (float repeatOffest = 0; repeatOffest < region.totalBeatCount; repeatOffest += region.repeatPosition)
 				    {
-					    foreach( OnBeatActionInfo onBeatActionInfo in sequence )
+					    foreach(OnBeatActionInfo onBeatActionInfo in sequence)
                         {
 						    if (onBeatActionInfo.triggerBeatTiming + repeatOffest > region.totalBeatCount)
 						    {
@@ -232,7 +231,7 @@ public class SongInfoLoader
 				    }
 				    onBeatActionInfo.triggerBeatTiming = float.Parse(lineCells[1]);
 
-				    //-记录行号？？？
+				    //-记录行号
 				    onBeatActionInfo.line_number = line_number;
 
 				    sequence.Add(onBeatActionInfo);
