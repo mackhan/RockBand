@@ -29,7 +29,7 @@ public class MusicManager : MonoBehaviour
 		get
         {
             float fDeltaCount = m_beatCountFromStart - m_previousBeatCountFromStart;
-            Debug.Assert(fDeltaCount > 1);
+            Debug.Log("fDeltaCount:" + fDeltaCount);
             return fDeltaCount;
         }
 	}

@@ -102,9 +102,14 @@ public class OnPlayGUI : MonoBehaviour
     SequenceSeeker<OnBeatActionInfo> m_seekerBack = new SequenceSeeker<OnBeatActionInfo>();
 
     MusicManager m_musicManager;
+
     ScoringManager m_scoringManager;
+
     GameObject m_playerAvator;
+
     Texture messageTexture;
+
+    GameObject m_kMato;
 
     /// <summary>
     /// PlayUI的初始化
@@ -157,13 +162,15 @@ public class OnPlayGUI : MonoBehaviour
         kAudioSource.Play();
     }
 
-	// Use this for initialization
 	void Start()
     {
 		m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
 		m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
 		m_playerAvator = GameObject.Find("PlayerAvator");
-	}
+
+        m_kMato = transform.Find("mato").gameObject;
+        Debug.Assert(m_kMato != null);
+    }
 
     public void Seek(float beatCount)
     {
@@ -222,12 +229,12 @@ public class OnPlayGUI : MonoBehaviour
         float y = markerOrigin.y - markerSize / 2.0f;
 
         //-显示目标拍子的ICON
-        Graphics.DrawTexture(
-			new Rect(x, y, markerSize, markerSize)
-			, beatPositionIcon
-		);
+  //      Graphics.DrawTexture(
+  //	new Rect(x, y, markerSize, markerSize)
+  //	, beatPositionIcon
+  //);
 
-		if (m_musicManager.IsPlaying())
+        if (m_musicManager.IsPlaying())
         {
 			SongInfo song =  m_musicManager.currentSongInfo;
 
@@ -259,9 +266,11 @@ public class OnPlayGUI : MonoBehaviour
                     markerSize,
                     markerSize
                 );
-			
-				GUI.DrawTexture(drawRect, headbangingIcon);
-				GUI.color = Color.white;
+
+                GUI.DrawTexture(drawRect, headbangingIcon);
+                //-m_kMato.transform.position = new Vector3(x + x_offset, y, 0.0f);
+
+                GUI.color = Color.white;
 
                 // 在文本文件中显示行号。
                 if (isDevelopmentMode)

@@ -62,12 +62,10 @@ public class StagingDirectionFactory
 		}
 		else if (stagingDirectionEnum == StagingDirectionEnum.SetBandMemberAction)//-设置所有乐队成员的动作，这里应该走不到
         {
-            Debug.Assert(false);
 			return new StagingDirection_SetBandMemberAction();
 		}
 		else if (stagingDirectionEnum == StagingDirectionEnum.SetBandMemberDefaultAnimation)//-设置所有乐队成员的默认动画，这里应该走不到
         {
-            Debug.Assert(false);
             return new StagingDirection_SetBandMemberDefaultAnimation();
 		}
 		else if (stagingDirectionEnum == StagingDirectionEnum.Applause)//-播放观众的欢呼音效
