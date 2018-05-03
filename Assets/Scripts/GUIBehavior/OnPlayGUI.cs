@@ -22,6 +22,9 @@ public class OnPlayGUI : MonoBehaviour
     /// </summary>
 	public Texture messageTexture_Miss;
 
+    /// <summary>
+    /// 滚动音符的图标
+    /// </summary>
     public Texture headbangingIcon;
 
     /// <summary>
