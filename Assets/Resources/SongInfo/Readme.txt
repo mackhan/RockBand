@@ -40,7 +40,7 @@
 ********
 stagingDirectionSequenceRegion-Begin
 
-....(部分基本信息，舞台方向指定等)
+....(部分基本信息，舞台效果指定等)
 
 stagingDirectionSequenceRegion-End
 ********
@@ -52,7 +52,7 @@ stagingDirectionSequenceRegion-End
 　　　　regionParameters, 零件名称, 部分长度（节拍数）, 部分重复单位（节拍数）
 　　　例：
 　　　　regionParameters,Intro,32,4
-　　　　*在这个例子中，部分的长度是32拍，重复单位是4拍，所以相同的方向将在32÷4总共重复8次。
+　　　　*在这个例子中，部分的长度是32拍，重复单位是4拍，所以相同的表现将在32÷4总共重复8次。
 
     指导1.烟花：
 　　　写作方法：
