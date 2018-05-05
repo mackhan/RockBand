@@ -109,7 +109,7 @@ public class ScoringManager : MonoBehaviour
     /// </summary>
 	public void BeginScoringSequence()
     {
-		m_scoringUnitSeeker.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
+		m_scoringUnitSeeker.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence[0]);
 	}
 	
     void Start()
@@ -164,15 +164,15 @@ public class ScoringManager : MonoBehaviour
         {		
 			nearestIndex = 0;
 		}
-        else if(m_scoringUnitSeeker.nextIndex >= song.onBeatActionSequence.Count)//-当前索引的位置比序列的尺寸大的时候（过了最后的标记时间的时候）应该不会大于
+        else if(m_scoringUnitSeeker.nextIndex >= song.onBeatActionSequence[0].Count)//-当前索引的位置比序列的尺寸大的时候（过了最后的标记时间的时候）应该不会大于
         {
-            Debug.Assert(m_scoringUnitSeeker.nextIndex > song.onBeatActionSequence.Count);
-			nearestIndex = song.onBeatActionSequence.Count - 1;
+            Debug.Assert(m_scoringUnitSeeker.nextIndex > song.onBeatActionSequence[0].Count);
+			nearestIndex = song.onBeatActionSequence[0].Count - 1;
 		}
         else//与前后的定时相比较
         {
-            OnBeatActionInfo crnt_action = song.onBeatActionSequence[m_scoringUnitSeeker.nextIndex];//-当前位置
-			OnBeatActionInfo prev_action = song.onBeatActionSequence[m_scoringUnitSeeker.nextIndex - 1];//-前一个位置
+            OnBeatActionInfo crnt_action = song.onBeatActionSequence[0][m_scoringUnitSeeker.nextIndex];//-当前位置
+			OnBeatActionInfo prev_action = song.onBeatActionSequence[0][m_scoringUnitSeeker.nextIndex - 1];//-前一个位置
 
 			float act_timing = m_playerAction.lastActionInfo.triggerBeatTiming;//-玩家在哪个拍子按下的
 
@@ -207,7 +207,7 @@ public class ScoringManager : MonoBehaviour
 
 				SongInfo song = m_musicManager.currentSongInfo;
 
-				OnBeatActionInfo marker_act = song.onBeatActionSequence[nearestIndex];//-找到最近的谱面
+				OnBeatActionInfo marker_act = song.onBeatActionSequence[0][nearestIndex];//-找到最近的谱面
 				OnBeatActionInfo player_act = m_playerAction.lastActionInfo;//-找到玩家操作的信息
 
 				m_lastResult.timingError = player_act.triggerBeatTiming - marker_act.triggerBeatTiming;//-找到玩家操作的拍子和最近谱面时间的差值
@@ -306,7 +306,7 @@ public class ScoringManager : MonoBehaviour
 	private void OnScoreAdded(int nearestIndex)
     {
 		SongInfo song = m_musicManager.currentSongInfo;
-		if (song.onBeatActionSequence[nearestIndex].playerActionType == PlayerActionEnum.Jump
+		if (song.onBeatActionSequence[0][nearestIndex].playerActionType == PlayerActionEnum.Jump
 			&& temper > temperThreshold)//-当行为是跳跃的时候，并且是非常兴奋的时候，并且成功输入的时候
 		{
             //-所有乐队成员跳一下
@@ -328,7 +328,7 @@ public class ScoringManager : MonoBehaviour
 				noteParticle.GetComponent<ParticleSystem>().Emit(20);
 			}
 		}
-		else if (song.onBeatActionSequence[nearestIndex].playerActionType 
+		else if (song.onBeatActionSequence[0][nearestIndex].playerActionType 
             == PlayerActionEnum.HeadBanging)//-如果只是headBanging，那乐队成员动一下
 		{
 			foreach (GameObject bandMember in m_bandMembers)
@@ -349,7 +349,7 @@ public class ScoringManager : MonoBehaviour
             if (outScoringLog)
             {
                 OnBeatActionInfo onBeatActionInfo
-                    = m_musicManager.currentSongInfo.onBeatActionSequence[m_scoringUnitSeeker.nextIndex - 1];
+                    = m_musicManager.currentSongInfo.onBeatActionSequence[0][m_scoringUnitSeeker.nextIndex - 1];
                 m_logWriter.WriteLine(
                     onBeatActionInfo.triggerBeatTiming.ToString() + ","
                     + "IdealAction,,"

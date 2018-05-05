@@ -45,7 +45,7 @@ public class InputManager : MonoBehaviour
 			}
 			else//-如果比较兴奋了就按照脚本的动作
             {
-				actionType = m_musicManager.currentSongInfo.onBeatActionSequence[m_scoringManager.GetNearestPlayerActionInfoIndex()].playerActionType;
+				actionType = m_musicManager.currentSongInfo.onBeatActionSequence[0][m_scoringManager.GetNearestPlayerActionInfoIndex()].playerActionType;
 			}
 			m_playerAction.DoAction(actionType);
 		}

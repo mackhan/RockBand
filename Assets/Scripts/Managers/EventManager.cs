@@ -60,7 +60,7 @@ public class EventManager : MonoBehaviour
 			}
 		}
 
-        //“执行中的活动列表”的执行，LinkedList<T>类在.NET framework中是一个双向链表
+        //“执行中的活动列表”的执行，LinkedList<T>类在.NET framework中是一个双向链表，便于删除
         for (LinkedListNode<StagingDirection> it = m_activeEvents.First; it != null; it = it.Next)
         {
 			StagingDirection activeEvent = it.Value;

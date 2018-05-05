@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.IO;
 
+#if false
 /// <summary>
 /// 没有使用
 /// </summary>
@@ -29,3 +30,4 @@ public class SongInfoExporter_CSV
         writer.WriteLine("scoringUnitSequenceRegion-End");
 	}
 }
+#endif

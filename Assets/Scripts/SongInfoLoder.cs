@@ -18,7 +18,7 @@ public class SongInfoLoader
     /// <summary>
     /// 总的记录谱面偏移的值
     /// </summary>
-    private float m_onBeatActionInfoRegionOffset = 0;
+    private float[] m_onBeatActionInfoRegionOffset = new float[4] { 0, 0, 0, 0 };
     
     /// <summary>
     /// 读入谱面和动画信息
@@ -48,10 +48,10 @@ public class SongInfoLoader
 				break;
 
 			case "scoringUnitSequenceRegion-Begin":
-				line_number = ReadCSV_OnBeatAction(reader, line_number);
+				line_number = ReadCSV_OnBeatAction(reader, line_number, int.Parse(lineCells[1]));
 				break;
 
-			case "stagingDirectionSequenceRegion-Begin"://-舞台活动开始
+                case "stagingDirectionSequenceRegion-Begin"://-舞台活动开始
 				ReadCSV_StagingDirection(reader);
 				break;
 
@@ -72,7 +72,9 @@ public class SongInfoLoader
                     textReader = new StringReader(data);
                 }
 
-				ReadCSV(textReader);
+                Debug.Log("include ：" + lineCells[1]);
+
+                ReadCSV(textReader);
 				break;
 			}
 		}
@@ -174,7 +176,7 @@ public class SongInfoLoader
     /// <param name="reader"></param>
     /// <param name="line_number"></param>
     /// <returns></returns>
-	private int	ReadCSV_OnBeatAction(System.IO.TextReader reader, int line_number)
+	private int	ReadCSV_OnBeatAction(System.IO.TextReader reader, int line_number, int _iIndex)
     {
 		string line;
 		SequenceRegion region = new SequenceRegion();
@@ -184,8 +186,9 @@ public class SongInfoLoader
 		while ((line = reader.ReadLine()) != null)
         {
 			line_number++;
+            Debug.Log("line_number ：" + line_number);
 
-			string[] lineCells = line.Split(',');
+            string[] lineCells = line.Split(',');
 			switch (lineCells[0])
             {
 			case "regionParameters":
@@ -196,7 +199,7 @@ public class SongInfoLoader
 
 			case "scoringUnitSequenceRegion-End"://-区域结束，应该只有一块
 			    {
-                    region.triggerBeatTiming = m_onBeatActionInfoRegionOffset;
+                    region.triggerBeatTiming = m_onBeatActionInfoRegionOffset[_iIndex - 1];
 				    songInfo.onBeatActionRegionSequence.Add(region);
 				    for (float repeatOffest = 0; repeatOffest < region.totalBeatCount; repeatOffest += region.repeatPosition)
 				    {
@@ -207,11 +210,11 @@ public class SongInfoLoader
 							    break;
 						    }
 						    OnBeatActionInfo cloned = onBeatActionInfo.GetClone() as OnBeatActionInfo;
-						    cloned.triggerBeatTiming += m_onBeatActionInfoRegionOffset + repeatOffest;
-						    songInfo.onBeatActionSequence.Add(cloned);
+						    cloned.triggerBeatTiming += m_onBeatActionInfoRegionOffset[_iIndex - 1] + repeatOffest;
+						    songInfo.onBeatActionSequence[_iIndex-1].Add(cloned);
 					    }
 				    }
-				    m_onBeatActionInfoRegionOffset += region.totalBeatCount;
+				    m_onBeatActionInfoRegionOffset[_iIndex - 1] += region.totalBeatCount;
 			    }
                 return (line_number);
                 // 因为↑有return，所以这个break不被执行.
@@ -229,6 +232,7 @@ public class SongInfoLoader
                     {
 					    onBeatActionInfo.playerActionType = PlayerActionEnum.HeadBanging;
 				    }
+                    Debug.Log("triggerBeatTiming ：" + float.Parse(lineCells[1]));
 				    onBeatActionInfo.triggerBeatTiming = float.Parse(lineCells[1]);
 
 				    //-记录行号

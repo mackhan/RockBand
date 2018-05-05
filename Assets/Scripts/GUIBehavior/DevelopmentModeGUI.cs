@@ -89,7 +89,8 @@ public class DevelopmentModeGUI : MonoBehaviour
 
 	void OnGUI()
     {
-		GUI.Label(new Rect( 5, 100, 150, 40 ),"Current");
+#if false
+        GUI.Label(new Rect( 5, 100, 150, 40 ),"Current");
 
 		//-滑动进度条的控制
 		SeekSliderControl();
@@ -150,7 +151,7 @@ public class DevelopmentModeGUI : MonoBehaviour
             GUI.Label(new Rect(5, 460, 150, 40), "Current:" + m_musicManager.beatCountFromStart);
 			GUI.Label(new Rect(150, 460, 250, 40), "region ...:" + m_musicManager.currentSongInfo.onBeatActionRegionSequence[currentReginIndex].name);
 		}
-
+#endif
 	}
 
     /// <summary>

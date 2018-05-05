@@ -35,10 +35,13 @@ public abstract class StagingDirection : MusicalElement
 	public virtual StagingDirectionEnum GetEnum() { return StagingDirectionEnum.None; }
 };
 
+/// <summary>
+/// 舞台事件的工厂类
+/// </summary>
 public class StagingDirectionFactory
 {
     /// <summary>
-    /// 舞台事件的工程
+    /// 舞台事件的工厂
     /// </summary>
     /// <param name="stagingDirectionEnum"></param>
     /// <returns></returns>

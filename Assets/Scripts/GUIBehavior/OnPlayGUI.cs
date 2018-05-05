@@ -48,22 +48,24 @@ public class OnPlayGUI : MonoBehaviour
 	public Texture temperBarFrame;
 
     /// <summary>
-    /// 何时开始显示标记，节拍要提前多久显示
+    /// 何时开始显示标记，节拍要提前多少拍显示，经验值
     /// </summary>
 	public static float markerEnterOffset = 2.5f;
 
     /// <summary>
-    /// 转换成提前多少个像素
+    /// 每拍移动多少个像素
+    /// 其中Screen.width表示移动的距离
+    /// markerEnterOffset表示从开始显示到抵达该处经历的拍数
     /// </summary>
     float m_pixelsPerBeats = Screen.width * 1.0f / markerEnterOffset;
 
     /// <summary>
-    /// 转换成提前多少个像素
+    /// 每拍需要移动多少个像素
     /// </summary>
     float m_pixelsPerBeatsY = Screen.height * 1.0f / markerEnterOffset;
 
     /// <summary>
-    /// 计时结束显示标记，节拍要延迟多久结束
+    /// 计时结束显示标记，节拍要延迟多久结束，和开始的时间差就是通过画面需要的时间
     /// </summary>
 	public static float markerLeaveOffset = -1.0f;   
 
@@ -103,15 +105,17 @@ public class OnPlayGUI : MonoBehaviour
 
 	public GUISkin guiSkin;
 
-    /// <summary>
-    /// 时间先进的查找单位（显示结束位置）。
-    /// </summary>
-    SequenceSeeker<OnBeatActionInfo> m_seekerFront = new SequenceSeeker<OnBeatActionInfo>();
+    ///// <summary>
+    ///// 时间先进的查找单位（显示结束位置）。
+    ///// </summary>
+    //SequenceSeeker<OnBeatActionInfo> m_seekerFront = new SequenceSeeker<OnBeatActionInfo>();
+    SequenceSeekers<OnBeatActionInfo> m_kSeekersFront = new SequenceSeekers<OnBeatActionInfo>();
 
     /// <summary>
     /// 寻找单位（显示开始位置），在后面的时间。 
     /// </summary>
-    SequenceSeeker<OnBeatActionInfo> m_seekerBack = new SequenceSeeker<OnBeatActionInfo>();
+    //SequenceSeeker<OnBeatActionInfo> m_seekerBack = new SequenceSeeker<OnBeatActionInfo>();
+    SequenceSeekers<OnBeatActionInfo> m_kSeekersBack = new SequenceSeekers<OnBeatActionInfo>();
 
     MusicManager m_musicManager;
 
@@ -139,12 +143,18 @@ public class OnPlayGUI : MonoBehaviour
 		m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
 		m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
 
-        m_seekerBack.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
-        m_seekerBack.Seek(markerLeaveOffset);
+        //m_seekerBack.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
+        //m_seekerBack.Seek(markerLeaveOffset);
 
-        m_seekerFront.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
-		m_seekerFront.Seek(markerEnterOffset);
-	}
+        //m_seekerFront.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
+        //m_seekerFront.Seek(markerEnterOffset);
+
+        m_kSeekersBack.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
+        m_kSeekersBack.Seek(markerLeaveOffset);
+
+        m_kSeekersFront.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
+        m_kSeekersFront.Seek(markerEnterOffset);
+    }
 
     /// <summary>
     /// 根据玩家的操作结果播放音效和显示消息
@@ -199,17 +209,21 @@ public class OnPlayGUI : MonoBehaviour
 
     public void Seek(float beatCount)
     {
-		m_seekerBack.Seek(beatCount + markerLeaveOffset);
-		m_seekerFront.Seek(beatCount + markerEnterOffset);
-	}
+        //m_seekerBack.Seek(beatCount + markerLeaveOffset);
+        //m_seekerFront.Seek(beatCount + markerEnterOffset);
+        m_kSeekersBack.Seek(beatCount + markerLeaveOffset);
+        m_kSeekersFront.Seek(beatCount + markerEnterOffset);
+    }
 
-	void Update ()
+    void Update ()
     {
 		if(m_musicManager.IsPlaying())//-更新拍子，一帧可能有多个拍子
         {
-			m_seekerBack.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
-			m_seekerFront.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
-		}
+            //m_seekerBack.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
+            //m_seekerFront.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
+            m_kSeekersBack.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
+            m_kSeekersFront.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
+        }
 	}
 
 	void OnGUI()
@@ -249,8 +263,6 @@ public class OnPlayGUI : MonoBehaviour
 
         //-计算目标拍子的ICON的大小。显示当前需要击中的位置
         float markerSize = ScoringManager.timingErrorToleranceGood * m_pixelsPerBeatsY;
-        float x = markerOrigin.x - markerSize / 2.0f;
-        float y = markerOrigin.y - markerSize / 2.0f;
 
         //-显示目标拍子的ICON
         m_kButton.transform.position = new Vector2(40f, markerOrigin.y);
@@ -261,89 +273,100 @@ public class OnPlayGUI : MonoBehaviour
 
         if (m_musicManager.IsPlaying())
         {
-			SongInfo song =  m_musicManager.currentSongInfo;
-
-            //标记开始显示。
-            int begin = m_seekerBack.nextIndex;
-
-            //标记结束显示。
-            int end   = m_seekerFront.nextIndex;
-			float x_offset;
-            float fYoffset;
-
-            //绘制一个显示动作时间的图标。
-            for (int drawnIndex = begin; drawnIndex < end; drawnIndex++)
+            for (int i = 0; i < 4; i++)
             {
-				OnBeatActionInfo info = song.onBeatActionSequence[drawnIndex];
-                //当兴奋值高，并且是跳跃的时候,放大一些
-                if (m_scoringManager.temper > ScoringManager.temperThreshold 
-                    && info.playerActionType == PlayerActionEnum.Jump)
-				{
-                    markerSize *= 1.5f;
-				}
-
-                // 求到显示位置的X坐标的偏移,用提前显示的轨道播放的位置减去当前播放拍子的差值
-    //            x_offset = info.triggerBeatTiming - m_musicManager.beatCountFromStart;
-				//x_offset *= m_pixelsPerBeats;
-                fYoffset = info.triggerBeatTiming - m_musicManager.beatCountFromStart;
-                fYoffset *= m_pixelsPerBeatsY;
-
-                Rect drawRect = new Rect(x//x + x_offset,
-                    , y - fYoffset//y
-                    , markerSize
-                    , markerSize);
-
-                GUI.DrawTexture(drawRect, headbangingIcon);
-                //-m_kMato.transform.position = new Vector3(x + x_offset, y, 0.0f);
-
-                GUI.color = Color.white;
-
-                // 在文本文件中显示行号。
-                if (isDevelopmentMode)
-                {
-					GUI.skin = this.guiSkin;
-					GUI.Label(new Rect(drawRect.x, drawRect.y - 10.0f, 50.0f, 30.0f), info.line_number.ToString());
-					GUI.skin = null;
-				}
-			}
-
-            //-点中爆裂的效果
-            if (m_rythmHitEffectCountDown > 0)
-            {
-				float scale  = 2.0f - m_rythmHitEffectCountDown / (float)rythmHitEffectShowFrameDuration;//-依据点击效果的时间确认缩放，一开始1倍，最后是2倍，逐渐变大
-
-                //-再依据上一次的得分调整倍率
-                if (m_lastInputScore >= ScoringManager.excellentScore)
-                {
-					scale *= 2.0f;
-				}
-				else if( m_lastInputScore > ScoringManager.missScore)
-                {
-					scale *= 1.2f;
-				}
-				else
-                {
-					scale *= 0.5f;
-				}
-
-                float baseSize = markerSize;//32.0f;
-                Rect drawRect3 = new Rect(
-					markerOrigin.x - baseSize * scale / 2.0f,
-					markerOrigin.y - baseSize * scale / 2.0f,
-					baseSize * scale,
-					baseSize * scale);
-				Graphics.DrawTexture(drawRect3, hitEffectIcon);
-				m_rythmHitEffectCountDown--;
-			}
-
-			//显示Perfect，Good，Bad三种提示
-			if (m_messageShowCountDown > 0)
-            {
-				GUI.color = new Color(1, 1, 1, m_messageShowCountDown / 40.0f);
-				GUI.DrawTexture(new Rect(20 ,230, 150, 50), messageTexture, ScaleMode.ScaleAndCrop, true);
-				GUI.color = Color.white;
-				m_messageShowCountDown--;
-			}
+                Drew(i, markerSize);
+            }
 		}
 	}
+
+    void Drew(int _iIndex, float markerSize)
+    {
+        float x = markerOrigin.x - markerSize / 2.0f;
+        float y = markerOrigin.y - markerSize / 2.0f;
+
+        SongInfo song = m_musicManager.currentSongInfo;
+
+        //标记开始显示。
+        int begin = m_kSeekersBack.GetSeeker(_iIndex).nextIndex;
+
+        //标记结束显示。
+        int end = m_kSeekersFront.GetSeeker(_iIndex).nextIndex;
+        float x_offset;
+        float fYoffset;
+
+        //绘制一个显示动作时间的图标。
+        for (int drawnIndex = begin; drawnIndex < end; drawnIndex++)
+        {
+            OnBeatActionInfo info = song.onBeatActionSequence[_iIndex][drawnIndex];
+            //当兴奋值高，并且是跳跃的时候,放大一些
+            if (m_scoringManager.temper > ScoringManager.temperThreshold
+                && info.playerActionType == PlayerActionEnum.Jump)
+            {
+                markerSize *= 1.5f;
+            }
+
+            // 求到显示位置的X坐标的偏移,用提前显示的轨道播放的位置减去当前播放拍子的差值
+            //            x_offset = info.triggerBeatTiming - m_musicManager.beatCountFromStart;
+            //x_offset *= m_pixelsPerBeats;
+            fYoffset = info.triggerBeatTiming - m_musicManager.beatCountFromStart;
+            fYoffset *= m_pixelsPerBeatsY;
+
+            Rect drawRect = new Rect(x + markerSize * _iIndex//x + x_offset,
+                , y - fYoffset//y
+                , markerSize
+                , markerSize);
+
+            GUI.DrawTexture(drawRect, headbangingIcon);
+            //-m_kMato.transform.position = new Vector3(x + x_offset, y, 0.0f);
+
+            GUI.color = Color.white;
+
+            // 在文本文件中显示行号。
+            if (isDevelopmentMode)
+            {
+                GUI.skin = this.guiSkin;
+                GUI.Label(new Rect(drawRect.x, drawRect.y - 10.0f, 50.0f, 30.0f), info.line_number.ToString());
+                GUI.skin = null;
+            }
+        }
+
+        //-点中爆裂的效果
+        if (m_rythmHitEffectCountDown > 0)
+        {
+            float scale = 2.0f - m_rythmHitEffectCountDown / (float)rythmHitEffectShowFrameDuration;//-依据点击效果的时间确认缩放，一开始1倍，最后是2倍，逐渐变大
+
+            //-再依据上一次的得分调整倍率
+            if (m_lastInputScore >= ScoringManager.excellentScore)
+            {
+                scale *= 2.0f;
+            }
+            else if (m_lastInputScore > ScoringManager.missScore)
+            {
+                scale *= 1.2f;
+            }
+            else
+            {
+                scale *= 0.5f;
+            }
+
+            float baseSize = markerSize;//32.0f;
+            Rect drawRect3 = new Rect(
+                markerOrigin.x - baseSize * scale / 2.0f + markerSize * _iIndex,
+                markerOrigin.y - baseSize * scale / 2.0f,
+                baseSize * scale,
+                baseSize * scale);
+            Graphics.DrawTexture(drawRect3, hitEffectIcon);
+            m_rythmHitEffectCountDown--;
+        }
+
+        //显示Perfect，Good，Bad三种提示
+        if (m_messageShowCountDown > 0)
+        {
+            GUI.color = new Color(1, 1, 1, m_messageShowCountDown / 40.0f);
+            GUI.DrawTexture(new Rect(20 + markerSize * _iIndex, 230, 150, 50), messageTexture, ScaleMode.ScaleAndCrop, true);
+            GUI.color = Color.white;
+            m_messageShowCountDown--;
+        }
+    }
 }
