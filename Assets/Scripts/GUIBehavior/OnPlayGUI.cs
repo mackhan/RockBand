@@ -33,7 +33,7 @@ public class OnPlayGUI : MonoBehaviour
 	public Texture beatPositionIcon;
 
     /// <summary>
-    /// 集中的特效
+    /// 击中的特效
     /// </summary>
 	public Texture hitEffectIcon;
 
@@ -42,6 +42,9 @@ public class OnPlayGUI : MonoBehaviour
     /// </summary>
 	public Texture temperBar;
 
+    /// <summary>
+    /// 兴奋度的底
+    /// </summary>
 	public Texture temperBarFrame;
 
     /// <summary>

@@ -68,9 +68,9 @@ public class DevelopmentModeGUI : MonoBehaviour
 
 	void Start ()
     {
-		m_musicManager=GameObject.Find("MusicManager").GetComponent<MusicManager>();
-		m_scoringManager=GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
-		m_eventManager=GameObject.Find("EventManager").GetComponent<EventManager>();
+		m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
+		m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
+		m_eventManager = GameObject.Find("EventManager").GetComponent<EventManager>();
 
         //因为GUI对象有Inactie的可能性，所以不能在Find直接访问。
         m_onPlayGUI = GameObject.Find("PhaseManager").GetComponent<PhaseManager>().guiList[1].GetComponent<OnPlayGUI>();
@@ -129,7 +129,7 @@ public class DevelopmentModeGUI : MonoBehaviour
 			+ m_musicManager.currentSongInfo.onBeatActionSequence[m_scoringManager.m_lastResult.markerIndex].line_number.ToString());
 
         // 显示相关的部分名称
-        if ( m_musicManager.currentSongInfo.onBeatActionRegionSequence.Count>0 )
+        if (m_musicManager.currentSongInfo.onBeatActionRegionSequence.Count > 0)
         {
             //确认当前部分的索引
             int currentReginIndex = m_actionInfoRegionSeeker.nextIndex - 1;

@@ -145,19 +145,19 @@ public class PhaseManager : MonoBehaviour
 			    //-显示结算结果
 			    Debug.Log(m_scoringManager.scoreRate);
 			    Debug.Log(ScoringManager.failureScoreRate);
-			    if (m_scoringManager.scoreRate <= ScoringManager.failureScoreRate)
+			    if (m_scoringManager.scoreRate <= ScoringManager.failureScoreRate)//-如果是失败的得分率，乐队成员发出失败的声音
 			    {
 				    showResult.comment = showResult.comment_BAD;
 				    GameObject.Find("Vocalist").GetComponent<BandMember>().BadFeedback();
 				
 			    }
-			    else if (m_scoringManager.scoreRate >= ScoringManager.excellentScoreRate)
+			    else if (m_scoringManager.scoreRate >= ScoringManager.excellentScoreRate)//-如果是Excellent乐队成员和观众一起欢呼
 			    {
 				    showResult.comment = showResult.comment_EXCELLENT;
 				    GameObject.Find("Vocalist").GetComponent<BandMember>().GoodFeedback();
 				    GameObject.Find("AudienceVoice").GetComponent<AudioSource>().Play();
 			    }
-			    else
+			    else//-如果是Good，乐队成员欢呼
 			    {
 				    showResult.comment = showResult.comment_GOOD;
 				    GameObject.Find("Vocalist").GetComponent<BandMember>().GoodFeedback();

@@ -208,7 +208,7 @@ public class SongInfoLoader
 						    }
 						    OnBeatActionInfo cloned = onBeatActionInfo.GetClone() as OnBeatActionInfo;
 						    cloned.triggerBeatTiming += m_onBeatActionInfoRegionOffset + repeatOffest;
-						    songInfo.onBeatActionSequence.Add( cloned );
+						    songInfo.onBeatActionSequence.Add(cloned);
 					    }
 				    }
 				    m_onBeatActionInfoRegionOffset += region.totalBeatCount;

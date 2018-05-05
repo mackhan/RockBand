@@ -33,8 +33,15 @@ public class ScoringManager : MonoBehaviour
     /// </summary>
 	public static float excellentScore = 4.0f;
 
-	public static float failureScoreRate = 0.3f;//途中判定ポイントで"失敗"として判定される得点率(得点/理論上の最高得点)
-	public static float excellentScoreRate = 0.85f;//途中判定ポイントで"優秀"として判定される得点率(得点/理論上の最高得点)
+    /// <summary>
+    /// 中途判定点被判定为“失败”的得分率（得分/理论上的最高得分）
+    /// </summary>
+	public static float failureScoreRate = 0.3f;
+
+    /// <summary>
+    /// 中途判定点被判定为“优秀”的得分率（得分/理论上的最高得分）
+    /// </summary>
+	public static float excellentScoreRate = 0.85f;
 
     /// <summary>
     /// 失败的兴奋值
@@ -88,8 +95,10 @@ public class ScoringManager : MonoBehaviour
 		get{ return m_additionalScore; }
 	}
 
-	//現在の得点率(得点/理論上の最高得点)
-	public float scoreRate
+    /// <summary>
+    /// 现在的得分率（得分/理论上的最高得分）
+    /// </summary>
+    public float scoreRate
 	{
 		get { return m_scoreRate; }
 	}
@@ -244,7 +253,8 @@ public class ScoringManager : MonoBehaviour
 				DebugWriteLogPrev();
 				DebugWriteLogPost(hitBefore, hitAfter);
 			}
-            if (m_scoringUnitSeeker.nextIndex > 0)
+
+            if (m_scoringUnitSeeker.nextIndex > 0)//-如果还没结束，计算得分率，用总分数，除以假设全部是最佳的得分
             {
                 m_scoreRate = m_score / (m_scoringUnitSeeker.nextIndex * excellentScore);
             }
