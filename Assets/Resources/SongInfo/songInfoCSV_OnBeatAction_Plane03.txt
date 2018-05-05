@@ -1,4 +1,4 @@
-scoringUnitSequenceRegion-Begin
+scoringUnitSequenceRegion-Begin,3
 regionParameters,Unified,172,172
 SingleShot,4.3,HeadBanging
 SingleShot,12.3,HeadBanging
@@ -56,7 +56,7 @@ SingleShot,99.3,HeadBanging
 SingleShot,100.4,HeadBanging
 SingleShot,101.3,HeadBanging
 SingleShot,102.4,HeadBanging 
-SingleShot,103.3.3,Jump
+SingleShot,103.3,Jump
 SingleShot,104.4,HeadBanging
 SingleShot,108.3,HeadBanging 
 SingleShot,110.3,Jump
@@ -71,7 +71,7 @@ SingleShot,124.3,HeadBanging
 SingleShot,126.3,Jump
 SingleShot,128.3,HeadBanging
 SingleShot,133.4,HeadBanging
-SingleShot,135.3.3,HeadBanging
+SingleShot,135.3,HeadBanging
 SingleShot,147,Jump
 SingleShot,155,HeadBanging
 SingleShot,163,HeadBanging

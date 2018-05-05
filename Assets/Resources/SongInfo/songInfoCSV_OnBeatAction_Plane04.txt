@@ -1,4 +1,4 @@
-scoringUnitSequenceRegion-Begin
+scoringUnitSequenceRegion-Begin,4
 regionParameters,Unified,172,172
 SingleShot,5.3,HeadBanging
 SingleShot,8.3,HeadBanging
