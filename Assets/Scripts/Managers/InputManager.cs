@@ -34,20 +34,11 @@ public class InputManager : MonoBehaviour
 		m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
 	}
 
-	void Update ()
-    {
-        if (Input.GetMouseButtonDown(0) && m_musicManager.IsPlaying())//-如果有操作并且音乐正在播放
-        {
-			PlayerActionEnum actionType;
-			if (m_scoringManager.temper < ScoringManager.temperThreshold)//-如果兴奋值比较低就一直播放点头的动作
-            {
-				actionType = PlayerActionEnum.HeadBanging;
-			}
-			else//-如果比较兴奋了就按照脚本的动作
-            {
-				actionType = m_musicManager.currentSongInfo.onBeatActionSequence[0][m_scoringManager.GetNearestPlayerActionInfoIndex()].playerActionType;
-			}
-			m_playerAction.DoAction(actionType);
-		}
-	}
+	//void Update ()
+ //   {
+ //       if (Input.GetMouseButtonDown(0))//-如果有操作并且音乐正在播放
+ //       {
+	//		m_playerAction.DoAction(0);
+	//	}
+	//}
 }

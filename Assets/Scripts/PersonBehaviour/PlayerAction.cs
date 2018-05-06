@@ -44,14 +44,23 @@ public class PlayerAction : MonoBehaviour
 		get{ return m_lastActionInfo; }
 	}
 
+    /// <summary>
+    /// 音乐管理器，播放暂停等
+    /// </summary>
     MusicManager m_musicManager;
-    
+
+    /// <summary>
+    /// 音乐管理器
+    /// </summary>
+    ScoringManager m_scoringManager;
+
     PlayerActionEnum m_newPlayerAction;
 
     void Start ()
     {
 		m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
-	}
+        m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
+    }
 	
 	void Update ()
     {
@@ -63,9 +72,21 @@ public class PlayerAction : MonoBehaviour
     /// 玩家有一个操作，表现的玩家就做一个动作
     /// </summary>
     /// <param name="actionType"></param>
-	public void DoAction(PlayerActionEnum actionType)
+	public void DoAction(int _iIndex)
     {
-		m_newPlayerAction = actionType;
+        if (!m_musicManager.IsPlaying())
+        {
+            return;
+        }
+
+        if (m_scoringManager.temper < ScoringManager.temperThreshold)//-如果兴奋值比较低就一直播放点头的动作
+        {
+            m_newPlayerAction = PlayerActionEnum.HeadBanging;
+        }
+        else//-如果比较兴奋了就按照脚本的动作
+        {
+            m_newPlayerAction = m_musicManager.currentSongInfo.onBeatActionSequence[_iIndex][m_scoringManager.GetNearestPlayerActionInfoIndex()].playerActionType;
+        }
 
         //获取当前在哪个拍子按下来了
 		OnBeatActionInfo actionInfo = new OnBeatActionInfo();

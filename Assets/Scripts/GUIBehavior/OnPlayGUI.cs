@@ -312,7 +312,7 @@ public class OnPlayGUI : MonoBehaviour
             fYoffset = info.triggerBeatTiming - m_musicManager.beatCountFromStart;
             fYoffset *= m_pixelsPerBeatsY;
 
-            Rect drawRect = new Rect(x + markerSize * _iIndex//x + x_offset,
+            Rect drawRect = new Rect(x + Screen.width / 4 * _iIndex//x + x_offset,
                 , y - fYoffset//y
                 , markerSize
                 , markerSize);
