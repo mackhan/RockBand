@@ -29,19 +29,28 @@ public class PlayerAction : MonoBehaviour
     /// <summary>
     /// 玩家当前的动作
     /// </summary>
-    PlayerActionEnum m_currentPlayerAction;
-    public PlayerActionEnum currentPlayerAction
+    PlayerActionEnum[] m_currentPlayerAction = new PlayerActionEnum[4];
+
+    public PlayerActionEnum GetCurrentPlayerAction(int _iIndex)
     {
-		get{ return m_currentPlayerAction; }
+		return m_currentPlayerAction[_iIndex];
 	}
 
     /// <summary>
     /// 玩家在哪个拍子按下来了
     /// </summary>
-    OnBeatActionInfo m_lastActionInfo = new OnBeatActionInfo();
-    public OnBeatActionInfo lastActionInfo
+    OnBeatActionInfo[] m_lastActionInfo = new OnBeatActionInfo[] 
     {
-		get{ return m_lastActionInfo; }
+        new OnBeatActionInfo()
+        , new OnBeatActionInfo()
+        , new OnBeatActionInfo()
+        , new OnBeatActionInfo()
+
+    };
+
+    public OnBeatActionInfo GetLastActionInof(int _iIndex)
+    {
+		return m_lastActionInfo[_iIndex];
 	}
 
     /// <summary>
@@ -54,7 +63,7 @@ public class PlayerAction : MonoBehaviour
     /// </summary>
     ScoringManager m_scoringManager;
 
-    PlayerActionEnum m_newPlayerAction;
+    PlayerActionEnum[] m_newPlayerAction = new PlayerActionEnum[4];
 
     void Start ()
     {
@@ -64,8 +73,11 @@ public class PlayerAction : MonoBehaviour
 	
 	void Update ()
     {
-		m_currentPlayerAction = m_newPlayerAction;
-		m_newPlayerAction = PlayerActionEnum.None;
+        for (int i = 0; i < 4; i++)
+        {
+            m_currentPlayerAction[i] = m_newPlayerAction[i];
+            m_newPlayerAction[i] = PlayerActionEnum.None;
+        }
 	}
 
     /// <summary>
@@ -81,18 +93,19 @@ public class PlayerAction : MonoBehaviour
 
         if (m_scoringManager.temper < ScoringManager.temperThreshold)//-如果兴奋值比较低就一直播放点头的动作
         {
-            m_newPlayerAction = PlayerActionEnum.HeadBanging;
+            m_newPlayerAction[_iIndex] = PlayerActionEnum.HeadBanging;
         }
         else//-如果比较兴奋了就按照脚本的动作
         {
-            m_newPlayerAction = m_musicManager.currentSongInfo.onBeatActionSequence[_iIndex][m_scoringManager.GetNearestPlayerActionInfoIndex()].playerActionType;
+            int iNearest = m_scoringManager.GetNearestPlayerActionInfoIndex(_iIndex);
+            m_newPlayerAction[_iIndex] = m_musicManager.currentSongInfo.onBeatActionSequence[_iIndex][iNearest].playerActionType;
         }
 
         //获取当前在哪个拍子按下来了
 		OnBeatActionInfo actionInfo = new OnBeatActionInfo();
 		actionInfo.triggerBeatTiming = m_musicManager.beatCountFromStart;
-		actionInfo.playerActionType = m_newPlayerAction;
-		m_lastActionInfo = actionInfo;
+		actionInfo.playerActionType = m_newPlayerAction[_iIndex];
+		m_lastActionInfo[_iIndex] = actionInfo;
 
 #if PLAYER
         //-播放相应的动画

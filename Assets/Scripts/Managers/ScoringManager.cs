@@ -104,13 +104,23 @@ public class ScoringManager : MonoBehaviour
 	}
 	private float m_scoreRate = 0;
 
-	/// <summary>
+    /// <summary>
+    /// 得分的序列计数器
+    /// </summary>
+    //SequenceSeeker<OnBeatActionInfo> m_scoringUnitSeeker
+    //    = new SequenceSeeker<OnBeatActionInfo>();
+
+    SequenceSeekers<OnBeatActionInfo> m_kScoringUnitSeekers = new SequenceSeekers<OnBeatActionInfo>();
+
+    /// <summary>
     /// 得分系统开启
     /// </summary>
-	public void BeginScoringSequence()
+    public void BeginScoringSequence()
     {
-		m_scoringUnitSeeker.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence[0]);
-	}
+        //m_scoringUnitSeeker.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence[0]);
+        m_kScoringUnitSeekers.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
+
+    }
 	
     void Start()
     {
@@ -147,42 +157,46 @@ public class ScoringManager : MonoBehaviour
     /// <param name="beatCount"></param>
     public void Seek(float beatCount)
     {
-		m_scoringUnitSeeker.Seek(beatCount);
-		m_previousHitIndex=-1;
+        //m_scoringUnitSeeker.Seek(beatCount);
+        m_kScoringUnitSeekers.Seek(beatCount);
+        m_previousHitIndex =-1;
 	}
 
 	/// <summary>
     /// 找到最近的谱面索引
     /// </summary>
     /// <returns></returns>
-	public int GetNearestPlayerActionInfoIndex()
+	public int GetNearestPlayerActionInfoIndex(int _iIndex)
     {
 		SongInfo	song = m_musicManager.currentSongInfo;
 		int 		nearestIndex = 0;
 
-		if (m_scoringUnitSeeker.nextIndex == 0)//-如果目的位置是开头的话，没有前一个标记，所以不比较。
+        List<OnBeatActionInfo> kBeatActionInfos = song.onBeatActionSequence[_iIndex];
+        SequenceSeeker<OnBeatActionInfo> kSeeker = m_kScoringUnitSeekers.GetSeeker(_iIndex);
+
+        if (kSeeker.nextIndex == 0)//-如果目的位置是开头的话，没有前一个标记，所以不比较。
         {		
 			nearestIndex = 0;
 		}
-        else if(m_scoringUnitSeeker.nextIndex >= song.onBeatActionSequence[0].Count)//-当前索引的位置比序列的尺寸大的时候（过了最后的标记时间的时候）应该不会大于
+        else if(kSeeker.nextIndex >= kBeatActionInfos.Count)//-当前索引的位置比序列的尺寸大的时候（过了最后的标记时间的时候）应该不会大于
         {
-            Debug.Assert(m_scoringUnitSeeker.nextIndex > song.onBeatActionSequence[0].Count);
-			nearestIndex = song.onBeatActionSequence[0].Count - 1;
+            Debug.Assert(kSeeker.nextIndex > kBeatActionInfos.Count);
+			nearestIndex = kBeatActionInfos.Count - 1;
 		}
         else//与前后的定时相比较
         {
-            OnBeatActionInfo crnt_action = song.onBeatActionSequence[0][m_scoringUnitSeeker.nextIndex];//-当前位置
-			OnBeatActionInfo prev_action = song.onBeatActionSequence[0][m_scoringUnitSeeker.nextIndex - 1];//-前一个位置
+            OnBeatActionInfo crnt_action = kBeatActionInfos[kSeeker.nextIndex];//-当前位置
+			OnBeatActionInfo prev_action = kBeatActionInfos[kSeeker.nextIndex - 1];//-前一个位置
 
-			float act_timing = m_playerAction.lastActionInfo.triggerBeatTiming;//-玩家在哪个拍子按下的
+			float act_timing = m_playerAction.GetLastActionInof(_iIndex).triggerBeatTiming;//-玩家在哪个拍子按下的
 
 			if (crnt_action.triggerBeatTiming - act_timing < act_timing - prev_action.triggerBeatTiming)//-如果是当前位置比较近
             {
-				nearestIndex = m_scoringUnitSeeker.nextIndex;
+				nearestIndex = kSeeker.nextIndex;
 			}
             else//-如果是前一个位置比较近
             {
-				nearestIndex = m_scoringUnitSeeker.nextIndex - 1;
+				nearestIndex = kSeeker.nextIndex - 1;
 			}
 		}
 
@@ -193,73 +207,83 @@ public class ScoringManager : MonoBehaviour
     {
 		m_additionalScore = 0;
 
-		float additionalTemper = 0;
-		bool hitBefore = false;
-		bool hitAfter = false;
-
 		if (m_musicManager.IsPlaying())
         {
-			m_scoringUnitSeeker.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
+            m_kScoringUnitSeekers.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
 
-			if (m_playerAction.currentPlayerAction != PlayerActionEnum.None)//-如果这一拍玩家有操作？？？
+            for (int i = 0; i < 4; i++)
             {
-				int nearestIndex = GetNearestPlayerActionInfoIndex();
-
-				SongInfo song = m_musicManager.currentSongInfo;
-
-				OnBeatActionInfo marker_act = song.onBeatActionSequence[0][nearestIndex];//-找到最近的谱面
-				OnBeatActionInfo player_act = m_playerAction.lastActionInfo;//-找到玩家操作的信息
-
-				m_lastResult.timingError = player_act.triggerBeatTiming - marker_act.triggerBeatTiming;//-找到玩家操作的拍子和最近谱面时间的差值
-				m_lastResult.markerIndex = nearestIndex;
-
-				if (nearestIndex == m_previousHitIndex)//-如果已经判定过了，则扣分
-                {
-					m_additionalScore = 0;
-				}
-                else//-计算得分
-                {
-					m_additionalScore = CheckScore(nearestIndex, m_lastResult.timingError, out additionalTemper);
-				}
-
-				if (m_additionalScore > 0)//-得分
-                {
-                    //-记录当前的索引，防止将相同的标记判定为两次
-                    m_previousHitIndex = nearestIndex;
-
-                    if (nearestIndex == m_scoringUnitSeeker.nextIndex)//-判断当前按下的是前一个还是后一个
-                    {
-                        hitAfter = true;
-                    }
-                    else
-                    {
-                        hitBefore = true;
-                    }
-
-                    //增加分数的时候播放动画
-                    OnScoreAdded(nearestIndex);
-				}
-                else//-扣分，为了已经判定的时候也自动扣分写的有些丑陋
-                {
-					m_additionalScore = missScore;
-					additionalTemper = missHeatupRate;
-				}
-
-				m_score += m_additionalScore;
-				temper += additionalTemper;
-				m_onPlayGUI.RythmHitEffect(m_previousHitIndex, m_additionalScore);
-
-				//-记录日志
-				DebugWriteLogPrev();
-				DebugWriteLogPost(hitBefore, hitAfter);
-			}
-
-            if (m_scoringUnitSeeker.nextIndex > 0)//-如果还没结束，计算得分率，用总分数，除以假设全部是最佳的得分
-            {
-                m_scoreRate = m_score / (m_scoringUnitSeeker.nextIndex * excellentScore);
+                Process(i);
             }
-		}
+        }
 	}
+
+    void Process(int _iIndex)
+    {
+        float additionalTemper = 0;
+        bool hitBefore = false;
+        bool hitAfter = false;
+
+        SequenceSeeker<OnBeatActionInfo> kSeeker = m_kScoringUnitSeekers.GetSeeker(_iIndex);
+
+        if (m_playerAction.GetCurrentPlayerAction(_iIndex) != PlayerActionEnum.None)//-如果这一拍玩家有操作？？？
+        {
+            int nearestIndex = GetNearestPlayerActionInfoIndex(_iIndex);
+            SongInfo song = m_musicManager.currentSongInfo;
+            OnBeatActionInfo marker_act = song.onBeatActionSequence[_iIndex][nearestIndex];//-找到最近的谱面
+            OnBeatActionInfo player_act = m_playerAction.GetLastActionInof(_iIndex);//-找到玩家操作的信息
+
+            m_lastResult.timingError = player_act.triggerBeatTiming - marker_act.triggerBeatTiming;//-找到玩家操作的拍子和最近谱面时间的差值
+            m_lastResult.markerIndex = nearestIndex;
+
+            if (nearestIndex == m_previousHitIndex)//-如果已经判定过了，则扣分
+            {
+                m_additionalScore = 0;
+            }
+            else//-计算得分
+            {
+                m_additionalScore = CheckScore(nearestIndex, m_lastResult.timingError, out additionalTemper);
+            }
+
+            if (m_additionalScore > 0)//-得分
+            {
+                //-记录当前的索引，防止将相同的标记判定为两次
+                m_previousHitIndex = nearestIndex;
+
+                if (nearestIndex == kSeeker.nextIndex)//-判断当前按下的是前一个还是后一个
+                {
+                    hitAfter = true;
+                }
+                else
+                {
+                    hitBefore = true;
+                }
+
+                //增加分数的时候播放动画
+                OnScoreAdded(nearestIndex);
+            }
+            else//-扣分，为了已经判定的时候也自动扣分写的有些丑陋
+            {
+                m_additionalScore = missScore;
+                additionalTemper = missHeatupRate;
+            }
+
+            m_score += m_additionalScore;
+            temper += additionalTemper;
+            m_onPlayGUI.RythmHitEffect(_iIndex, m_previousHitIndex, m_additionalScore);
+
+#if false
+            //-记录日志
+            DebugWriteLogPrev();
+            DebugWriteLogPost(hitBefore, hitAfter);
+#endif
+        }
+
+        if (kSeeker.nextIndex > 0)//-如果还没结束，计算得分率，用总分数，除以假设全部是最佳的得分
+        {
+            m_scoreRate = m_score / (kSeeker.nextIndex * excellentScore);
+        }
+    }
 
     /// <summary>
     /// 判定输入的结果（好/不好/错误）
@@ -338,6 +362,7 @@ public class ScoringManager : MonoBehaviour
 		}
 	}
 
+#if false
     /// <summary>
     /// 输出debug信息，这一帧玩家是有的操作的
     /// </summary>
@@ -402,14 +427,9 @@ public class ScoringManager : MonoBehaviour
 		}
 #endif
 	}
+#endif
 
-    /// <summary>
-    /// 得分的序列计数器
-    /// </summary>
-	SequenceSeeker<OnBeatActionInfo> m_scoringUnitSeeker
-		= new SequenceSeeker<OnBeatActionInfo>();
-
-	float			m_additionalScore;
+    float m_additionalScore;
 	MusicManager	m_musicManager;
 	PlayerAction	m_playerAction;
 	OnPlayGUI		m_onPlayGUI;

@@ -82,12 +82,12 @@ public class OnPlayGUI : MonoBehaviour
     /// <summary>
     /// Perfect，good，bad图标显示的时长
     /// </summary>
-    int m_messageShowCountDown = 0;
+    int[] m_messageShowCountDown = new int[4];
 
     /// <summary>
     /// 点击效果显示的时长
     /// </summary>
-    int m_rythmHitEffectCountDown = 0;
+    int[] m_rythmHitEffectCountDown = new int[4];
 
     /// <summary>
     /// 上一次的分数
@@ -140,8 +140,8 @@ public class OnPlayGUI : MonoBehaviour
     /// </summary>
 	public void BeginVisualization()
     {
-		m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
-		m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
+        m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
+        m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
 
         //m_seekerBack.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
         //m_seekerBack.Seek(markerLeaveOffset);
@@ -161,11 +161,11 @@ public class OnPlayGUI : MonoBehaviour
     /// </summary>
     /// <param name="actionInfoIndex"></param>
     /// <param name="score"></param>
-    public void RythmHitEffect(int actionInfoIndex, float score)
+    public void RythmHitEffect(int _iIndex, int actionInfoIndex, float score)
     {
         m_lastInputScore = score;
-		m_rythmHitEffectCountDown = rythmHitEffectShowFrameDuration;
-		m_messageShowCountDown = messatShowFrameDuration;
+		m_rythmHitEffectCountDown[_iIndex] = rythmHitEffectShowFrameDuration;
+		m_messageShowCountDown[_iIndex] = messatShowFrameDuration;
 
         //-根据操作播放音效，这里好坏的音效放在了角色的身上
         AudioClip kAudioClip;
@@ -292,7 +292,7 @@ public class OnPlayGUI : MonoBehaviour
 
         //标记结束显示。
         int end = m_kSeekersFront.GetSeeker(_iIndex).nextIndex;
-        float x_offset;
+        float x_offset = Screen.width / 4 * _iIndex;
         float fYoffset;
 
         //绘制一个显示动作时间的图标。
@@ -312,7 +312,7 @@ public class OnPlayGUI : MonoBehaviour
             fYoffset = info.triggerBeatTiming - m_musicManager.beatCountFromStart;
             fYoffset *= m_pixelsPerBeatsY;
 
-            Rect drawRect = new Rect(x + Screen.width / 4 * _iIndex//x + x_offset,
+            Rect drawRect = new Rect(x + x_offset//x + x_offset,
                 , y - fYoffset//y
                 , markerSize
                 , markerSize);
@@ -332,9 +332,9 @@ public class OnPlayGUI : MonoBehaviour
         }
 
         //-点中爆裂的效果
-        if (m_rythmHitEffectCountDown > 0)
+        if (m_rythmHitEffectCountDown[_iIndex] > 0)
         {
-            float scale = 2.0f - m_rythmHitEffectCountDown / (float)rythmHitEffectShowFrameDuration;//-依据点击效果的时间确认缩放，一开始1倍，最后是2倍，逐渐变大
+            float scale = 2.0f - m_rythmHitEffectCountDown[_iIndex] / (float)rythmHitEffectShowFrameDuration;//-依据点击效果的时间确认缩放，一开始1倍，最后是2倍，逐渐变大
 
             //-再依据上一次的得分调整倍率
             if (m_lastInputScore >= ScoringManager.excellentScore)
@@ -352,21 +352,21 @@ public class OnPlayGUI : MonoBehaviour
 
             float baseSize = markerSize;//32.0f;
             Rect drawRect3 = new Rect(
-                markerOrigin.x - baseSize * scale / 2.0f + markerSize * _iIndex,
+                markerOrigin.x - baseSize * scale / 2.0f + x_offset,
                 markerOrigin.y - baseSize * scale / 2.0f,
                 baseSize * scale,
                 baseSize * scale);
             Graphics.DrawTexture(drawRect3, hitEffectIcon);
-            m_rythmHitEffectCountDown--;
+            m_rythmHitEffectCountDown[_iIndex]--;
         }
 
         //显示Perfect，Good，Bad三种提示
-        if (m_messageShowCountDown > 0)
+        if (m_messageShowCountDown[_iIndex] > 0)
         {
-            GUI.color = new Color(1, 1, 1, m_messageShowCountDown / 40.0f);
-            GUI.DrawTexture(new Rect(20 + markerSize * _iIndex, 230, 150, 50), messageTexture, ScaleMode.ScaleAndCrop, true);
+            GUI.color = new Color(1, 1, 1, m_messageShowCountDown[_iIndex] / 40.0f);
+            GUI.DrawTexture(new Rect(20 + x_offset, 230, 150, 50), messageTexture, ScaleMode.ScaleAndCrop, true);
             GUI.color = Color.white;
-            m_messageShowCountDown--;
+            m_messageShowCountDown[_iIndex]--;
         }
     }
 }
