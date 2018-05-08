@@ -353,7 +353,7 @@ public class OnPlayGUI : MonoBehaviour
         if (m_messageShowCountDown[_iIndex] > 0)
         {
             GUI.color = new Color(1, 1, 1, m_messageShowCountDown[_iIndex] / 40.0f);
-            GUI.DrawTexture(new Rect(20 + x_offset, markerOrigin.y - markerSize, 150, 50), messageTexture, ScaleMode.ScaleAndCrop, true);
+            GUI.DrawTexture(new Rect(20 + x_offset, markerOrigin.y - markerSize, 150, 80), messageTexture, ScaleMode.ScaleToFit, true);
             GUI.color = Color.white;
             m_messageShowCountDown[_iIndex]--;
         }
