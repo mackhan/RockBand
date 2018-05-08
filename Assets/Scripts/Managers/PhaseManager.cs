@@ -36,6 +36,11 @@ public class PhaseManager : MonoBehaviour
     /// 所有UI的管理器
     /// </summary>
     public GameObject[] guiList;
+
+    void Awake()
+    {
+        Application.targetFrameRate = 60;
+    }
 	
 	void Start ()
     {
@@ -43,7 +48,6 @@ public class PhaseManager : MonoBehaviour
 		m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
 
         SetPhase(m_currentPhase);
-
     }
 	
 	void Update ()
@@ -83,18 +87,18 @@ public class PhaseManager : MonoBehaviour
         m_musicManager.currentSongInfo = songInfo;
 
         //-三波观众开始动起来
-        foreach (GameObject audience in GameObject.FindGameObjectsWithTag("Audience"))
-        {
-            audience.GetComponent<SimpleActionMotor>().isWaveBegin = true;
-        }
+        //foreach (GameObject audience in GameObject.FindGameObjectsWithTag("Audience"))
+        //{
+        //    audience.GetComponent<SimpleActionMotor>().isWaveBegin = true;
+        //}
 
-        //各种效果动画（舞台演出等）开始
+        //-各种效果动画（舞台演出等）开始
         GameObject.Find("EventManager").GetComponent<EventManager>().BeginEventSequence();
 
-        //得分评价开始
+        //-得分评价开始
         m_scoringManager.BeginScoringSequence();
 
-        //节奏序列绘制开始
+        //-节奏序列绘制开始
         OnPlayGUI onPlayGUI = GameObject.Find("OnPlayGUI").GetComponent<OnPlayGUI>();
         onPlayGUI.BeginVisualization();
         onPlayGUI.isDevelopmentMode = _bDevelopment;

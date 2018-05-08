@@ -73,7 +73,7 @@ public class PlayerAction : MonoBehaviour
 	
 	void Update ()
     {
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < ConstantManager.MemberNum; i++)
         {
             m_currentPlayerAction[i] = m_newPlayerAction[i];
             m_newPlayerAction[i] = PlayerActionEnum.None;

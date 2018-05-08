@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
 
+/// <summary>
+/// 序列管理器，因为可能有多个音轨
+/// </summary>
 public class SequenceSeekers<ElementType> where ElementType : MusicalElement
 {
     /// <summary>

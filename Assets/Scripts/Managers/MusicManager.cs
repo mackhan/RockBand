@@ -29,7 +29,7 @@ public class MusicManager : MonoBehaviour
 		get
         {
             float fDeltaCount = m_beatCountFromStart - m_previousBeatCountFromStart;
-            Debug.Log("fDeltaCount:" + fDeltaCount);
+            //-Debug.Log("fDeltaCount:" + fDeltaCount);
             return fDeltaCount;
         }
 	}
@@ -82,8 +82,23 @@ public class MusicManager : MonoBehaviour
 		m_musicFinished = false;
 	}
 
+    /// <summary>
+    /// 暂停控制
+    /// </summary>
+    public static bool Pause = false;
+
 	void Update ()
     {
+        if (Pause)
+        {
+            m_audioSource.Pause();
+            return;
+        }
+        else
+        {
+            m_audioSource.UnPause();
+        }
+
         //-播放时始终检查歌曲的播放位置
         if (m_audioSource.isPlaying)
 		{
@@ -136,6 +151,6 @@ public class MusicManager : MonoBehaviour
     /// <returns></returns>
 	public bool IsPlaying()
     {
-		return m_audioSource.isPlaying;
+        return m_audioSource.isPlaying;
 	}
 }

@@ -37,8 +37,18 @@ public class EventManager : MonoBehaviour
 		}
 	}
 
+    /// <summary>
+    /// 暂停控制
+    /// </summary>
+    public static bool Pause = false;
+
     void Update ()
     {
+        if (Pause)
+        {
+            return;
+        }
+
 		SongInfo song = m_musicManager.currentSongInfo;
 
 		if (m_musicManager.IsPlaying())

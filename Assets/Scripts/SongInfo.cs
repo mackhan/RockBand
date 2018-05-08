@@ -12,13 +12,13 @@ public class SongInfo
     /// <summary>
     /// 谱面每个关键拍的打击事件
     /// </summary>
-	//public List<OnBeatActionInfo> onBeatActionSequence = new List<OnBeatActionInfo>();
     public List<OnBeatActionInfo>[] onBeatActionSequence = new List<OnBeatActionInfo>[4] 
     {
         new List<OnBeatActionInfo>()
         , new List<OnBeatActionInfo>()
         , new List<OnBeatActionInfo>()
-        , new List<OnBeatActionInfo>() };
+        , new List<OnBeatActionInfo>() 
+    };
 
     /// <summary>
     /// 舞台事件的序列队列

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
 
-
 /// <summary>
 /// 舞台演出和节拍标记的基类
 /// </summary>
@@ -77,5 +76,5 @@ public class OnBeatActionInfo : MusicalElement
     /// <summary>
     /// 原来文本中的行号
     /// </summary>
-	public int	line_number;		
+	public int line_number;		
 }

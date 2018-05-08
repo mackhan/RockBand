@@ -53,13 +53,6 @@ public class OnPlayGUI : MonoBehaviour
 	public static float markerEnterOffset = 2.5f;
 
     /// <summary>
-    /// 每拍移动多少个像素
-    /// 其中Screen.width表示移动的距离
-    /// markerEnterOffset表示从开始显示到抵达该处经历的拍数
-    /// </summary>
-    float m_pixelsPerBeats = Screen.width * 1.0f / markerEnterOffset;
-
-    /// <summary>
     /// 每拍需要移动多少个像素
     /// </summary>
     float m_pixelsPerBeatsY = Screen.height * 1.0f / markerEnterOffset;
@@ -94,6 +87,9 @@ public class OnPlayGUI : MonoBehaviour
     /// </summary>
 	float m_lastInputScore = 0;
 
+    /// <summary>
+    /// 兴奋闪烁的颜色
+    /// </summary>
     Color m_blinkColor = new Color(1, 1, 1);
     
     public bool isDevelopmentMode = false;
@@ -142,12 +138,6 @@ public class OnPlayGUI : MonoBehaviour
     {
         m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
         m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
-
-        //m_seekerBack.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
-        //m_seekerBack.Seek(markerLeaveOffset);
-
-        //m_seekerFront.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
-        //m_seekerFront.Seek(markerEnterOffset);
 
         m_kSeekersBack.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
         m_kSeekersBack.Seek(markerLeaveOffset);
@@ -207,10 +197,13 @@ public class OnPlayGUI : MonoBehaviour
         markerOrigin = new Vector2(Screen.width / 8.0f, Screen.height - 100);
     }
 
+    /// <summary>
+    /// 定位
+    /// </summary>
+    /// <returns>The seek.</returns>
+    /// <param name="beatCount">Beat count.</param>
     public void Seek(float beatCount)
     {
-        //m_seekerBack.Seek(beatCount + markerLeaveOffset);
-        //m_seekerFront.Seek(beatCount + markerEnterOffset);
         m_kSeekersBack.Seek(beatCount + markerLeaveOffset);
         m_kSeekersFront.Seek(beatCount + markerEnterOffset);
     }
@@ -219,8 +212,6 @@ public class OnPlayGUI : MonoBehaviour
     {
 		if(m_musicManager.IsPlaying())//-更新拍子，一帧可能有多个拍子
         {
-            //m_seekerBack.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
-            //m_seekerFront.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
             m_kSeekersBack.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
             m_kSeekersFront.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
         }
@@ -271,9 +262,9 @@ public class OnPlayGUI : MonoBehaviour
   //	, beatPositionIcon
   //);
 
-        if (m_musicManager.IsPlaying())
+        if (m_musicManager.IsPlaying() || Time.timeScale == 0.0f)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < ConstantManager.MemberNum; i++)
             {
                 Drew(i, markerSize);
             }
@@ -307,8 +298,6 @@ public class OnPlayGUI : MonoBehaviour
             }
 
             // 求到显示位置的X坐标的偏移,用提前显示的轨道播放的位置减去当前播放拍子的差值
-            //            x_offset = info.triggerBeatTiming - m_musicManager.beatCountFromStart;
-            //x_offset *= m_pixelsPerBeats;
             fYoffset = info.triggerBeatTiming - m_musicManager.beatCountFromStart;
             fYoffset *= m_pixelsPerBeatsY;
 
@@ -369,4 +358,28 @@ public class OnPlayGUI : MonoBehaviour
             m_messageShowCountDown[_iIndex]--;
         }
     }
+
+    /// <summary>
+    /// 按了暂停
+    /// </summary>
+    /// <param name="pause">If set to <c>true</c> pause.</param>
+	public void OnPause(bool pause)
+	{
+        if (Time.timeScale == 1.0f)
+        {
+            Debug.Log("OnPause:" + 0.0f);
+            Time.timeScale = 0.0f;
+            EventManager.Pause = true;
+            MusicManager.Pause = true;
+            ScoringManager.Pause = true;
+        }
+        else
+        {
+            Debug.Log("OnPause:" + 1.0f);
+            Time.timeScale = 1.0f;
+            EventManager.Pause = false;
+            MusicManager.Pause = false;
+            ScoringManager.Pause = false;
+        }
+	}
 }
