@@ -60,7 +60,7 @@ public class OnPlayGUI : MonoBehaviour
     /// <summary>
     /// 计时结束显示标记，节拍要延迟多久结束，和开始的时间差就是通过画面需要的时间
     /// </summary>
-	public static float markerLeaveOffset = -1.0f;   
+	public static float markerLeaveOffset = -1.0f;
 
     /// <summary>
     /// 消息显示的时长
@@ -91,7 +91,7 @@ public class OnPlayGUI : MonoBehaviour
     /// 兴奋闪烁的颜色
     /// </summary>
     Color m_blinkColor = new Color(1, 1, 1);
-    
+
     public bool isDevelopmentMode = false;
 
     /// <summary>
@@ -99,19 +99,22 @@ public class OnPlayGUI : MonoBehaviour
     /// </summary>
 	public Vector2 markerOrigin = new Vector2(20.0f, 300.0f);
 
-	public GUISkin guiSkin;
+    public GUISkin guiSkin;
 
     ///// <summary>
     ///// 时间先进的查找单位（显示结束位置）。
     ///// </summary>
-    //SequenceSeeker<OnBeatActionInfo> m_seekerFront = new SequenceSeeker<OnBeatActionInfo>();
     SequenceSeekers<OnBeatActionInfo> m_kSeekersFront = new SequenceSeekers<OnBeatActionInfo>();
 
     /// <summary>
     /// 寻找单位（显示开始位置），在后面的时间。 
     /// </summary>
-    //SequenceSeeker<OnBeatActionInfo> m_seekerBack = new SequenceSeeker<OnBeatActionInfo>();
     SequenceSeekers<OnBeatActionInfo> m_kSeekersBack = new SequenceSeekers<OnBeatActionInfo>();
+
+    /// <summary>
+    /// 测试
+    /// </summary>
+    SequenceSeekers<OnBeatActionInfo> m_kSeeker = new SequenceSeekers<OnBeatActionInfo>();
 
     MusicManager m_musicManager;
 
@@ -127,9 +130,15 @@ public class OnPlayGUI : MonoBehaviour
     GameObject m_kMato;
 
     /// <summary>
-    /// 所有按钮的位置
+    /// 按钮的位置
     /// </summary>
-    GameObject m_kButton;
+    GameObject m_kButtonPiano;
+
+    GameObject m_kButtonGuitar;
+
+    GameObject m_kButtonDrum;
+
+    GameObject m_kButtonBass;
 
     /// <summary>
     /// PlayUI的初始化
@@ -144,6 +153,9 @@ public class OnPlayGUI : MonoBehaviour
 
         m_kSeekersFront.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
         m_kSeekersFront.Seek(markerEnterOffset);
+
+        m_kSeeker.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
+        m_kSeeker.Seek(0.0f);
     }
 
     /// <summary>
@@ -154,47 +166,59 @@ public class OnPlayGUI : MonoBehaviour
     public void RythmHitEffect(int _iIndex, int actionInfoIndex, float score)
     {
         m_lastInputScore = score;
-		m_rythmHitEffectCountDown[_iIndex] = rythmHitEffectShowFrameDuration;
-		m_messageShowCountDown[_iIndex] = messatShowFrameDuration;
+        m_rythmHitEffectCountDown[_iIndex] = rythmHitEffectShowFrameDuration;
+        m_messageShowCountDown[_iIndex] = messatShowFrameDuration;
 
         //-根据操作播放音效，这里好坏的音效放在了角色的身上
         AudioClip kAudioClip;
         PlayerAction kPlayerAction = m_playerAvator.GetComponent<PlayerAction>();
-        if (score < 0)
+        if (score == 0)
+        {
+            Debug.Log("Empty");
+            m_messageShowCountDown[_iIndex] = 0;
+            return;
+        }
+        else if (score < 0)
         {
             kAudioClip = kPlayerAction.headBangingSoundClip_BAD;
-			messageTexture = messageTexture_Miss;
-		}
-		else if (score <= ScoringManager.goodScore)
+            messageTexture = messageTexture_Miss;
+        }
+        else if (score <= ScoringManager.goodScore)
         {
             kAudioClip = kPlayerAction.headBangingSoundClip_GOOD;
-			messageTexture = messageTexture_Good;
-		}
-		else
+            messageTexture = messageTexture_Good;
+        }
+        else
         {
             kAudioClip = kPlayerAction.headBangingSoundClip_GOOD;
-			messageTexture = messageTexture_Best;
-		}
-        
+            messageTexture = messageTexture_Best;
+        }
+
         //-播放Best，Good，bad的音效，播放器也放在主角的身上
         AudioSource kAudioSource = m_playerAvator.GetComponent<AudioSource>();
         kAudioSource.clip = kAudioClip;
         kAudioSource.Play();
     }
 
-	void Start()
+    void Start()
     {
-		m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
-		m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
-		m_playerAvator = GameObject.Find("PlayerAvator");
+        m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
+        m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
+        m_playerAvator = GameObject.Find("PlayerAvator");
 
         m_kMato = transform.Find("mato").gameObject;
         Debug.Assert(m_kMato != null);
 
-        m_kButton = transform.Find("Button").gameObject;
-        Debug.Assert(m_kButton != null);
+        m_kButtonPiano = transform.Find("ButtonPiano").gameObject;
+        Debug.Assert(m_kButtonPiano != null);
+        m_kButtonGuitar = transform.Find("ButtonGuitar").gameObject;
+        Debug.Assert(m_kButtonGuitar != null);
+        m_kButtonDrum = transform.Find("ButtonDrum").gameObject;
+        Debug.Assert(m_kButtonDrum != null);
+        m_kButtonBass = transform.Find("ButtonBass").gameObject;
+        Debug.Assert(m_kButtonBass != null);
 
-        markerOrigin = new Vector2(Screen.width / 8.0f, Screen.height - 100);
+        markerOrigin = new Vector2(Screen.width / 8.0f, Screen.height - Screen.height * 1 / 3);
     }
 
     /// <summary>
@@ -204,35 +228,41 @@ public class OnPlayGUI : MonoBehaviour
     /// <param name="beatCount">Beat count.</param>
     public void Seek(float beatCount)
     {
-        m_kSeekersBack.Seek(beatCount + markerLeaveOffset);
-        m_kSeekersFront.Seek(beatCount + markerEnterOffset);
+        float fCount = beatCount + markerEnterOffset;
+        m_kSeekersBack.Seek(fCount);
+        m_kSeekersFront.Seek(fCount);
+        m_kSeeker.Seek(fCount);
     }
 
-    void Update ()
+    void Update()
     {
-		if(m_musicManager.IsPlaying())//-更新拍子，一帧可能有多个拍子
+        if (m_musicManager.IsPlaying())//-更新拍子，一帧可能有多个拍子
         {
             m_kSeekersBack.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
             m_kSeekersFront.ProceedTime(m_musicManager.DeltaBeatCountFromStart);
+            m_kSeeker.Seek(m_musicManager.DeltaBeatCountFromStart);
         }
-	}
+    }
 
-	void OnGUI()
+    void OnGUI()
     {
+        float fScale = Screen.height / 1334;
+
         //-分数显示
-        GUI.Box(new Rect(15,5,100,30), "");
-		GUI.Label(new Rect(20,10,90,20), "Score: " + m_scoringManager.score);
+        GUI.Box(new Rect(15*fScale, 5*fScale, 200*fScale, 60*fScale), "");
+        GUI.Label(new Rect(20*fScale, 10*fScale, 180*fScale, 40*fScale)
+                  , "Score: " + m_scoringManager.score);
 
         //-兴奋闪烁颜色
         if (m_scoringManager.temper > ScoringManager.temperThreshold)
-		{
-			m_blinkColor.g = m_blinkColor.b	
+        {
+            m_blinkColor.g = m_blinkColor.b
                 = 0.7f + 0.3f * Mathf.Abs(Time.frameCount % Application.targetFrameRate - Application.targetFrameRate / 2) / (float)Application.targetFrameRate;
-			GUI.color = m_blinkColor;
-		}
+            GUI.color = m_blinkColor;
+        }
 
         //-兴奋度
-        Rect heatBarFrameRect = new Rect(180.0f, 20.0f, 100.0f, 20.0f);
+        Rect heatBarFrameRect = new Rect(360.0f*fScale, 40.0f*fScale, 200.0f*fScale, 40.0f*fScale);
 
         //-显示兴奋度的文字
         Rect heatBarLabelRect = heatBarFrameRect;
@@ -241,26 +271,36 @@ public class OnPlayGUI : MonoBehaviour
 
         //-显示兴奋度的能量槽
         Rect heatBarRect = heatBarFrameRect;
-		heatBarRect.width *= m_scoringManager.temper;
-		GUI.Box(heatBarFrameRect, "");
+        heatBarRect.width *= m_scoringManager.temper;
+        GUI.Box(heatBarFrameRect, "");
 
         //-显示兴奋度的值
-		GUI.DrawTextureWithTexCoords(heatBarRect
+        GUI.DrawTextureWithTexCoords(heatBarRect
             , temperBar
             , new Rect(0.0f, 0.0f, 1.0f * m_scoringManager.temper
             , 1.0f));
 
-		GUI.color = Color.white;
+        GUI.color = Color.white;
+
+        //-调试功能，加速减速
+        if (GUI.Button(new Rect(Screen.width - 300 * fScale, 80 * fScale, 300 * fScale, 80 * fScale), "Speed+"))
+        {
+            m_pixelsPerBeatsY += Screen.height / 10;
+        }
+        if (GUI.Button(new Rect(Screen.width - 300 * fScale, 240 * fScale, 300 * fScale, 80 * fScale), "Speed-"))
+        {
+            m_pixelsPerBeatsY -= Screen.height / 10;
+        }
 
         //-计算目标拍子的ICON的大小。显示当前需要击中的位置
-        float markerSize = ScoringManager.timingErrorToleranceGood * m_pixelsPerBeatsY;
-
+        //-float markerSize = ScoringManager.timingErrorToleranceGood * Screen.height / markerEnterOffset;
+        float markerSize = Screen.width / 4.5f;
+            
         //-显示目标拍子的ICON
-        m_kButton.transform.position = new Vector2(40f, markerOrigin.y);
-  //      Graphics.DrawTexture(
-  //	new Rect(x, y, markerSize, markerSize)
-  //	, beatPositionIcon
-  //);
+        m_kButtonPiano.transform.position = new Vector2(markerOrigin.x * 1, Screen.height / 3);
+        m_kButtonGuitar.transform.position = new Vector2(markerOrigin.x * 3, Screen.height / 3);
+        m_kButtonDrum.transform.position = new Vector2(markerOrigin.x * 5, Screen.height / 3);
+        m_kButtonBass.transform.position = new Vector2(markerOrigin.x * 7, Screen.height / 3);
 
         if (m_musicManager.IsPlaying() || Time.timeScale == 0.0f)
         {
@@ -268,11 +308,19 @@ public class OnPlayGUI : MonoBehaviour
             {
                 Drew(i, markerSize);
             }
-		}
-	}
+        }
+    }
 
+    /// <summary>
+    /// Drew the specified _iIndex and markerSize.
+    /// </summary>
+    /// <returns>The drew.</returns>
+    /// <param name="_iIndex">I index.</param>
+    /// <param name="markerSize">Marker size.</param>
     void Drew(int _iIndex, float markerSize)
     {
+        float fScale = Screen.height / 1334;
+
         float x = markerOrigin.x - markerSize / 2.0f;
         float y = markerOrigin.y - markerSize / 2.0f;
 
@@ -294,7 +342,7 @@ public class OnPlayGUI : MonoBehaviour
             if (m_scoringManager.temper > ScoringManager.temperThreshold
                 && info.playerActionType == PlayerActionEnum.Jump)
             {
-                markerSize *= 1.5f;
+                markerSize *= 1.2f;
             }
 
             // 求到显示位置的X坐标的偏移,用提前显示的轨道播放的位置减去当前播放拍子的差值
@@ -307,7 +355,6 @@ public class OnPlayGUI : MonoBehaviour
                 , markerSize);
 
             GUI.DrawTexture(drawRect, headbangingIcon);
-            //-m_kMato.transform.position = new Vector3(x + x_offset, y, 0.0f);
 
             GUI.color = Color.white;
 
@@ -315,10 +362,28 @@ public class OnPlayGUI : MonoBehaviour
             if (isDevelopmentMode)
             {
                 GUI.skin = this.guiSkin;
-                GUI.Label(new Rect(drawRect.x, drawRect.y - 10.0f, 50.0f, 30.0f), info.line_number.ToString());
+                GUI.Label(new Rect(drawRect.x
+                                   , drawRect.y - 10.0f
+                                   , 50.0f*fScale
+                                   , 30.0f*fScale), info.line_number.ToString());
                 GUI.skin = null;
             }
         }
+
+#if false //-没有问题
+        for (int i = 0; i < 4; i++)
+        {
+            OnBeatActionInfo sTestInfo = song.onBeatActionSequence[_iIndex][m_kSeeker.GetSeeker(i).nextIndex];
+            fYoffset = sTestInfo.triggerBeatTiming - m_musicManager.beatCountFromStart;
+            fYoffset *= m_pixelsPerBeatsY;
+            Rect drawRect = new Rect(x + x_offset
+                , y
+                , markerSize
+                , markerSize);
+
+            GUI.DrawTexture(drawRect, hitEffectIcon);  
+        }
+#endif
 
         //-点中爆裂的效果
         if (m_rythmHitEffectCountDown[_iIndex] > 0)
@@ -365,21 +430,22 @@ public class OnPlayGUI : MonoBehaviour
     /// <param name="pause">If set to <c>true</c> pause.</param>
 	public void OnPause(bool pause)
 	{
-        if (Time.timeScale == 1.0f)
-        {
-            Debug.Log("OnPause:" + 0.0f);
-            Time.timeScale = 0.0f;
-            EventManager.Pause = true;
-            MusicManager.Pause = true;
-            ScoringManager.Pause = true;
-        }
-        else
-        {
-            Debug.Log("OnPause:" + 1.0f);
-            Time.timeScale = 1.0f;
-            EventManager.Pause = false;
-            MusicManager.Pause = false;
-            ScoringManager.Pause = false;
-        }
+        GameObject.Find("PhaseManager").GetComponent<PhaseManager>().SetPhase("Restart");
+        //if (Time.timeScale == 1.0f)
+        //{
+        //    Debug.Log("OnPause:" + 0.0f);
+        //    Time.timeScale = 0.0f;
+        //    EventManager.Pause = true;
+        //    MusicManager.Pause = true;
+        //    ScoringManager.Pause = true;
+        //}
+        //else
+        //{
+        //    Debug.Log("OnPause:" + 1.0f);
+        //    Time.timeScale = 1.0f;
+        //    EventManager.Pause = false;
+        //    MusicManager.Pause = false;
+        //    ScoringManager.Pause = false;
+        //}
 	}
 }

@@ -71,6 +71,15 @@ public class MusicManager : MonoBehaviour
         return m_musicFinished;
     }
 
+    /// <summary>
+    /// 设置音乐
+    /// </summary>
+    /// <param name="_sName">S name.</param>
+    public void SetMusic(string _sName)
+    {
+        m_audioSource.clip = (AudioClip)Resources.Load(_sName, typeof(AudioClip));
+    }
+
     void Awake()
 	{
 		Application.targetFrameRate = 60;//-限帧60

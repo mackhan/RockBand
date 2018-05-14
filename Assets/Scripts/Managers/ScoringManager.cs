@@ -9,6 +9,11 @@ using System.IO;
 public class ScoringManager : MonoBehaviour
 {
     /// <summary>
+    /// 空按的时机
+    /// </summary>
+    public static float timingErrorMiss = 0.5f;
+
+    /// <summary>
     /// Good的时机，如果时间差距低于这个就是Error
     /// </summary>
 	public static float timingErrorToleranceGood = 0.22f;
@@ -117,9 +122,7 @@ public class ScoringManager : MonoBehaviour
     /// </summary>
     public void BeginScoringSequence()
     {
-        //m_scoringUnitSeeker.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence[0]);
         m_kScoringUnitSeekers.SetSequence(m_musicManager.currentSongInfo.onBeatActionSequence);
-
     }
 
     void Start()
@@ -146,8 +149,8 @@ public class ScoringManager : MonoBehaviour
 
 #if UNITY_EDITOR
         //-记录日志
-        string sPath = "Assets/PlayLog/scoringLog.csv";
-        m_logWriter = new StreamWriter(sPath);
+        //-string sPath = "Assets/PlayLog/scoringLog.csv";
+        //-m_logWriter = new StreamWriter(sPath);
 #endif
     }
 
@@ -227,6 +230,11 @@ public class ScoringManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Process the specified _iIndex.
+    /// </summary>
+    /// <returns>The process.</returns>
+    /// <param name="_iIndex">I index.</param>
     void Process(int _iIndex)
     {
         float additionalTemper = 0;
@@ -237,23 +245,28 @@ public class ScoringManager : MonoBehaviour
 
         SequenceSeeker<OnBeatActionInfo> kSeeker = m_kScoringUnitSeekers.GetSeeker(_iIndex);
 
-        if (m_playerAction.GetCurrentPlayerAction(_iIndex) != PlayerActionEnum.None)//-如果这一拍玩家有操作？？？
+        if (m_playerAction.GetCurrentPlayerAction(_iIndex) 
+            != PlayerActionEnum.None)//-如果这一拍玩家有操作？？？
         {
             int nearestIndex = GetNearestPlayerActionInfoIndex(_iIndex);
             SongInfo song = m_musicManager.currentSongInfo;
             OnBeatActionInfo marker_act = song.onBeatActionSequence[_iIndex][nearestIndex];//-找到最近的谱面
             OnBeatActionInfo player_act = m_playerAction.GetLastActionInof(_iIndex);//-找到玩家操作的信息
 
-            m_lastResult.timingError = player_act.triggerBeatTiming - marker_act.triggerBeatTiming;//-找到玩家操作的拍子和最近谱面时间的差值
-            m_lastResult.markerIndex = nearestIndex;
+            m_lastResults[_iIndex].timingError = player_act.triggerBeatTiming 
+                - marker_act.triggerBeatTiming;//-找到玩家操作的拍子和最近谱面时间的差值
+            m_lastResults[_iIndex].markerIndex = nearestIndex;
 
             if (nearestIndex == m_previousHitIndex)//-如果已经判定过了，则扣分
             {
-                m_additionalScore = 0;
+                m_additionalScore = missScore;
+                additionalTemper = missHeatupRate; 
             }
             else//-计算得分
             {
-                m_additionalScore = CheckScore(nearestIndex, m_lastResult.timingError, out additionalTemper);
+                m_additionalScore = CheckScore(nearestIndex
+                                               , m_lastResults[_iIndex].timingError
+                                               , out additionalTemper);
             }
 
             if (m_additionalScore > 0)//-得分
@@ -274,15 +287,12 @@ public class ScoringManager : MonoBehaviour
                 //增加分数的时候播放动画
                 OnScoreAdded(nearestIndex);
             }
-            else//-扣分，为了已经判定的时候也自动扣分写的有些丑陋
-            {
-                m_additionalScore = missScore;
-                additionalTemper = missHeatupRate;
-            }
 
             m_score += m_additionalScore;
             temper += additionalTemper;
-            m_onPlayGUI.RythmHitEffect(_iIndex, m_previousHitIndex, m_additionalScore);
+            m_onPlayGUI.RythmHitEffect(_iIndex
+                                       , m_previousHitIndex
+                                       , m_additionalScore);
 
 #if false
             //-记录日志
@@ -312,16 +322,24 @@ public class ScoringManager : MonoBehaviour
 
 		do
         {
+            if (timingError > timingErrorMiss)//-如果超过了Miss的判定范围就不计算
+            {
+                Debug.Log("Empty1");
+                score = 0.0f;
+                heatup = 0.0f;
+                break;
+            }
+
 			if (timingError >= timingErrorToleranceGood)//-如果低于了Good范围，增加0分，兴奋值为0
             {
-				score  = 0.0f;
-				heatup = 0;
+                score = missScore;
+                heatup = missHeatupRate; 
 				break;
 			}
 			
 			if(timingError >= timingErrorTorelanceExcellent)//-“Good和Excellent”之间的时候认为是Good，增加good的分数和兴奋值
             {
-				score  = goodScore;
+				score = goodScore;
 				heatup = goodHeatupRate;
 				break;
 			}
@@ -332,7 +350,7 @@ public class ScoringManager : MonoBehaviour
 
 		} while(false);
 
-		return (score);
+		return score;
 	}
 
     /// <summary>
@@ -341,7 +359,15 @@ public class ScoringManager : MonoBehaviour
     /// <param name="nearestIndex">最近的谱面</param>
 	private void OnScoreAdded(int nearestIndex)
     {
-		SongInfo song = m_musicManager.currentSongInfo;
+        SongInfo song = m_musicManager.currentSongInfo;
+
+        if (nearestIndex >= song.onBeatActionSequence[0].Count)
+        {
+            Debug.Log("Out of range : " + nearestIndex
+                           + " total : " + song.onBeatActionSequence[0].Count);
+            return;
+        }
+
 		if (song.onBeatActionSequence[0][nearestIndex].playerActionType == PlayerActionEnum.Jump
 			&& temper > temperThreshold)//-当行为是跳跃的时候，并且是非常兴奋的时候，并且成功输入的时候
 		{
@@ -483,6 +509,12 @@ public class ScoringManager : MonoBehaviour
     /// <summary>
     /// 之前玩家输入的结果
     /// </summary>
-    public Result	m_lastResult;
+    public Result[] m_lastResults = new Result[4]
+    {
+        new Result(),
+        new Result(),
+        new Result(),
+        new Result(),
+    };
 }
 

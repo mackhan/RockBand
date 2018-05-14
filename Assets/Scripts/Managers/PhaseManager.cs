@@ -22,7 +22,7 @@ public class PhaseManager : MonoBehaviour
     /// <summary>
     /// 当前的状态，默认是Startup
     /// </summary>
-	string m_currentPhase = "Startup";
+    string m_currentPhase = "StartupMenu";
 
     /// <summary>
     /// 获得当前的状态
@@ -36,6 +36,8 @@ public class PhaseManager : MonoBehaviour
     /// 所有UI的管理器
     /// </summary>
     public GameObject[] guiList;
+
+    public string SongName = "";
 
     void Awake()
     {
@@ -78,12 +80,11 @@ public class PhaseManager : MonoBehaviour
 
         //从csv读取歌曲数据
         TextReader textReader = new StringReader(
-                System.Text.Encoding.UTF8.GetString((Resources.Load("SongInfo/songInfoCSV") as TextAsset).bytes)
-            );
+            System.Text.Encoding.UTF8.GetString((Resources.Load(SongName + "songInfoCSV") as TextAsset).bytes));
         SongInfo songInfo = new SongInfo();
         SongInfoLoader loader = new SongInfoLoader();
         loader.songInfo = songInfo;
-        loader.ReadCSV(textReader);
+        loader.ReadCSV(SongName, textReader);
         m_musicManager.currentSongInfo = songInfo;
 
         //-三波观众开始动起来
@@ -121,9 +122,9 @@ public class PhaseManager : MonoBehaviour
     {
 		switch(nextPhase)
         {
-		case "Startup"://开始菜单
+        case "StartupMenu"://开始菜单
             DeactiveateAllGUI();
-			ActivateGUI("StartupMenuxixi");
+			ActivateGUI("StartupMenu");
 			break;
 		
 		//case "OnBeginInstruction"://玩法介绍界面
@@ -131,6 +132,11 @@ public class PhaseManager : MonoBehaviour
 		//	ActivateGUI("InstructionGUI");
 		//	ActivateGUI("OnPlayGUI");
 		//	break;
+
+        case "SelectMusic":
+            DeactiveateAllGUI();
+            ActivateGUI("SelectMusic");                
+            break;
 
 		case "Play"://主游戏
             Play(false);
@@ -143,27 +149,27 @@ public class PhaseManager : MonoBehaviour
 		case "GameOver":
 		    {
 			    DeactiveateAllGUI();
-			    ActivateGUI("ShowResultGUI");
-			    ShowResultGUI showResult = GameObject.Find("ShowResultGUI").GetComponent<ShowResultGUI>();
+                ActivateGUI("Settlement");
+                Settlement showResult = GameObject.Find("Settlement").GetComponent<Settlement>();
 
 			    //-显示结算结果
 			    Debug.Log(m_scoringManager.scoreRate);
 			    Debug.Log(ScoringManager.failureScoreRate);
 			    if (m_scoringManager.scoreRate <= ScoringManager.failureScoreRate)//-如果是失败的得分率，乐队成员发出失败的声音
 			    {
-				    showResult.comment = showResult.comment_BAD;
+                    showResult.SetResult(eResult.eBad, m_scoringManager.score);
 				    GameObject.Find("Vocalist").GetComponent<BandMember>().BadFeedback();
 				
 			    }
 			    else if (m_scoringManager.scoreRate >= ScoringManager.excellentScoreRate)//-如果是Excellent乐队成员和观众一起欢呼
 			    {
-				    showResult.comment = showResult.comment_EXCELLENT;
+                    showResult.SetResult(eResult.eBest, m_scoringManager.score);
 				    GameObject.Find("Vocalist").GetComponent<BandMember>().GoodFeedback();
 				    GameObject.Find("AudienceVoice").GetComponent<AudioSource>().Play();
 			    }
 			    else//-如果是Good，乐队成员欢呼
 			    {
-				    showResult.comment = showResult.comment_GOOD;
+                    showResult.SetResult(eResult.eGood, m_scoringManager.score);
 				    GameObject.Find("Vocalist").GetComponent<BandMember>().GoodFeedback();
 			    }
 		    }
@@ -171,7 +177,7 @@ public class PhaseManager : MonoBehaviour
 
 		case "Restart"://-重新开始，直接重新加载Main场景
 		    {
-			    Application.LoadLevel("Main");
+				UnityEngine.SceneManagement.SceneManager.LoadScene("Main");
 		    }
 			break;
 

@@ -25,7 +25,7 @@ public class SongInfoLoader
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="isEditorMode">目前没使用</param>
-    public void ReadCSV(System.IO.TextReader reader, bool isEditorMode=false)
+    public void ReadCSV(string _sName, System.IO.TextReader reader, bool isEditorMode=false)
     {
 		string line;
 
@@ -60,21 +60,21 @@ public class SongInfoLoader
 #if UNITY_EDITOR
                 if (isEditorMode)//-没啥用
                 {
-                    textReader = File.OpenText("Assets/Resources/SongInfo/" + lineCells[1] + ".txt");
+                        textReader = File.OpenText("Assets/Resources/" + _sName + lineCells[1] + ".txt");
                 }
                 else
 #endif
                 {
                     string data = System.Text.Encoding.UTF8.GetString
                     (
-                        (Resources.Load("SongInfo/" + lineCells[1]) as TextAsset).bytes
+                        (Resources.Load(_sName + lineCells[1]) as TextAsset).bytes
                     );
                     textReader = new StringReader(data);
                 }
 
                 Debug.Log("include ：" + lineCells[1]);
 
-                ReadCSV(textReader);
+                ReadCSV(_sName, textReader);
 				break;
 			}
 		}
@@ -148,7 +148,7 @@ public class SongInfoLoader
 				    }
 				    m_stagingDirectoionRegionOffset += totalBeatCount;
 			    }
-				return ;
+				return;
                 // 因为↑有return，所以这个break不被执行.
                 //break;
 

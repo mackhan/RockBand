@@ -28,7 +28,7 @@ public class SequenceSeekers<ElementType> where ElementType : MusicalElement
     /// <summary>
     /// 设置序列数据
     /// </summary>
-    /// <param name="sequence"></param>
+    /// <param name="_kSequence"></param>
     public void SetSequence(List<ElementType>[] _kSequence)
     {
         int i = 0;

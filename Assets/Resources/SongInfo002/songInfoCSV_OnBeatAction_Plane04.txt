@@ -1,5 +1,5 @@
 scoringUnitSequenceRegion-Begin,4
-regionParameters,Unified,172,172
+regionParameters,Unified,174.34756,174.34756
 SingleShot,5.3,HeadBanging
 SingleShot,8.3,HeadBanging
 SingleShot,9.3,HeadBanging

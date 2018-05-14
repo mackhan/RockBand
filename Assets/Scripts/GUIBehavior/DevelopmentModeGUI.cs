@@ -89,7 +89,7 @@ public class DevelopmentModeGUI : MonoBehaviour
 
 	void OnGUI()
     {
-#if false
+#if true
         GUI.Label(new Rect( 5, 100, 150, 40 ),"Current");
 
 		//-滑动进度条的控制
@@ -108,26 +108,28 @@ public class DevelopmentModeGUI : MonoBehaviour
 		}
 
 		//结束按钮，按了重启
-		if( GUI.Button( new Rect( (Screen.width - 150)/2.0f, 350, 150, 40 ), "End" ) )
+		if( GUI.Button(new Rect((Screen.width - 150)/2.0f, 350, 150, 40), "End"))
         {
 			GameObject.Find("PhaseManager").GetComponent<PhaseManager>().SetPhase("Restart");
 		}
 
         //显示之前输入的定时偏离了多少。
-        GUI.Label(new Rect( 5, 400, 150, 40 )
-            , "Input Gap:" + m_scoringManager.m_lastResult.timingError);
+        GUI.Label(new Rect(5, 400, 150, 40)
+                  , "Input Gap:" 
+                  + m_scoringManager.m_lastResults[0].timingError);
 
         //显示上一次是在哪个拍子按下了
-		GUI.Label(new Rect( 5, 420, 150, 40 )
-            , "Previous Input:"	+ m_playerAction.lastActionInfo.triggerBeatTiming.ToString());
+		GUI.Label(new Rect(5, 420, 150, 40)
+                  , "Previous Input:" 
+                  + m_playerAction.GetLastActionInof(0).triggerBeatTiming.ToString());
 
-		GUI.Label(new Rect( 5, 440, 150, 40 )
-            , "Nearest(beat):"	
-            + m_musicManager.currentSongInfo.onBeatActionSequence[m_scoringManager.m_lastResult.markerIndex].triggerBeatTiming.ToString());
+		GUI.Label(new Rect( 5, 440, 150, 40)
+                  , "Nearest(beat):" 
+                  + m_musicManager.currentSongInfo.onBeatActionSequence[0][m_scoringManager.m_lastResults[0].markerIndex].triggerBeatTiming.ToString());
 
-		GUI.Label(new Rect( 150, 440, 150, 40 )
-            , "Nearest(index):"
-			+ m_musicManager.currentSongInfo.onBeatActionSequence[m_scoringManager.m_lastResult.markerIndex].line_number.ToString());
+		GUI.Label(new Rect( 150, 440, 150, 40)
+                  , "Nearest(index):" 
+                  + m_musicManager.currentSongInfo.onBeatActionSequence[0][m_scoringManager.m_lastResults[0].markerIndex].line_number.ToString());
 
         // 显示相关的部分名称
         if (m_musicManager.currentSongInfo.onBeatActionRegionSequence.Count > 0)
@@ -140,7 +142,7 @@ public class DevelopmentModeGUI : MonoBehaviour
             }
 
             //显示上次输入时的部分
-            if (m_playerAction.currentPlayerAction != PlayerActionEnum.None)
+            if (m_playerAction.GetCurrentPlayerAction(0) != PlayerActionEnum.None)
 			{	
 				previousHitRegionName
 					= m_musicManager.currentSongInfo.onBeatActionRegionSequence[currentReginIndex].name;
