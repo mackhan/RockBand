@@ -93,14 +93,6 @@ public class ScoringManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 当前帧中的总得分波动值
-    /// </summary>
-    public float scoreJustAdded
-    {
-        get { return m_additionalScore; }
-    }
-
-    /// <summary>
     /// 现在的得分率（得分/理论上的最高得分）
     /// </summary>
     public float scoreRate
@@ -285,7 +277,7 @@ public class ScoringManager : MonoBehaviour
 #endif
 
                 //增加分数的时候播放动画
-                OnScoreAdded(nearestIndex);
+                OnScoreAdded(_iIndex, nearestIndex);
             }
 
             m_score += m_additionalScore;
@@ -357,7 +349,7 @@ public class ScoringManager : MonoBehaviour
     /// 增加分数的时候播放动画
     /// </summary>
     /// <param name="nearestIndex">最近的谱面</param>
-	private void OnScoreAdded(int nearestIndex)
+	private void OnScoreAdded(int _iIndex, int nearestIndex)
     {
         SongInfo song = m_musicManager.currentSongInfo;
 
@@ -467,7 +459,11 @@ public class ScoringManager : MonoBehaviour
 	}
 #endif
 
+    /// <summary>
+    /// 当前增加的分数
+    /// </summary>
     float m_additionalScore;
+
 	MusicManager	m_musicManager;
 	PlayerAction	m_playerAction;
 	OnPlayGUI		m_onPlayGUI;
