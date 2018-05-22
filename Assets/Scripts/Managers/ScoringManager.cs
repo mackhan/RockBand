@@ -353,14 +353,14 @@ public class ScoringManager : MonoBehaviour
     {
         SongInfo song = m_musicManager.currentSongInfo;
 
-        if (nearestIndex >= song.onBeatActionSequence[0].Count)
+        if (nearestIndex >= song.onBeatActionSequence[_iIndex].Count)
         {
             Debug.Log("Out of range : " + nearestIndex
-                           + " total : " + song.onBeatActionSequence[0].Count);
+                           + " total : " + song.onBeatActionSequence[_iIndex].Count);
             return;
         }
 
-		if (song.onBeatActionSequence[0][nearestIndex].playerActionType == PlayerActionEnum.Jump
+		if (song.onBeatActionSequence[_iIndex][nearestIndex].playerActionType == PlayerActionEnum.Jump
 			&& temper > temperThreshold)//-当行为是跳跃的时候，并且是非常兴奋的时候，并且成功输入的时候
 		{
             //-所有乐队成员跳一下
@@ -382,7 +382,7 @@ public class ScoringManager : MonoBehaviour
 				noteParticle.GetComponent<ParticleSystem>().Emit(20);
 			}
 		}
-		else if (song.onBeatActionSequence[0][nearestIndex].playerActionType 
+		else if (song.onBeatActionSequence[_iIndex][nearestIndex].playerActionType 
             == PlayerActionEnum.HeadBanging)//-如果只是headBanging，那乐队成员动一下
 		{
 			foreach (GameObject bandMember in m_bandMembers)

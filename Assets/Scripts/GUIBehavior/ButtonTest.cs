@@ -55,9 +55,7 @@ public class ButtonTest : MonoBehaviour
     public void OnBeginDrag(PointerEventData eventData)
     {
         Debug.Log("OnBeginDrag");
-        OnPointerDown(eventData);
-        OnPointerUp(eventData);
-        OnPointerClick(eventData);
+        //eventData.button.OnPointerClick(eventData);
     }
 
     public void OnDrag(PointerEventData eventData)
