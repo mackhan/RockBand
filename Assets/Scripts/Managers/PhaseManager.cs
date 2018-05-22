@@ -181,7 +181,28 @@ public class PhaseManager : MonoBehaviour
 		    }
 			break;
 
-		default:
+        case "Reset"://-重新开始，直接重新加载Main场景
+            {
+                //-UnityEngine.SceneManagement.SceneManager.LoadScene("Main");
+                SelectMusic.Select2(SelectMusic.Index);
+                Play(false);
+            }
+            break;
+
+            case "Pause"://-
+            {
+                //-DeactiveateAllGUI();
+                ActivateGUI("PauseGUI");
+            }
+            break;
+
+        case "Continue"://-
+            {
+                DeActivateGUI("PauseGUI");
+            }
+            break;
+
+            default:
 			Debug.LogError("unknown phase: " + nextPhase);
 			break;
 		}
@@ -214,4 +235,15 @@ public class PhaseManager : MonoBehaviour
             }
 		}
 	}
+
+    private void DeActivateGUI(string guiName)
+    {
+        foreach (GameObject gui in guiList)
+        {
+            if (gui.name == guiName)
+            {
+                gui.SetActive(false);
+            }
+        }
+    }
 }

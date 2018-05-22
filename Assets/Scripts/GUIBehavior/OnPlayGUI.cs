@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -249,8 +250,8 @@ public class OnPlayGUI : MonoBehaviour
         float fScale = Screen.height / 1334;
 
         //-分数显示
-        GUI.Box(new Rect(15*fScale, 5*fScale, 200*fScale, 60*fScale), "");
-        GUI.Label(new Rect(20*fScale, 10*fScale, 180*fScale, 40*fScale)
+        GUI.Box(new Rect(15 * fScale, 5 * fScale, 200 * fScale, 60 * fScale), "");
+        GUI.Label(new Rect(20 * fScale, 10 * fScale, 180 * fScale, 40 * fScale)
                   , "Score: " + m_scoringManager.score);
 
         //-兴奋闪烁颜色
@@ -262,7 +263,7 @@ public class OnPlayGUI : MonoBehaviour
         }
 
         //-兴奋度
-        Rect heatBarFrameRect = new Rect(360.0f*fScale, 40.0f*fScale, 200.0f*fScale, 40.0f*fScale);
+        Rect heatBarFrameRect = new Rect(360.0f * fScale, 40.0f * fScale, 200.0f * fScale, 40.0f * fScale);
 
         //-显示兴奋度的文字
         Rect heatBarLabelRect = heatBarFrameRect;
@@ -295,7 +296,7 @@ public class OnPlayGUI : MonoBehaviour
         //-计算目标拍子的ICON的大小。显示当前需要击中的位置
         //-float markerSize = ScoringManager.timingErrorToleranceGood * Screen.height / markerEnterOffset;
         float markerSize = Screen.width / 4.5f;
-            
+
         //-显示目标拍子的ICON
         m_kButtonPiano.transform.position = new Vector2(markerOrigin.x * 1, Screen.height / 3);
         m_kButtonGuitar.transform.position = new Vector2(markerOrigin.x * 3, Screen.height / 3);
@@ -364,8 +365,8 @@ public class OnPlayGUI : MonoBehaviour
                 GUI.skin = this.guiSkin;
                 GUI.Label(new Rect(drawRect.x
                                    , drawRect.y - 10.0f
-                                   , 50.0f*fScale
-                                   , 30.0f*fScale), info.line_number.ToString());
+                                   , 50.0f * fScale
+                                   , 30.0f * fScale), info.line_number.ToString());
                 GUI.skin = null;
             }
         }
@@ -429,23 +430,74 @@ public class OnPlayGUI : MonoBehaviour
     /// </summary>
     /// <param name="pause">If set to <c>true</c> pause.</param>
 	public void OnPause(bool pause)
-	{
+    {
+        GameObject.Find("PhaseManager").GetComponent<PhaseManager>().SetPhase("Pause");
+        if (Time.timeScale == 1.0f)
+        {
+            Debug.Log("OnPause:" + 0.0f);
+            Time.timeScale = 0.0f;
+            EventManager.Pause = true;
+            MusicManager.Pause = true;
+            ScoringManager.Pause = true;
+        }
+    }
+
+    public void OnContinue()
+    {
+        GameObject.Find("PhaseManager").GetComponent<PhaseManager>().SetPhase("Continue");
+        if (Time.timeScale == 0.0f)
+        {
+            Debug.Log("OnPause:" + 1.0f);
+            Time.timeScale = 1.0f;
+            EventManager.Pause = false;
+            MusicManager.Pause = false;
+            ScoringManager.Pause = false;
+        }
+    }
+
+    public void OnReset()
+    {
+        GameObject.Find("PhaseManager").GetComponent<PhaseManager>().SetPhase("Reset");
+        if (Time.timeScale == 0.0f)
+        {
+            Debug.Log("OnPause:" + 1.0f);
+            Time.timeScale = 1.0f;
+            EventManager.Pause = false;
+            MusicManager.Pause = false;
+            ScoringManager.Pause = false;
+        }
+    }
+
+    public void OnRestart()
+    {
         GameObject.Find("PhaseManager").GetComponent<PhaseManager>().SetPhase("Restart");
-        //if (Time.timeScale == 1.0f)
-        //{
-        //    Debug.Log("OnPause:" + 0.0f);
-        //    Time.timeScale = 0.0f;
-        //    EventManager.Pause = true;
-        //    MusicManager.Pause = true;
-        //    ScoringManager.Pause = true;
-        //}
-        //else
-        //{
-        //    Debug.Log("OnPause:" + 1.0f);
-        //    Time.timeScale = 1.0f;
-        //    EventManager.Pause = false;
-        //    MusicManager.Pause = false;
-        //    ScoringManager.Pause = false;
-        //}
-	}
+        if (Time.timeScale == 0.0f)
+        {
+            Debug.Log("OnPause:" + 1.0f);
+            Time.timeScale = 1.0f;
+            EventManager.Pause = false;
+            MusicManager.Pause = false;
+            ScoringManager.Pause = false;
+        }
+    }
+
+    public void OnSpeedUp(Text TextText)
+    {
+        m_pixelsPerBeatsY += Screen.height / 10;
+        if (m_pixelsPerBeatsY > Screen.height)
+        {
+            m_pixelsPerBeatsY = Screen.height;
+        }
+        TextText.text = m_pixelsPerBeatsY.ToString();
+    }
+
+    public void OnSpeedDown(Text TextText)
+    {
+        m_pixelsPerBeatsY -= Screen.height / 10;
+        if (m_pixelsPerBeatsY < 0)
+        {
+            m_pixelsPerBeatsY = 0.0f;
+        }
+        TextText.text = m_pixelsPerBeatsY.ToString();
+    }
 }
