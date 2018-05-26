@@ -96,9 +96,14 @@ public class OnPlayGUI : MonoBehaviour
     public bool isDevelopmentMode = false;
 
     /// <summary>
-    /// 目标图标的中心位置
+    /// 目标图标的初始位置
     /// </summary>
-	public Vector2 markerOrigin = new Vector2(20.0f, 300.0f);
+	Vector2 markerOrigin = new Vector2(30.0f, 300.0f);
+
+    /// <summary>
+    /// 目标图标的宽度
+    /// </summary>
+    float m_fMarkWeight = 0.0f;
 
     public GUISkin guiSkin;
 
@@ -219,7 +224,9 @@ public class OnPlayGUI : MonoBehaviour
         m_kButtonBass = transform.Find("ButtonBass").gameObject;
         Debug.Assert(m_kButtonBass != null);
 
-        markerOrigin = new Vector2(Screen.width / 8.0f, Screen.height - Screen.height * 1 / 3);
+        m_fMarkWeight = (Screen.width - 60) / 8.0f;
+        markerOrigin = new Vector2(30 * 750 / Screen.width
+            , 408 * 1334 / Screen.height);        //-Screen.height - Screen.height * 1 / 3
     }
 
     /// <summary>
@@ -284,24 +291,24 @@ public class OnPlayGUI : MonoBehaviour
         GUI.color = Color.white;
 
         //-调试功能，加速减速
-        if (GUI.Button(new Rect(Screen.width - 300 * fScale, 80 * fScale, 300 * fScale, 80 * fScale), "Speed+"))
-        {
-            m_pixelsPerBeatsY += Screen.height / 10;
-        }
-        if (GUI.Button(new Rect(Screen.width - 300 * fScale, 240 * fScale, 300 * fScale, 80 * fScale), "Speed-"))
-        {
-            m_pixelsPerBeatsY -= Screen.height / 10;
-        }
+        //if (GUI.Button(new Rect(Screen.width - 300 * fScale, 80 * fScale, 300 * fScale, 80 * fScale), "Speed+"))
+        //{
+        //    m_pixelsPerBeatsY += Screen.height / 10;
+        //}
+        //if (GUI.Button(new Rect(Screen.width - 300 * fScale, 240 * fScale, 300 * fScale, 80 * fScale), "Speed-"))
+        //{
+        //    m_pixelsPerBeatsY -= Screen.height / 10;
+        //}
 
         //-计算目标拍子的ICON的大小。显示当前需要击中的位置
         //-float markerSize = ScoringManager.timingErrorToleranceGood * Screen.height / markerEnterOffset;
         float markerSize = Screen.width / 4.5f;
 
         //-显示目标拍子的ICON
-        m_kButtonPiano.transform.position = new Vector2(markerOrigin.x * 1, Screen.height / 3);
-        m_kButtonGuitar.transform.position = new Vector2(markerOrigin.x * 3, Screen.height / 3);
-        m_kButtonDrum.transform.position = new Vector2(markerOrigin.x * 5, Screen.height / 3);
-        m_kButtonBass.transform.position = new Vector2(markerOrigin.x * 7, Screen.height / 3);
+        m_kButtonPiano.transform.position = new Vector2(markerOrigin.x + m_fMarkWeight, Screen.height / 3);
+        m_kButtonGuitar.transform.position = new Vector2(markerOrigin.x + m_fMarkWeight * 3, Screen.height / 3);
+        m_kButtonDrum.transform.position = new Vector2(markerOrigin.x + m_fMarkWeight * 5, Screen.height / 3);
+        m_kButtonBass.transform.position = new Vector2(markerOrigin.x + m_fMarkWeight * 7, Screen.height / 3);
 
         if (m_musicManager.IsPlaying() || Time.timeScale == 0.0f)
         {
@@ -322,7 +329,7 @@ public class OnPlayGUI : MonoBehaviour
     {
         float fScale = Screen.height / 1334;
 
-        float x = markerOrigin.x - markerSize / 2.0f;
+        float x = markerOrigin.x - markerSize / 2.0f + m_fMarkWeight;
         float y = markerOrigin.y - markerSize / 2.0f;
 
         SongInfo song = m_musicManager.currentSongInfo;
@@ -332,7 +339,7 @@ public class OnPlayGUI : MonoBehaviour
 
         //标记结束显示。
         int end = m_kSeekersFront.GetSeeker(_iIndex).nextIndex;
-        float x_offset = Screen.width / 4 * _iIndex;
+        float x_offset = m_fMarkWeight * 2 * _iIndex;
         float fYoffset;
 
         //绘制一个显示动作时间的图标。
