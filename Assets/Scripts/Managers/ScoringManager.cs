@@ -78,9 +78,9 @@ public class ScoringManager : MonoBehaviour
     /// </summary>
     public float score
     {
-        get { return m_score; }
+        get { return m_fScore; }
     }
-    private float m_score;
+    private float m_fScore;
 
     /// <summary>
     /// 兴奋的数值化 0.0 - 1.0
@@ -209,7 +209,7 @@ public class ScoringManager : MonoBehaviour
             return;
         }
 
-        m_additionalScore = 0;
+        m_fAdditionalScore = 0;
 
         if (m_musicManager.IsPlaying())
         {
@@ -251,17 +251,17 @@ public class ScoringManager : MonoBehaviour
 
             if (nearestIndex == m_previousHitIndex)//-如果已经判定过了，则扣分
             {
-                m_additionalScore = missScore;
+                m_fAdditionalScore = missScore;
                 additionalTemper = missHeatupRate; 
             }
             else//-计算得分
             {
-                m_additionalScore = CheckScore(nearestIndex
+                m_fAdditionalScore = CheckScore(nearestIndex
                                                , m_lastResults[_iIndex].timingError
                                                , out additionalTemper);
             }
 
-            if (m_additionalScore > 0)//-得分
+            if (m_fAdditionalScore > 0)//-得分
             {
                 //-记录当前的索引，防止将相同的标记判定为两次
                 m_previousHitIndex = nearestIndex;
@@ -280,11 +280,12 @@ public class ScoringManager : MonoBehaviour
                 OnScoreAdded(_iIndex, nearestIndex);
             }
 
-            m_score += m_additionalScore;
+            m_fScore += m_fAdditionalScore;
             temper += additionalTemper;
             m_onPlayGUI.RythmHitEffect(_iIndex
                                        , m_previousHitIndex
-                                       , m_additionalScore);
+                                       , m_fAdditionalScore
+                                       , m_fScore);
 
 #if false
             //-记录日志
@@ -295,7 +296,7 @@ public class ScoringManager : MonoBehaviour
 
         if (kSeeker.nextIndex > 0)//-如果还没结束，计算得分率，用总分数，除以假设全部是最佳的得分
         {
-            m_scoreRate = m_score / (kSeeker.nextIndex * excellentScore);
+            m_scoreRate = m_fScore / (kSeeker.nextIndex * excellentScore);
         }
     }
 
@@ -462,7 +463,7 @@ public class ScoringManager : MonoBehaviour
     /// <summary>
     /// 当前增加的分数
     /// </summary>
-    float m_additionalScore;
+    float m_fAdditionalScore;
 
 	MusicManager	m_musicManager;
 	PlayerAction	m_playerAction;

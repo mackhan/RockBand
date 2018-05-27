@@ -97,16 +97,4 @@ public class Settlement : MonoBehaviour
     {
         GameObject.Find("PhaseManager").GetComponent<PhaseManager>().SetPhase("Restart");
     }
-
-	//void OnGUI()
-	//{
-		//GUI.skin = guiStyle;
-		//GUI.Box(new Rect(10.0f, 10.0f, Screen.width - 20.0f, Screen.height - 20.0f), title);//-
-		//GUI.Label( new Rect(20, 100, 200, 40), scoreLabel );
-		//GUI.Label( new Rect(20, 140, 200, 40), m_scoringManager.score.ToString() );
-		//GUI.Label( new Rect(20, 180, 200, 40), commentLabel );
-		//GUILayout.BeginArea(new Rect(20.0f, 220.0f, Screen.width - 20.0f, Screen.height - 40.0f));
-		//GUILayout.Label(comment);
-		//GUILayout.EndArea();
-	//}
 }

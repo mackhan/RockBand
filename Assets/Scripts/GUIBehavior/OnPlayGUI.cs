@@ -132,6 +132,8 @@ public class OnPlayGUI : MonoBehaviour
 
     Texture messageTexture;
 
+    public Text TextScore;
+
     /// <summary>
     /// UGUI中的音符，目前不使用
     /// </summary>
@@ -159,28 +161,33 @@ public class OnPlayGUI : MonoBehaviour
     /// 根据玩家的操作结果播放音效和显示消息
     /// </summary>
     /// <param name="actionInfoIndex"></param>
-    /// <param name="score"></param>
-    public void RythmHitEffect(int _iIndex, int actionInfoIndex, float score)
+    /// <param name="_fAdditionalScore"></param>
+    public void RythmHitEffect(int _iIndex
+        , int actionInfoIndex
+        , float _fAdditionalScore
+        , float _fScore)
     {
-        m_lastInputScore = score;
+        //-分数显示
+        TextScore.text = _fScore.ToString();
+        m_lastInputScore = _fAdditionalScore;
         m_rythmHitEffectCountDown[_iIndex] = rythmHitEffectShowFrameDuration;
         m_messageShowCountDown[_iIndex] = messatShowFrameDuration;
 
         //-根据操作播放音效，这里好坏的音效放在了角色的身上
         AudioClip kAudioClip;
         PlayerAction kPlayerAction = m_playerAvator.GetComponent<PlayerAction>();
-        if (score == 0)
+        if (_fAdditionalScore == 0)
         {
             Debug.Log("Empty");
             m_messageShowCountDown[_iIndex] = 0;
             return;
         }
-        else if (score < 0)
+        else if (_fAdditionalScore < 0)
         {
             kAudioClip = kPlayerAction.headBangingSoundClip_BAD;
             messageTexture = messageTexture_Miss;
         }
-        else if (score <= ScoringManager.goodScore)
+        else if (_fAdditionalScore <= ScoringManager.goodScore)
         {
             kAudioClip = kPlayerAction.headBangingSoundClip_GOOD;
             messageTexture = messageTexture_Good;
@@ -240,11 +247,6 @@ public class OnPlayGUI : MonoBehaviour
     void OnGUI()
     {
         float fScale = Screen.height / 1334;
-
-        //-分数显示
-        GUI.Box(new Rect(15 * fScale, 5 * fScale, 200 * fScale, 60 * fScale), "");
-        GUI.Label(new Rect(20 * fScale, 10 * fScale, 180 * fScale, 40 * fScale)
-                  , "Score: " + m_scoringManager.score);
 
         //-兴奋闪烁颜色
         if (m_scoringManager.temper > ScoringManager.temperThreshold)
