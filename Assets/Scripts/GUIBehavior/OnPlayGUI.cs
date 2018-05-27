@@ -39,16 +39,6 @@ public class OnPlayGUI : MonoBehaviour
 	public Texture hitEffectIcon;
 
     /// <summary>
-    /// 兴奋度的血条
-    /// </summary>
-	public Texture temperBar;
-
-    /// <summary>
-    /// 兴奋度的底
-    /// </summary>
-	public Texture temperBarFrame;
-
-    /// <summary>
     /// 何时开始显示标记，节拍要提前多少拍显示，经验值
     /// </summary>
 	public static float markerEnterOffset = 2.5f;
@@ -96,11 +86,14 @@ public class OnPlayGUI : MonoBehaviour
     public bool isDevelopmentMode = false;
 
     /// <summary>
-    /// 目标图标的初始位置
+    /// 目标图标的初始X，就是边缘的宽度30
     /// </summary>
-	Vector2 markerOrigin = new Vector2(30.0f, 300.0f);
+	float m_fMarkerOriginX;
 
-    float m_fMarkHitHeight;
+    /// <summary>
+    /// 目标图标的初始Y，就是舞台的位置
+    /// </summary>
+    float m_fMarkerOriginY;
 
     /// <summary>
     /// 目标图标的宽度
@@ -235,9 +228,8 @@ public class OnPlayGUI : MonoBehaviour
         float fScaleH = 1334 / Screen.height;
 
         m_fMarkWeight = 86 * fScaleH;
-        markerOrigin = new Vector2(30 * fScaleH
-            , 408 * fScaleH);        
-        m_fMarkHitHeight = (1334 - 215) * fScaleH + m_fMarkWeight;
+        m_fMarkerOriginX = 30 * fScaleH;    
+        m_fMarkerOriginY = (1334 - 215) * fScaleH - m_fMarkWeight;
     }
 
     /// <summary>
@@ -267,7 +259,6 @@ public class OnPlayGUI : MonoBehaviour
     {
         //-计算目标拍子的ICON的大小。显示当前需要击中的位置
         float markerSize = Screen.width / 6f;
-
         if (m_musicManager.IsPlaying() || Time.timeScale == 0.0f)
         {
             for (int i = 0; i < ConstantManager.MemberNum; i++)
@@ -285,15 +276,14 @@ public class OnPlayGUI : MonoBehaviour
     /// <param name="markerSize">Marker size.</param>
     void Drew(int _iIndex, float markerSize)
     {
-        float x = markerOrigin.x + m_fMarkWeight * 2 * _iIndex;
-        float y = markerOrigin.y;
+        //-X的位置，每个需要增加m_fMarkWeight，因为是用GUI渲染需要再减去markerSize / 2.0f
+        float x = m_fMarkerOriginX + m_fMarkWeight + m_fMarkWeight * 2 * _iIndex - markerSize / 2.0f;
+        float y = m_fMarkerOriginY - markerSize / 2.0f;
 
         SongInfo song = m_musicManager.currentSongInfo;
 
-        //标记开始显示。
+        //标记开始和结束索引显示。
         int begin = m_kSeekersBack.GetSeeker(_iIndex).nextIndex;
-
-        //标记结束显示。
         int end = m_kSeekersFront.GetSeeker(_iIndex).nextIndex;
 
         //绘制一个显示动作时间的图标。
@@ -311,7 +301,7 @@ public class OnPlayGUI : MonoBehaviour
             float fYoffset = info.triggerBeatTiming - m_musicManager.beatCountFromStart;
             fYoffset *= m_pixelsPerBeatsY;
 
-            Rect drawRect = new Rect(x
+            Rect drawRect = new Rect(x 
                 , y - fYoffset
                 , markerSize
                 , markerSize);
@@ -323,9 +313,7 @@ public class OnPlayGUI : MonoBehaviour
             // 在文本文件中显示行号。
             if (isDevelopmentMode)
             {
-                //-适配用
-                float fScale = Screen.height / 1334;
-
+                float fScale = Screen.height / 1334;//-适配用
                 GUI.skin = this.guiSkin;
                 GUI.Label(new Rect(drawRect.x
                                    , drawRect.y - 10.0f
@@ -335,27 +323,14 @@ public class OnPlayGUI : MonoBehaviour
             }
         }
 
-#if true //-没有问题
+#if false //-调试用，画出命中的位置
         for (int i = 0; i < 4; i++)
         {
             OnBeatActionInfo sTestInfo = song.onBeatActionSequence[_iIndex][m_kSeeker.GetSeeker(i).nextIndex];
             float fYoffset = sTestInfo.triggerBeatTiming - m_musicManager.beatCountFromStart;
             fYoffset *= m_pixelsPerBeatsY;
             Rect drawRect = new Rect(x 
-                , y
-                , markerSize
-                , markerSize);
-
-            GUI.DrawTexture(drawRect, headbangingIcon);  
-        }
-
-        for (int i = 0; i < 4; i++)
-        {
-            OnBeatActionInfo sTestInfo = song.onBeatActionSequence[_iIndex][m_kSeeker.GetSeeker(i).nextIndex];
-            float fYoffset = sTestInfo.triggerBeatTiming - m_musicManager.beatCountFromStart;
-            fYoffset *= m_pixelsPerBeatsY;
-            Rect drawRect = new Rect(x 
-                , m_fMarkHitHeight
+                , m_fMarkerOriginY - markerSize / 2.0f
                 , markerSize
                 , markerSize);
 
@@ -382,12 +357,12 @@ public class OnPlayGUI : MonoBehaviour
                 scale *= 0.5f;
             }
 
-            float baseSize = markerSize;
+            float fHitY = m_fMarkerOriginY - markerSize * scale / 2.0f;
             Rect drawRect3 = new Rect(
                 x,
-                m_fMarkHitHeight,
-                baseSize * scale,
-                baseSize * scale);
+                fHitY,
+                markerSize * scale,
+                markerSize * scale);
             Graphics.DrawTexture(drawRect3, hitEffectIcon);
             m_rythmHitEffectCountDown[_iIndex]--;
         }
@@ -396,7 +371,10 @@ public class OnPlayGUI : MonoBehaviour
         if (m_messageShowCountDown[_iIndex] > 0)
         {
             GUI.color = new Color(1, 1, 1, m_messageShowCountDown[_iIndex] / 40.0f);
-            GUI.DrawTexture(new Rect(x, m_fMarkHitHeight, 150, 80), messageTexture, ScaleMode.ScaleToFit, true);
+            GUI.DrawTexture(new Rect(x, m_fMarkerOriginY - markerSize, 150, 80)
+                , messageTexture
+                , ScaleMode.ScaleToFit
+                , true);
             GUI.color = Color.white;
             m_messageShowCountDown[_iIndex]--;
         }
