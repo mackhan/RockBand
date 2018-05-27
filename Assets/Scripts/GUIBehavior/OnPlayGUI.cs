@@ -132,7 +132,15 @@ public class OnPlayGUI : MonoBehaviour
 
     Texture messageTexture;
 
+    /// <summary>
+    /// 得分的UI
+    /// </summary>
     public Text TextScore;
+
+    /// <summary>
+    /// 兴奋度的能量控制
+    /// </summary>
+    public Image ImageTemper;
 
     /// <summary>
     /// UGUI中的音符，目前不使用
@@ -173,6 +181,17 @@ public class OnPlayGUI : MonoBehaviour
         m_rythmHitEffectCountDown[_iIndex] = rythmHitEffectShowFrameDuration;
         m_messageShowCountDown[_iIndex] = messatShowFrameDuration;
 
+        //-兴奋闪烁颜色
+        if (m_scoringManager.temper > ScoringManager.temperThreshold)
+        {
+            m_blinkColor.g = m_blinkColor.b
+                = 0.7f + 0.3f * Mathf.Abs(Time.frameCount % Application.targetFrameRate - Application.targetFrameRate / 2) / (float)Application.targetFrameRate;
+            ImageTemper.color = m_blinkColor;
+        }
+
+        //-显示兴奋度的能量槽
+        ImageTemper.fillAmount = m_scoringManager.temper;
+        
         //-根据操作播放音效，这里好坏的音效放在了角色的身上
         AudioClip kAudioClip;
         PlayerAction kPlayerAction = m_playerAvator.GetComponent<PlayerAction>();
@@ -246,47 +265,6 @@ public class OnPlayGUI : MonoBehaviour
 
     void OnGUI()
     {
-        float fScale = Screen.height / 1334;
-
-        //-兴奋闪烁颜色
-        if (m_scoringManager.temper > ScoringManager.temperThreshold)
-        {
-            m_blinkColor.g = m_blinkColor.b
-                = 0.7f + 0.3f * Mathf.Abs(Time.frameCount % Application.targetFrameRate - Application.targetFrameRate / 2) / (float)Application.targetFrameRate;
-            GUI.color = m_blinkColor;
-        }
-
-        //-兴奋度
-        Rect heatBarFrameRect = new Rect(360.0f * fScale, 40.0f * fScale, 200.0f * fScale, 40.0f * fScale);
-
-        //-显示兴奋度的文字
-        Rect heatBarLabelRect = heatBarFrameRect;
-        heatBarLabelRect.y = heatBarFrameRect.y - 20;
-        GUI.Label(heatBarLabelRect, "Temper");
-
-        //-显示兴奋度的能量槽
-        Rect heatBarRect = heatBarFrameRect;
-        heatBarRect.width *= m_scoringManager.temper;
-        GUI.Box(heatBarFrameRect, "");
-
-        //-显示兴奋度的值
-        GUI.DrawTextureWithTexCoords(heatBarRect
-            , temperBar
-            , new Rect(0.0f, 0.0f, 1.0f * m_scoringManager.temper
-            , 1.0f));
-
-        GUI.color = Color.white;
-
-        //-调试功能，加速减速
-        //if (GUI.Button(new Rect(Screen.width - 300 * fScale, 80 * fScale, 300 * fScale, 80 * fScale), "Speed+"))
-        //{
-        //    m_pixelsPerBeatsY += Screen.height / 10;
-        //}
-        //if (GUI.Button(new Rect(Screen.width - 300 * fScale, 240 * fScale, 300 * fScale, 80 * fScale), "Speed-"))
-        //{
-        //    m_pixelsPerBeatsY -= Screen.height / 10;
-        //}
-
         //-计算目标拍子的ICON的大小。显示当前需要击中的位置
         float markerSize = Screen.width / 6f;
 
