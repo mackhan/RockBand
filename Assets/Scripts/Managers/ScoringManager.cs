@@ -26,17 +26,17 @@ public class ScoringManager : MonoBehaviour
     /// <summary>
     /// 失败的得分
     /// </summary>
-    public static float missScore = -1.0f;
+    public static float missScore = -100.0f;
 
     /// <summary>
     /// Good的得分
     /// </summary>
-	public static float goodScore = 2.0f;
+	public static float goodScore = 200.0f;
 
     /// <summary>
     /// Excellent的得分
     /// </summary>
-	public static float excellentScore = 4.0f;
+	public static float excellentScore = 400.0f;
 
     /// <summary>
     /// 中途判定点被判定为“失败”的得分率（得分/理论上的最高得分）
