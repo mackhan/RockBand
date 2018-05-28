@@ -46,7 +46,7 @@ public class OnPlayGUI : MonoBehaviour
     /// <summary>
     /// 每拍需要移动多少个像素
     /// </summary>
-    float m_pixelsPerBeatsY = Screen.height * 1.0f / markerEnterOffset;
+    float m_pixelsPerBeatsY;
 
     /// <summary>
     /// 计时结束显示标记，节拍要延迟多久结束，和开始的时间差就是通过画面需要的时间
@@ -140,6 +140,25 @@ public class OnPlayGUI : MonoBehaviour
     /// </summary>
     GameObject m_kMato;
 
+    void Start()
+    {
+        m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
+        m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
+        m_playerAvator = GameObject.Find("PlayerAvator");
+
+        m_kMato = transform.Find("mato").gameObject;
+        Debug.Assert(m_kMato != null);
+
+        float fScaleH = 1334 / Screen.height;
+
+        m_fMarkWeight = 86 * fScaleH;
+        m_fMarkerOriginX = 30 * fScaleH;
+        m_fMarkerOriginY = (1334 - 215) * fScaleH - m_fMarkWeight;
+
+        //-每秒移动这么多
+        m_pixelsPerBeatsY = (Screen.height - 408 * fScaleH) * 1.0f / markerEnterOffset;
+    }
+
     /// <summary>
     /// PlayUI的初始化
     /// </summary>
@@ -216,22 +235,6 @@ public class OnPlayGUI : MonoBehaviour
         kAudioSource.Play();
     }
 
-    void Start()
-    {
-        m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
-        m_scoringManager = GameObject.Find("ScoringManager").GetComponent<ScoringManager>();
-        m_playerAvator = GameObject.Find("PlayerAvator");
-
-        m_kMato = transform.Find("mato").gameObject;
-        Debug.Assert(m_kMato != null);
-
-        float fScaleH = 1334 / Screen.height;
-
-        m_fMarkWeight = 86 * fScaleH;
-        m_fMarkerOriginX = 30 * fScaleH;    
-        m_fMarkerOriginY = (1334 - 215) * fScaleH - m_fMarkWeight;
-    }
-
     /// <summary>
     /// 定位
     /// </summary>
@@ -278,7 +281,7 @@ public class OnPlayGUI : MonoBehaviour
     {
         //-X的位置，每个需要增加m_fMarkWeight，因为是用GUI渲染需要再减去markerSize / 2.0f
         float x = m_fMarkerOriginX + m_fMarkWeight + m_fMarkWeight * 2 * _iIndex - markerSize / 2.0f;
-        float y = m_fMarkerOriginY - markerSize / 2.0f;
+        float y = m_fMarkerOriginY;//- - markerSize / 2.0f
 
         SongInfo song = m_musicManager.currentSongInfo;
 
@@ -299,7 +302,8 @@ public class OnPlayGUI : MonoBehaviour
 
             // 求到显示位置的X坐标的偏移,用提前显示的轨道播放的位置减去当前播放拍子的差值
             float fYoffset = info.triggerBeatTiming - m_musicManager.beatCountFromStart;
-            fYoffset *= m_pixelsPerBeatsY;
+            //-Debug.Log("fYoffset:" + fYoffset);
+            fYoffset *= m_pixelsPerBeatsY;//-时间乘以速度等于距离
 
             Rect drawRect = new Rect(x 
                 , y - fYoffset
@@ -357,13 +361,13 @@ public class OnPlayGUI : MonoBehaviour
                 scale *= 0.5f;
             }
 
-            float fHitY = m_fMarkerOriginY - markerSize * scale / 2.0f;
+            float fSize = markerSize * scale;
             Rect drawRect3 = new Rect(
-                x,
-                fHitY,
-                markerSize * scale,
-                markerSize * scale);
-            Graphics.DrawTexture(drawRect3, hitEffectIcon);
+                x + markerSize / 2.0f - fSize / 2.0f,
+                m_fMarkerOriginY - fSize / 2.0f,
+                fSize,
+                fSize);
+            GUI.DrawTexture(drawRect3, hitEffectIcon);
             m_rythmHitEffectCountDown[_iIndex]--;
         }
 
