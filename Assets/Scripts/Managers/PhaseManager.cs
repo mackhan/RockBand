@@ -88,10 +88,10 @@ public class PhaseManager : MonoBehaviour
         m_musicManager.currentSongInfo = songInfo;
 
         //-三波观众开始动起来
-        //foreach (GameObject audience in GameObject.FindGameObjectsWithTag("Audience"))
-        //{
-        //    audience.GetComponent<SimpleActionMotor>().isWaveBegin = true;
-        //}
+        foreach (GameObject audience in GameObject.FindGameObjectsWithTag("Audience"))
+        {
+            audience.GetComponent<SimpleActionMotor>().isWaveBegin = true;
+        }
 
         //-各种效果动画（舞台演出等）开始
         GameObject.Find("EventManager").GetComponent<EventManager>().BeginEventSequence();
@@ -126,12 +126,6 @@ public class PhaseManager : MonoBehaviour
             DeactiveateAllGUI();
 			ActivateGUI("StartupMenu");
 			break;
-		
-		//case "OnBeginInstruction"://玩法介绍界面
-  //          DeactiveateAllGUI();
-		//	ActivateGUI("InstructionGUI");
-		//	ActivateGUI("OnPlayGUI");
-		//	break;
 
         case "SelectMusic":
             DeactiveateAllGUI();

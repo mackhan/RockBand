@@ -104,9 +104,6 @@ public class ScoringManager : MonoBehaviour
     /// <summary>
     /// 得分的序列计数器
     /// </summary>
-    //SequenceSeeker<OnBeatActionInfo> m_scoringUnitSeeker
-    //    = new SequenceSeeker<OnBeatActionInfo>();
-
     SequenceSeekers<OnBeatActionInfo> m_kScoringUnitSeekers = new SequenceSeekers<OnBeatActionInfo>();
 
     /// <summary>
@@ -125,10 +122,8 @@ public class ScoringManager : MonoBehaviour
         //-找到所有成员
         m_bandMembers = GameObject.FindGameObjectsWithTag("BandMember");
 
-#if AUDIENCES
         //-找到所有的观众
         m_audiences = GameObject.FindGameObjectsWithTag("Audience");
-#endif
 
         //-找到所有的音符特效
         m_noteParticles = GameObject.FindGameObjectsWithTag("NoteParticle");
@@ -370,13 +365,12 @@ public class ScoringManager : MonoBehaviour
 				bandMember.GetComponent<BandMember>().Jump();
 			}
 
-#if AUDIENCES
             //-所有观众跳一下
             foreach (GameObject audience in m_audiences)
 			{
 				audience.GetComponent<Audience>().Jump();
 			}
-#endif
+
             //-所有的音符效果,激发一下
             foreach (GameObject noteParticle in m_noteParticles)
 			{
@@ -475,12 +469,10 @@ public class ScoringManager : MonoBehaviour
     /// </summary>
 	GameObject[]	m_bandMembers;
 
-#if AUDIENCES
     /// <summary>
     /// 所有的观众 
     /// </summary>
 	GameObject[]    m_audiences;
-#endif
 
     /// <summary>
     /// 所有的音符效果
