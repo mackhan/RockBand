@@ -160,11 +160,11 @@ public class OnPlayGUI : MonoBehaviour
         //-每秒移动这么多
         m_pixelsPerBeatsY = (Screen.height - 408 * fScaleH) * 1.0f / markerEnterOffset;
 
-        Object kHitEffect = Resources.Load("Perfeb/HitEffect", typeof(GameObject)); 
-        m_kHitEffects[0] = Instantiate(kHitEffect) as GameObject;
-        m_kHitEffects[1] = Instantiate(kHitEffect) as GameObject;
-        m_kHitEffects[2] = Instantiate(kHitEffect) as GameObject;
-        m_kHitEffects[3] = Instantiate(kHitEffect) as GameObject;
+        //Object kHitEffect = Resources.Load("Perfeb/HitEffect", typeof(GameObject)); 
+        //m_kHitEffects[0] = Instantiate(kHitEffect) as GameObject;
+        //m_kHitEffects[1] = Instantiate(kHitEffect) as GameObject;
+        //m_kHitEffects[2] = Instantiate(kHitEffect) as GameObject;
+        //m_kHitEffects[3] = Instantiate(kHitEffect) as GameObject;
     }
 
     /// <summary>
@@ -272,6 +272,21 @@ public class OnPlayGUI : MonoBehaviour
 
     void OnGUI()
     {
+#if UNITY_EDITOR
+        //-编辑器下按了开发键
+        if (GUI.Button(new Rect((Screen.width - 150) / 2.0f, 360, 150, 40), "Development"))
+        {
+            if (ScoringManager.DebugTest == true)
+            {
+                ScoringManager.DebugTest = false;
+            }
+            else
+            {
+                ScoringManager.DebugTest = true;
+            }
+        }
+#endif
+
         //-计算目标拍子的ICON的大小。显示当前需要击中的位置
         float markerSize = Screen.width / 6f;
         if (m_musicManager.IsPlaying() || Time.timeScale == 0.0f)

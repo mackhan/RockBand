@@ -127,6 +127,7 @@ public class PhaseManager : MonoBehaviour
 			ActivateGUI("StartupMenu");
 			break;
 
+
         case "SelectMusic":
             DeactiveateAllGUI();
             ActivateGUI("SelectMusic");                

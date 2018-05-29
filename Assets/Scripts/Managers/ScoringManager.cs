@@ -217,6 +217,8 @@ public class ScoringManager : MonoBehaviour
         }
     }
 
+    static public bool DebugTest = false;
+
     /// <summary>
     /// Process the specified _iIndex.
     /// </summary>
@@ -232,14 +234,27 @@ public class ScoringManager : MonoBehaviour
 
         SequenceSeeker<OnBeatActionInfo> kSeeker = m_kScoringUnitSeekers.GetSeeker(_iIndex);
 
-        if (m_playerAction.GetCurrentPlayerAction(_iIndex) 
-            != PlayerActionEnum.None)//-如果这一拍玩家有操作？？？
-        {
-            int nearestIndex = GetNearestPlayerActionInfoIndex(_iIndex);
-            SongInfo song = m_musicManager.currentSongInfo;
-            OnBeatActionInfo marker_act = song.onBeatActionSequence[_iIndex][nearestIndex];//-找到最近的谱面
-            OnBeatActionInfo player_act = m_playerAction.GetLastActionInof(_iIndex);//-找到玩家操作的信息
+        int nearestIndex = GetNearestPlayerActionInfoIndex(_iIndex);
+        SongInfo song = m_musicManager.currentSongInfo;
+        OnBeatActionInfo marker_act = song.onBeatActionSequence[_iIndex][nearestIndex];//-找到最近的谱面
+        OnBeatActionInfo player_act = m_playerAction.GetLastActionInof(_iIndex);//-找到玩家操作的信息
 
+        bool bHit = false;
+        if (marker_act.triggerBeatTiming <= m_musicManager.beatCountFromStart
+            && nearestIndex != m_previousHitIndex && DebugTest == true)
+        {
+            bHit = true;
+
+            OnBeatActionInfo actionInfo = new OnBeatActionInfo();
+            actionInfo.triggerBeatTiming = m_musicManager.beatCountFromStart;
+            actionInfo.playerActionType = PlayerActionEnum.Jump;
+            player_act = actionInfo;
+        }
+
+
+        if (m_playerAction.GetCurrentPlayerAction(_iIndex) 
+            != PlayerActionEnum.None || bHit)//-如果这一拍玩家有操作？？？
+        {
             m_lastResults[_iIndex].timingError = player_act.triggerBeatTiming 
                 - marker_act.triggerBeatTiming;//-找到玩家操作的拍子和最近谱面时间的差值
             m_lastResults[_iIndex].markerIndex = nearestIndex;
