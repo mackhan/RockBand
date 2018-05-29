@@ -140,6 +140,8 @@ public class OnPlayGUI : MonoBehaviour
     /// </summary>
     GameObject m_kMato;
 
+    GameObject[] m_kHitEffects = new GameObject[4];
+
     void Start()
     {
         m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
@@ -157,6 +159,12 @@ public class OnPlayGUI : MonoBehaviour
 
         //-每秒移动这么多
         m_pixelsPerBeatsY = (Screen.height - 408 * fScaleH) * 1.0f / markerEnterOffset;
+
+        Object kHitEffect = Resources.Load("Perfeb/HitEffect", typeof(GameObject)); 
+        m_kHitEffects[0] = Instantiate(kHitEffect) as GameObject;
+        m_kHitEffects[1] = Instantiate(kHitEffect) as GameObject;
+        m_kHitEffects[2] = Instantiate(kHitEffect) as GameObject;
+        m_kHitEffects[3] = Instantiate(kHitEffect) as GameObject;
     }
 
     /// <summary>
@@ -177,6 +185,8 @@ public class OnPlayGUI : MonoBehaviour
         m_kSeeker.Seek(0.0f);
     }
 
+    int[] HitIndex = new int[4];
+
     /// <summary>
     /// 根据玩家的操作结果播放音效和显示消息
     /// </summary>
@@ -187,6 +197,8 @@ public class OnPlayGUI : MonoBehaviour
         , float _fAdditionalScore
         , float _fScore)
     {
+        HitIndex[_iIndex] = actionInfoIndex;
+
         //-分数显示
         TextScore.text = _fScore.ToString();
         m_lastInputScore = _fAdditionalScore;
@@ -271,6 +283,8 @@ public class OnPlayGUI : MonoBehaviour
         }
     }
 
+    //Vector3 m_kVerctorTemp = Vector3.zero;
+
     /// <summary>
     /// Drew the specified _iIndex and markerSize.
     /// </summary>
@@ -292,6 +306,10 @@ public class OnPlayGUI : MonoBehaviour
         //绘制一个显示动作时间的图标。
         for (int drawnIndex = begin; drawnIndex < end; drawnIndex++)
         {
+            if (HitIndex[_iIndex] == drawnIndex)
+            {
+                continue;
+            }
             OnBeatActionInfo info = song.onBeatActionSequence[_iIndex][drawnIndex];
             //当兴奋值高，并且是跳跃的时候,放大一些
             if (m_scoringManager.temper > ScoringManager.temperThreshold
@@ -368,8 +386,22 @@ public class OnPlayGUI : MonoBehaviour
                 fSize,
                 fSize);
             GUI.DrawTexture(drawRect3, hitEffectIcon);
+
+            //Vector3 kPos1 = new Vector3(x
+            //    , m_fMarkerOriginY, Camera.main.nearClipPlane);
+            //Vector3 kPos2 = Camera.main.ScreenToWorldPoint(kPos1);
+            //Debug.Log("Pos : " + kPos1 + " : " + kPos2);
+
+            //m_kHitEffects[_iIndex].transform.position = kPos2;
+            //m_kHitEffects[_iIndex].active = true;
+            //m_kHitEffects[_iIndex].GetComponent<SimpleSpriteAnimation>().BeginAnimation(0, 8);
+
             m_rythmHitEffectCountDown[_iIndex]--;
         }
+        //else
+        //{
+        //    m_kHitEffects[_iIndex].active = false;
+        //}
 
         //显示Perfect，Good，Bad三种提示
         if (m_messageShowCountDown[_iIndex] > 0)
