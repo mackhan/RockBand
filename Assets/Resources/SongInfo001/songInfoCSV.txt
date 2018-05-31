@@ -1,4 +1,4 @@
-beatPerSecond,1.936,,
+beatPerSecond,1.34883721,,
 beatPerBar,4,,
 include,songInfoCSV_OnBeatAction_Plane01
 include,songInfoCSV_OnBeatAction_Plane02
