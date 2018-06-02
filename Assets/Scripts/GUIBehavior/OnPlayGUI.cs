@@ -125,6 +125,8 @@ public class OnPlayGUI : MonoBehaviour
 
     Texture messageTexture;
 
+    public GameObject[] RhythmGameObject;
+
     /// <summary>
     /// 得分的UI
     /// </summary>
@@ -142,6 +144,8 @@ public class OnPlayGUI : MonoBehaviour
 
     GameObject[] m_kHitEffects = new GameObject[4];
 
+    float fScale;
+
     void Start()
     {
         m_musicManager = GameObject.Find("MusicManager").GetComponent<MusicManager>();
@@ -151,14 +155,14 @@ public class OnPlayGUI : MonoBehaviour
         m_kMato = transform.Find("mato").gameObject;
         Debug.Assert(m_kMato != null);
 
-        float fScaleH = Screen.height / 1334;
+        fScale = Screen.width / 750.0f;
 
-        m_fMarkWeight = 86 * fScaleH;
-        m_fMarkerOriginX = 30 * fScaleH;
-        m_fMarkerOriginY = (1334 - 215) * fScaleH - m_fMarkWeight;
+        m_fMarkWeight = 86 * fScale;
+        m_fMarkerOriginX = 30 * fScale;
+        m_fMarkerOriginY = (1334 - 215) * fScale;
 
         //-每秒移动这么多
-        m_pixelsPerBeatsY = (Screen.height - 408 * fScaleH) * 1.0f / markerEnterOffset;
+        m_pixelsPerBeatsY = (Screen.height * fScale - 408 * fScale) * 1.0f / markerEnterOffset;
 
         //Object kHitEffect = Resources.Load("Perfeb/HitEffect", typeof(GameObject)); 
         //m_kHitEffects[0] = Instantiate(kHitEffect) as GameObject;
@@ -310,7 +314,9 @@ public class OnPlayGUI : MonoBehaviour
     {
         //-X的位置，每个需要增加m_fMarkWeight，因为是用GUI渲染需要再减去markerSize / 2.0f
         float x = m_fMarkerOriginX + m_fMarkWeight + m_fMarkWeight * 2 * _iIndex - markerSize / 2.0f;
-        float y = m_fMarkerOriginY;//- - markerSize / 2.0f
+        float y = m_fMarkerOriginY - m_fMarkWeight;
+
+        RhythmGameObject[_iIndex].transform.position = new Vector3(x + markerSize / 2.0f, 408*fScale, 0.0f);
 
         SongInfo song = m_musicManager.currentSongInfo;
 
@@ -350,7 +356,6 @@ public class OnPlayGUI : MonoBehaviour
             // 在文本文件中显示行号。
             if (isDevelopmentMode)
             {
-                float fScale = Screen.height / 1334;//-适配用
                 GUI.skin = this.guiSkin;
                 GUI.Label(new Rect(drawRect.x
                                    , drawRect.y - 10.0f
@@ -397,7 +402,7 @@ public class OnPlayGUI : MonoBehaviour
             float fSize = markerSize * scale;
             Rect drawRect3 = new Rect(
                 x + markerSize / 2.0f - fSize / 2.0f,
-                m_fMarkerOriginY - fSize / 2.0f,
+                m_fMarkerOriginY - m_fMarkWeight - fSize / 2.0f,
                 fSize,
                 fSize);
             GUI.DrawTexture(drawRect3, hitEffectIcon);
@@ -422,7 +427,7 @@ public class OnPlayGUI : MonoBehaviour
         if (m_messageShowCountDown[_iIndex] > 0)
         {
             GUI.color = new Color(1, 1, 1, m_messageShowCountDown[_iIndex] / 40.0f);
-            GUI.DrawTexture(new Rect(x, m_fMarkerOriginY - markerSize, 150, 80)
+            GUI.DrawTexture(new Rect(x, m_fMarkerOriginY - m_fMarkWeight*2 - 80 * fScale, 150 * fScale, 80 * fScale)
                 , messageTexture
                 , ScaleMode.ScaleToFit
                 , true);
