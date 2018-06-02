@@ -316,8 +316,6 @@ public class OnPlayGUI : MonoBehaviour
         float x = m_fMarkerOriginX + m_fMarkWeight + m_fMarkWeight * 2 * _iIndex - markerSize / 2.0f;
         float y = m_fMarkerOriginY - m_fMarkWeight;
 
-        RhythmGameObject[_iIndex].transform.position = new Vector3(x + markerSize / 2.0f, 408*fScale, 0.0f);
-
         SongInfo song = m_musicManager.currentSongInfo;
 
         //标记开始和结束索引显示。
@@ -402,7 +400,7 @@ public class OnPlayGUI : MonoBehaviour
             float fSize = markerSize * scale;
             Rect drawRect3 = new Rect(
                 x + markerSize / 2.0f - fSize / 2.0f,
-                m_fMarkerOriginY - m_fMarkWeight - fSize / 2.0f,
+                y - fSize / 2.0f,
                 fSize,
                 fSize);
             GUI.DrawTexture(drawRect3, hitEffectIcon);
@@ -427,13 +425,20 @@ public class OnPlayGUI : MonoBehaviour
         if (m_messageShowCountDown[_iIndex] > 0)
         {
             GUI.color = new Color(1, 1, 1, m_messageShowCountDown[_iIndex] / 40.0f);
-            GUI.DrawTexture(new Rect(x, m_fMarkerOriginY - m_fMarkWeight*2 - 80 * fScale, 150 * fScale, 80 * fScale)
+            GUI.DrawTexture(new Rect(x
+                    , y - m_fMarkWeight - 80 * fScale
+                    , 150 * fScale
+                    , 80 * fScale)
                 , messageTexture
                 , ScaleMode.ScaleToFit
                 , true);
             GUI.color = Color.white;
             m_messageShowCountDown[_iIndex]--;
         }
+
+        float fx = x + markerSize / 2.0f;
+        float fy = Screen.height - y + m_fMarkWeight*2;//- - 
+        RhythmGameObject[_iIndex].transform.position = new Vector3(fx, fy, 0.0f);
     }
 
     /// <summary>
