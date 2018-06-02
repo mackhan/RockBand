@@ -151,7 +151,7 @@ public class OnPlayGUI : MonoBehaviour
         m_kMato = transform.Find("mato").gameObject;
         Debug.Assert(m_kMato != null);
 
-        float fScaleH = 1334 / Screen.height;
+        float fScaleH = Screen.height / 1334;
 
         m_fMarkWeight = 86 * fScaleH;
         m_fMarkerOriginX = 30 * fScaleH;

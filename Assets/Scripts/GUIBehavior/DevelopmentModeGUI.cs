@@ -89,6 +89,8 @@ public class DevelopmentModeGUI : MonoBehaviour
 
 	void OnGUI()
     {
+        float fScaleH = Screen.height / 1334;
+
 #if true
         GUI.Label(new Rect( 5, 100, 150, 40 ),"Current");
 
@@ -97,37 +99,37 @@ public class DevelopmentModeGUI : MonoBehaviour
 
         //-调试信息，显示当前的拍子数和总共的拍子数
 		GUI.TextArea(
-			new Rect( 250, 100, 200, 40 ),
+			new Rect( 250, 100, 200 * fScaleH, 40 * fScaleH),
 			((int)m_musicManager.beatCountFromStart).ToString() + "/" + ((int)m_musicManager.length).ToString()
 		);
 
 		//-调试信息，显示滑动条当前的拍子数，只在拖动的时候显示
 		if(this.m_seekSlider.is_now_dragging)
         {
-			GUI.Label(new Rect(252, 120, 200, 40), ((int)this.m_seekSlider.dragging_poisition).ToString());
+			GUI.Label(new Rect(252, 120, 200 * fScaleH, 40 * fScaleH), ((int)this.m_seekSlider.dragging_poisition).ToString());
 		}
 
 		//结束按钮，按了重启
-		if( GUI.Button(new Rect((Screen.width - 150)/2.0f, 350, 150, 40), "End"))
+		if( GUI.Button(new Rect((Screen.width - 150)/2.0f, 350, 150 * fScaleH, 40 * fScaleH), "End"))
         {
 			GameObject.Find("PhaseManager").GetComponent<PhaseManager>().SetPhase("Restart");
 		}
 
         //显示之前输入的定时偏离了多少。
-        GUI.Label(new Rect(5, 400, 150, 40)
+        GUI.Label(new Rect(5, 400, 150 * fScaleH, 40 * fScaleH)
                   , "Input Gap:" 
                   + m_scoringManager.m_lastResults[0].timingError);
 
         //显示上一次是在哪个拍子按下了
-		GUI.Label(new Rect(5, 420, 150, 40)
+		GUI.Label(new Rect(5, 420, 150 * fScaleH, 40 * fScaleH)
                   , "Previous Input:" 
                   + m_playerAction.GetLastActionInof(0).triggerBeatTiming.ToString());
 
-		GUI.Label(new Rect( 5, 440, 150, 40)
+		GUI.Label(new Rect( 5, 440, 150 * fScaleH, 40 * fScaleH)
                   , "Nearest(beat):" 
                   + m_musicManager.currentSongInfo.onBeatActionSequence[0][m_scoringManager.m_lastResults[0].markerIndex].triggerBeatTiming.ToString());
 
-		GUI.Label(new Rect( 150, 440, 150, 40)
+		GUI.Label(new Rect( 150, 440, 150 * fScaleH, 40 * fScaleH)
                   , "Nearest(index):" 
                   + m_musicManager.currentSongInfo.onBeatActionSequence[0][m_scoringManager.m_lastResults[0].markerIndex].line_number.ToString());
 
@@ -147,11 +149,11 @@ public class DevelopmentModeGUI : MonoBehaviour
 				previousHitRegionName
 					= m_musicManager.currentSongInfo.onBeatActionRegionSequence[currentReginIndex].name;
 			}
-			GUI.Label(new Rect(150, 420, 250, 40), "region ...:" + previousHitRegionName);
+			GUI.Label(new Rect(150, 420, 250 * fScaleH, 40 * fScaleH), "region ...:" + previousHitRegionName);
 
             //显示当前部分
-            GUI.Label(new Rect(5, 460, 150, 40), "Current:" + m_musicManager.beatCountFromStart);
-			GUI.Label(new Rect(150, 460, 250, 40), "region ...:" + m_musicManager.currentSongInfo.onBeatActionRegionSequence[currentReginIndex].name);
+            GUI.Label(new Rect(5, 460, 150 * fScaleH, 40 * fScaleH), "Current:" + m_musicManager.beatCountFromStart);
+			GUI.Label(new Rect(150, 460, 250 * fScaleH, 40 * fScaleH), "region ...:" + m_musicManager.currentSongInfo.onBeatActionRegionSequence[currentReginIndex].name);
 		}
 #endif
 	}
