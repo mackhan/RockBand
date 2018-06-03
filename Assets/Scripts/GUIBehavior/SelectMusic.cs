@@ -33,23 +33,10 @@ public class SelectMusic : MonoBehaviour
             sPhase = "DevelopmentMode";
         }
         Index = _iIndex;
-        if (_iIndex == 1)
-        {
-            Debug.Log("Select 1");
-            kMusicManager.SetMusic("Sounds/Music001");
-            kPhaseManager.SongName = "SongInfo001/";
-            kPhaseManager.SetPhase(sPhase);
-        }
-        else if (_iIndex == 2)
-        {
-            Debug.Log("Select 2");
-            kMusicManager.SetMusic("Sounds/Music002");
-            kPhaseManager.SongName = "SongInfo002/";
-            kPhaseManager.SetPhase(sPhase);
-        }
-        else
-        {
-            Debug.LogError("Out of range!");
-        }
+
+        Debug.Log("Select " + Index);
+        kMusicManager.SetMusic("Sounds/Music00"+ Index);
+        kPhaseManager.SongName = "SongInfo00" + Index + "/";
+        kPhaseManager.SetPhase(sPhase);
     }
 }
