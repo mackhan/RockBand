@@ -7,7 +7,7 @@ stagingDirectionSequenceRegion-Begin,,,
 SetBandMemberDefaultAnimation,0,2,4,Vocalist
 regionParameters,Ready2,4,4
 LightFade,0,2,6
-LightFade,0,0,2
+LightFade,0,0,3
 LightFade,0,3,6
 SetBandMemberAction,0,jump,Vocalist
 stagingDirectionSequenceRegion-End,,,
@@ -35,8 +35,6 @@ regionParameters,Intro,32,4
 SetBandMemberDefaultAnimation,0,2,4,Guitarist
 LightFlash,0,0,
 LightFlash,0,1,
-FireBlast,0,0,10
-FireBlast,0,1,10
 stagingDirectionSequenceRegion-End,,,
 stagingDirectionSequenceRegion-Begin,,,
 regionParameters,A1-1,14,2
@@ -48,15 +46,11 @@ stagingDirectionSequenceRegion-Begin,,,
 regionParameters,A1-2,1,2
 LightFlash,0,0,
 LightFlash,0,1,
-FireBlast,0,0,80
-FireBlast,0,1,80
 stagingDirectionSequenceRegion-End,,,
 stagingDirectionSequenceRegion-Begin,,,
 regionParameters,A1-3,1,2
 LightFlash,0,0,
 LightFlash,0,1,
-FireBlast,0,0,80
-FireBlast,0,1,80
 stagingDirectionSequenceRegion-End,,,
 stagingDirectionSequenceRegion-Begin,,,
 regionParameters,A1-4,16,2
@@ -93,7 +87,7 @@ LightShuffle,0,2,0,10
 Applause,0
 stagingDirectionSequenceRegion-End,,,
 stagingDirectionSequenceRegion-Begin,,,
-regionParameters,SabiLast-1,14,4
+regionParameters,SabiLast-1,18,4
 LightFade,0,0,2
 LightFade,0,1,8
 LightFade,0,2,6
@@ -107,7 +101,7 @@ FireBlast,2,1,100
 Applause,0
 stagingDirectionSequenceRegion-End,,,
 stagingDirectionSequenceRegion-Begin,,,,
-regionParameters,SabiLastLast,16,4,
+regionParameters,SabiLastLast,18,4,
 FireBlast,0,0,150,
 FireBlast,0,1,150,
 LightShuffle,0,0,2,15

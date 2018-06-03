@@ -16,10 +16,9 @@ SingleShot,71,HeadBanging
 SingleShot,77,HeadBanging
 SingleShot,85,HeadBanging
 SingleShot,153,HeadBanging
-SingleShot,153.2,Jump
+SingleShot,154,Jump
 SingleShot,155,HeadBanging
 SingleShot,161,Jump
-SingleShot,173,HeadBanging
 SingleShot,185,Jump
 SingleShot,197,HeadBanging
 SingleShot,209,Jump
