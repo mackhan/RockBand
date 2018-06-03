@@ -32,7 +32,7 @@ SingleShot,117,HeadBanging
 SingleShot,121,HeadBanging
 SingleShot,125,HeadBanging
 SingleShot,129,HeadBanging
-SingleShot,133HeadBanging
+SingleShot,133,HeadBanging
 SingleShot,137,HeadBanging
 SingleShot,140,HeadBanging
 SingleShot,146,HeadBanging

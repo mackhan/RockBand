@@ -186,7 +186,7 @@ public class SongInfoLoader
 		while ((line = reader.ReadLine()) != null)
         {
 			line_number++;
-            Debug.Log("line_number ：" + line_number);
+            Debug.Log("line_number ：" + _iIndex + " " + line_number);
 
             string[] lineCells = line.Split(',');
 			switch (lineCells[0])
