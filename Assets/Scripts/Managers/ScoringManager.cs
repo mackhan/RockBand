@@ -236,6 +236,15 @@ public class ScoringManager : MonoBehaviour
 
         int nearestIndex = GetNearestPlayerActionInfoIndex(_iIndex);
         SongInfo song = m_musicManager.currentSongInfo;
+        if (song.onBeatActionSequence[_iIndex] == null)
+        {
+            Debug.Log("Out of range : " + _iIndex);
+        }
+        if (nearestIndex >= song.onBeatActionSequence[_iIndex].Count)
+        {
+            //-Debug.Log("Out of range : " + nearestIndex + " >= " + song.onBeatActionSequence[_iIndex].Count);
+            return;
+        }
         OnBeatActionInfo marker_act = song.onBeatActionSequence[_iIndex][nearestIndex];//-找到最近的谱面
         OnBeatActionInfo player_act = m_playerAction.GetLastActionInof(_iIndex);//-找到玩家操作的信息
 
