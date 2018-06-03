@@ -11,7 +11,6 @@ SingleShot,140,Jump
 SingleShot,156,HeadBanging
 SingleShot,158,HeadBanging
 SingleShot,160,HeadBanging
-SingleShot,162,HeadBanging
 SingleShot,164,HeadBanging
 SingleShot,166,HeadBanging
 scoringUnitSequenceRegion-End
