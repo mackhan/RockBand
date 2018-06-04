@@ -1,11 +1,3 @@
-scoringUnitSequenceRegion-Begin,4
-regionParameters,Unified,166.266667,166.266667
-SingleShot,102,HeadBanging
-SingleShot,104,HeadBanging
-SingleShot,114,HeadBanging
-SingleShot,120,HeadBanging
-SingleShot,134,HeadBanging
-SingleShot,136,HeadBanging
-SingleShot,146,HeadBanging
-SingleShot,152,HeadBanging
+scoringUnitSequenceRegion-Begin,1
+regionParameters,Unified,176,176
 scoringUnitSequenceRegion-End
