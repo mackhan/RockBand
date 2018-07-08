@@ -2498,6 +2498,10 @@ void RegisterAllStrippedInternalCalls()
 		void Register_UnityEngine_Animator_GetAnimatorClipInfoInternal();
 		Register_UnityEngine_Animator_GetAnimatorClipInfoInternal();
 
+		//System.Void UnityEngine.Animator::GetAnimatorTransitionInfo(System.Int32,UnityEngine.AnimatorTransitionInfo&)
+		void Register_UnityEngine_Animator_GetAnimatorTransitionInfo();
+		Register_UnityEngine_Animator_GetAnimatorTransitionInfo();
+
 		//System.Void UnityEngine.Animator::INTERNAL_CALL_GetBodyPositionInternal(UnityEngine.Animator,UnityEngine.Vector3&)
 		void Register_UnityEngine_Animator_INTERNAL_CALL_GetBodyPositionInternal();
 		Register_UnityEngine_Animator_INTERNAL_CALL_GetBodyPositionInternal();
@@ -2797,10 +2801,6 @@ void RegisterAllStrippedInternalCalls()
 		//UnityEngine.AnimatorStateInfo UnityEngine.Animator::GetNextAnimatorStateInfo(System.Int32)
 		void Register_UnityEngine_Animator_GetNextAnimatorStateInfo();
 		Register_UnityEngine_Animator_GetNextAnimatorStateInfo();
-
-		//UnityEngine.AnimatorTransitionInfo UnityEngine.Animator::GetAnimatorTransitionInfo(System.Int32)
-		void Register_UnityEngine_Animator_GetAnimatorTransitionInfo();
-		Register_UnityEngine_Animator_GetAnimatorTransitionInfo();
 
 		//UnityEngine.AnimatorUpdateMode UnityEngine.Animator::get_updateMode()
 		void Register_UnityEngine_Animator_get_updateMode();
@@ -22802,7 +22802,7 @@ void RegisterAllStrippedInternalCalls()
 		void Register_UnityEngine_Sprite_OverridePhysicsShapeCount();
 		Register_UnityEngine_Sprite_OverridePhysicsShapeCount();
 
-		//UnityEngine.Sprite UnityEngine.Sprite::INTERNAL_CALL_Create(UnityEngine.Texture2D,UnityEngine.Rect&,UnityEngine.Vector2&,System.Single,System.UInt32,UnityEngine.SpriteMeshType,UnityEngine.Vector4&)
+		//UnityEngine.Sprite UnityEngine.Sprite::INTERNAL_CALL_Create(UnityEngine.Texture2D,UnityEngine.Rect&,UnityEngine.Vector2&,System.Single,System.UInt32,UnityEngine.SpriteMeshType,UnityEngine.Vector4&,System.Boolean)
 		void Register_UnityEngine_Sprite_INTERNAL_CALL_Create();
 		Register_UnityEngine_Sprite_INTERNAL_CALL_Create();
 

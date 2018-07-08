@@ -1,3 +1,0 @@
-scoringUnitSequenceRegion-Begin,1
-regionParameters,Unified,176,176
-scoringUnitSequenceRegion-End

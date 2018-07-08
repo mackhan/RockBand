@@ -71,6 +71,7 @@ public class PhaseManager : MonoBehaviour
     /// <param name="_bDevelopment"></param>
     void Play(bool _bDevelopment)
     {
+        Debug.Log("PlayPlayPlayPlayPlayPlayPlayPlayPlayPlay");
         DeactiveateAllGUI();
         ActivateGUI("OnPlayGUI");
         if (_bDevelopment)
@@ -127,7 +128,6 @@ public class PhaseManager : MonoBehaviour
 			ActivateGUI("StartupMenu");
 			break;
 
-
         case "SelectMusic":
             DeactiveateAllGUI();
             ActivateGUI("SelectMusic");                
@@ -178,15 +178,13 @@ public class PhaseManager : MonoBehaviour
 
         case "Reset"://-重新开始，直接重新加载Main场景
             {
-                //-UnityEngine.SceneManagement.SceneManager.LoadScene("Main");
                 SelectMusic.Select2(SelectMusic.Index);
                 Play(false);
             }
             break;
-
-            case "Pause"://-
+            
+        case "Pause"://-
             {
-                //-DeactiveateAllGUI();
                 ActivateGUI("PauseGUI");
             }
             break;

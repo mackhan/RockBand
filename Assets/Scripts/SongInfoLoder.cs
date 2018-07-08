@@ -186,7 +186,7 @@ public class SongInfoLoader
 		while ((line = reader.ReadLine()) != null)
         {
 			line_number++;
-            Debug.Log("line_number ：" + _iIndex + " " + line_number);
+            //-Debug.Log("line_number ：" + _iIndex + " " + line_number);
 
             string[] lineCells = line.Split(',');
 			switch (lineCells[0])
@@ -232,7 +232,7 @@ public class SongInfoLoader
                     {
 					    onBeatActionInfo.playerActionType = PlayerActionEnum.HeadBanging;
 				    }
-                    Debug.Log("triggerBeatTiming ：" + float.Parse(lineCells[1]));
+                    //-Debug.Log("triggerBeatTiming ：" + float.Parse(lineCells[1]));
 				    onBeatActionInfo.triggerBeatTiming = float.Parse(lineCells[1]);
 
 				    //-记录行号

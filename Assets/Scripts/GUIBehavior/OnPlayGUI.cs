@@ -358,7 +358,7 @@ public class OnPlayGUI : MonoBehaviour
                 GUI.Label(new Rect(drawRect.x
                                    , drawRect.y - 10.0f
                                    , 50.0f * fScale
-                                   , 30.0f * fScale), info.line_number.ToString());
+                                   , 30.0f * fScale), info.line_number.ToString() + " " + info.triggerBeatTiming.ToString());
                 GUI.skin = null;
             }
         }

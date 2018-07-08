@@ -11,17 +11,17 @@ public class ScoringManager : MonoBehaviour
     /// <summary>
     /// 空按的时机
     /// </summary>
-    public static float timingErrorMiss = 0.5f;
+    public float timingErrorMiss = 0.5f;
 
     /// <summary>
     /// Good的时机，如果时间差距低于这个就是Error
     /// </summary>
-	public static float timingErrorToleranceGood = 0.22f;
+	public float timingErrorToleranceGood = 0.22f;
 
     /// <summary>
     /// Excellent的时机, 如果时偏差小于这个就是Good
     /// </summary>
-    public static float timingErrorTorelanceExcellent = 0.12f;
+    public float timingErrorTorelanceExcellent = 0.12f;
 
     /// <summary>
     /// 失败的得分
@@ -31,37 +31,37 @@ public class ScoringManager : MonoBehaviour
     /// <summary>
     /// Good的得分
     /// </summary>
-	public static float goodScore = 200.0f;
+    public static float goodScore = 200.0f;
 
     /// <summary>
     /// Excellent的得分
     /// </summary>
-	public static float excellentScore = 400.0f;
+    public static float excellentScore = 400.0f;
 
     /// <summary>
     /// 中途判定点被判定为“失败”的得分率（得分/理论上的最高得分）
     /// </summary>
-	public static float failureScoreRate = 0.3f;
+    public static float failureScoreRate = 0.3f;
 
     /// <summary>
     /// 中途判定点被判定为“优秀”的得分率（得分/理论上的最高得分）
     /// </summary>
-	public static float excellentScoreRate = 0.85f;
+    public static float excellentScoreRate = 0.85f;
 
     /// <summary>
     /// 失败的兴奋值
     /// </summary>
-    public static float missHeatupRate = -0.08f;
+    public float missHeatupRate = -0.08f;
 
     /// <summary>
     /// Good的兴奋值
     /// </summary>
-	public static float goodHeatupRate = 0.01f;
+	public float goodHeatupRate = 0.01f;
 
     /// <summary>
     /// Excellent的兴奋值
     /// </summary>
-	public static float bestHeatupRate = 0.02f;
+	public float bestHeatupRate = 0.02f;
 
     /// <summary>
     /// 兴奋度的门槛
