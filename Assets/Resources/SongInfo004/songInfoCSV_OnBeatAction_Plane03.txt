@@ -8,7 +8,7 @@ SingleShot,41,HeadBanging
 SingleShot,43,Jump
 SingleShot,49,HeadBanging
 SingleShot,51,Jump
-SingleShot,58,HeadBanging
+SingleShot,57,HeadBanging
 SingleShot,59,Jump
 SingleShot,65,HeadBanging
 SingleShot,69,Jump
