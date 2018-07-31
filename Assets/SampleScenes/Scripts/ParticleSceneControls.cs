@@ -5,6 +5,33 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityStandardAssets.Effects;
 
+namespace UnityStandardAssets.Effects
+{
+    public class ParticleSystemMultiplier : MonoBehaviour
+    {
+        // a simple script to scale the size, speed and lifetime of a particle system
+        public static int test = 0;
+        public float multiplier = 1;
+
+        public class varchange : MonoBehaviour { int test = 1; }
+
+        void Start()
+        {
+            if (test == 1)
+            {
+                var systems = GetComponentsInChildren<ParticleSystem>();
+                foreach (ParticleSystem system in systems)
+                {
+                    system.startSize *= multiplier;
+                    system.startSpeed *= multiplier;
+                    system.startLifetime *= Mathf.Lerp(multiplier, 1, 0.5f);
+                    system.Clear();
+                    system.Play();
+                }
+            }
+        }
+    }
+}
 
 namespace UnityStandardAssets.SceneUtils
 {
